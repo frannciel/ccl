@@ -3,47 +3,20 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use YourAppRocks\EloquentUuid\Traits\HasUuid;
 
-class Pregao extends Model
+class Pregao extends Licitacao
 {
     use HasUuid;
     protected $table = 'pregoes';
 
     protected $fillable = [
-        'numero', 'ano', 'objeto', 'processo', 'classificacao', 'forma'
+        'tipo', 'forma', 'srp', 'licitacao_id'
     ];
 
-    public function itens()
+    public function licitacao()
     {
-        return $this->belongsToMany('App\Item', 'item_pregao')->withPivot('numero');
+        return $this->hasOne('App\Licitacao', 'licitacao_id');
     }
 
-    public function processoOrigem()
-    {
-    	return $this->belongsTo('App\Processo');
-    }
-
-    public function getValorTotalEstimadoAttribute()
-    {
-        return number_format($this->total, 2, ',', '.');
-    }
-
-    public function getTotaEstimadolAttribute()
-    {
-        $soma = 0;
-        foreach ( $this->itens as  $item) 
-            $soma += $item->total;
-        return $soma;
-    }
-
-    public function getValorTotalLicitadoAttribute()
-    {
-        return number_format('');
-    }
-
-    public function getTotalLicitadoAttribute()
-    {
-        $soma = 0;
-        return $soma;
-    }
 }

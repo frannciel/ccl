@@ -11,7 +11,7 @@ class Licitacao extends Model
     protected $table = 'licitacoes';
 
     protected $fillable = [
-        'numero', 'ano', 'objeto', 'processo', 'modalidade', 'classificacao', 'tipo', 'forma'
+        'numero', 'ano', 'objeto', 'processo'
     ];
 
     public function itens()
@@ -24,12 +24,16 @@ class Licitacao extends Model
     	return $this->belongsTo('App\Processo');
     }
 
+    public function pregao(){
+        return $this->belongsTo('App\Pregao');
+    }
+
     public function getValorTotalEstimadoAttribute()
     {
         return number_format($this->total, 2, ',', '.');
     }
 
-    public function getTotaEstimadolAttribute()
+    public function getTotalEstimadolAttribute()
     {
         $soma = 0;
         foreach ( $this->itens as  $item) 

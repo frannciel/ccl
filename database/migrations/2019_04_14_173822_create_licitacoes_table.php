@@ -20,15 +20,7 @@ class CreateLicitacoesTable extends Migration
             $table->smallInteger('ano');
             $table->string('objeto', 200);
             $table->string('processo', 20);
-            $table->integer('modalidade_id')->unsigned();
-            $table->integer('classificacao_id')->unsigned();
-            $table->integer('tipo_id')->unsigned();
-            $table->integer('forma_id')->default(60)->unsigned();
             $table->unique(['numero', 'ano']);
-            $table->foreign('classificacao_id')->references('id')->on('informacoes');
-            $table->foreign('tipo_id')->references('id')->on('informacoes');
-            $table->foreign('forma_id')->references('id')->on('informacoes');
-            $table->foreign('modalidade_id')->references('id')->on('informacoes');
             $table->timestamps();
         });
     }
