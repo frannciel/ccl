@@ -18,9 +18,10 @@ class CreateLicitacoesTable extends Migration
             $table->uuid('uuid');
             $table->smallInteger('numero');
             $table->smallInteger('ano');
-            $table->string('objeto', 200);
+            $table->string('objeto', 300);
             $table->string('processo', 20);
-            $table->unique(['numero', 'ano']);
+            $table->integer('licitacaoable_id')->unsigned();
+            $table->string('licitacaoable_type', 100);
             $table->timestamps();
         });
     }

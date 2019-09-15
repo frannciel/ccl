@@ -24,8 +24,9 @@ class Licitacao extends Model
     	return $this->belongsTo('App\Processo');
     }
 
-    public function pregao(){
-        return $this->belongsTo('App\Pregao');
+    public function licitacaoable()
+    {
+        return $this->morphTo();
     }
 
     public function getValorTotalEstimadoAttribute()

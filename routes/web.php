@@ -19,6 +19,19 @@ Route::get('/', function () {
     return view('principal');
 })->name('principal');
 
+
+
+Route::get('pregao/novo', 				'PregaoController@create')->name('pregaoNovo');
+Route::post('pregao/store', 			'PregaoController@store');
+Route::post('pregao/update', 			'PregaoController@update');
+Route::get('pregao/exibir/{uuid}',		'PregaoController@show');
+
+Route::get('licitacao/', 				'LicitacaoController@index')->name('licitacao');
+Route::post('licitacao/modalidade', 	'LicitacaoController@modalidade')->name('modalidade');
+Route::get('licitacao/novo', 			'LicitacaoController@create')->name('licitacaoNovo');
+Route::post('licitacao/store', 			'LicitacaoController@store');
+
+
 Route::get('cotacao/novo', 'CotacaoController@redirecionar');
 Route::get('importar/novo', 'FileController@redirecionar');
 

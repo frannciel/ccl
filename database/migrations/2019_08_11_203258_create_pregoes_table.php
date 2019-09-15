@@ -16,13 +16,10 @@ class CreatePregoesTable extends Migration
         Schema::create('pregoes', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uuid');
-            $table->boolean('srp');
-            $table->integer('licitacao_id')->unsigned();
-            $table->integer('tipo_id')->unsigned();
-            $table->integer('forma_id')->default(60)->unsigned();
-            $table->foreign('licitacao_id')->references('id')->on('licitacoes');
-            $table->foreign('tipo_id')->references('id')->on('informacoes');
-            $table->foreign('forma_id')->references('id')->on('informacoes');
+            $table->smallInteger('srp');
+            $table->smallInteger('tipo');
+            $table->smallInteger('forma');
+            $table->timestamps();
         });
     }
 

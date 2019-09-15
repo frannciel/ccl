@@ -40,6 +40,10 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 	<style>
+        .notActive{ 
+            color: #4cae4c;
+            background-color: #fff;
+        }
 		.t-body {
 		   height: 500px;
 		   overflow-y: scroll;
@@ -358,17 +362,90 @@
         http://blog.conradosaud.com.br/artigo/26
     -->
     <script type="text/javascript">
+
+
+/*   $('#radioBtn a').on('change', function(){
+    var sel = $(this).data('title');
+    var tog = $(this).data('toggle');
+    $('#'+tog).prop('value', sel); 
+    $('a[data-toggle="'+tog+'"]').not('[data-title="'+sel+'"]').removeClass('active').addClass('notActive');
+    $('a[data-toggle="'+tog+'"][data-title="'+sel+'"]').removeClass('notActive').addClass('active');
+});*/
+
+    $(document).ready(function(){
         /*
          * A clicar no botão copiar o conteudo da <div> para a àrea de transferêcia
          */
-        var clipboard = new Clipboard('.btn'); 
-        clipboard.on('success', function(e){
+         var clipboard = new Clipboard('.btn'); 
+         clipboard.on('success', function(e){
             console.log(e); 
-        }); 
-        clipboard.on('error', function(e){
+        });     
+         clipboard.on('error', function(e){
             console.log(e);  
         });
 
+        /*
+         * Exibe a opção escolhida no radio durante o carregamento da página
+         */
+        $(window).on("load", function(){
+            $('input:hidden').each(function() {
+                radioButton($(this).attr('name'), $(this).val());
+            });
+        });
+    });
+
+    $('#modalidade').change(function () {
+        $.ajax({
+            method:'POST',
+            url: '/licitacao/modalidade',
+            data: {
+                opcao: $('#modalidade').val(),
+                "_token": "{{ csrf_token() }}"
+            },
+            success: function(data) {
+                if ( data.length > 0) {
+                    $('#adicioanis').empty();
+                    $('#adicioanis').html(data);
+                    $('.page-header').text('Incluir '+$('#modalidade option:selected').text())
+                }else{
+                    $('#adicioanis').empty();
+                }
+            }
+        });
+    });
+
+
+        function radioButton(toggle, title){
+            var group = 'G'+toggle;       
+            $('#'+toggle).prop('value', title); 
+            $('a[data-toggle="'+toggle+'"]').not('[data-title="'+title+'"]').removeClass('active').addClass('notActive');
+            $('a[data-toggle="'+toggle+'"][data-title="'+title+'"]').removeClass('notActive').addClass('active');
+        }
+
+        function enviar(nome){
+            $.ajax({
+                method:'POST',
+                url: '/enquadramento/dados',
+                data: {
+                    selecao: nome,
+                    opcao: $('#'+nome).val(),
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(data) {
+                    if ( data.length > 0) {
+                        if (nome == 'normativa'){
+                            $('#conteudo').html(data);
+                            $('#complemento').empty();
+                        }
+                        if (nome == 'modalidade' )
+                            $('#complemento').html(data);
+                    }else{
+                        if (nome == 'normativa')
+                            $('#complemento, #conteudo').empty();
+                    }
+                }
+            });
+        }
 
         function enviar(nome){
             $.ajax({

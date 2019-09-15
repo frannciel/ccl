@@ -16,8 +16,7 @@ class CreateInformacoesTable extends Migration
         Schema::create('informacoes', function (Blueprint $table) {
             $table->increments('id');
             $table->string('dado', 50);
-            $table->string('valor', 50);
-            $table->string('tipo', 50);
+            $table->smallInteger('classe');
         });
     }
 

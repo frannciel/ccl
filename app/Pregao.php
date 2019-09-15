@@ -5,18 +5,18 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use YourAppRocks\EloquentUuid\Traits\HasUuid;
 
-class Pregao extends Licitacao
+class Pregao extends Model
 {
     use HasUuid;
     protected $table = 'pregoes';
 
     protected $fillable = [
-        'tipo', 'forma', 'srp', 'licitacao_id'
+        'tipo', 'forma', 'srp'
     ];
 
     public function licitacao()
     {
-        return $this->hasOne('App\Licitacao', 'licitacao_id');
+        return $this->morphOne('App\Licitacao', 'licitacaoable');
     }
 
 }

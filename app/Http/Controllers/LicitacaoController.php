@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Informacao;
 use App\Licitacao;
 use Illuminate\Http\Request;
 
@@ -15,6 +15,8 @@ class LicitacaoController extends Controller
     public function index()
     {
         //https://github.com/YourAppRocks/eloquent-uuid
+        $licitacoes = Licitacao::all();
+        return view('licitacao.index', compact('licitacoes'));
     }
 
     /**
@@ -24,7 +26,10 @@ class LicitacaoController extends Controller
      */
     public function create()
     {
-        //
+        $modalidades = array();
+        foreach (Informacao::where('classe', 3)->get() as $value)
+            $modalidades +=  [$value->id => $value->dado];
+        return view('licitacao.create', compact('modalidades'));
     }
 
     /**
@@ -35,7 +40,9 @@ class LicitacaoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if ($request->modalidade == 7) {
+            return redirect()->action('PregaoController@store')->with($request);
+        }
     }
 
     /**
@@ -44,9 +51,10 @@ class LicitacaoController extends Controller
      * @param  \App\Licitacao  $licitacao
      * @return \Illuminate\Http\Response
      */
-    public function show(Licitacao $licitacao)
+    public function show($uuid)
     {
-        //
+        $licitacao = Licitacao::findByUuid($uuid);
+        return $licitacao;
     }
 
     /**
@@ -83,12 +91,20 @@ class LicitacaoController extends Controller
         //
     }
 
-        /**
+
+            /**
      * Get User by scope query.
      */
-    public function show($uuid)
+    public function modalidade(Request $request)
     {
-        $licitacao = Licitacao::findByUuid($uuid);
-        return $licitacao;
+        if ($request->opcao == 7) {
+            $tipos = array();
+            $formas = array();
+            foreach (Informacao::where('classe', 1)->get() as $value)
+                $formas +=  [$value->id => $value->dado];
+            foreach (Informacao::where('classe', 2)->get() as $value)
+                $tipos +=  [$value->id => $value->dado];
+            return view('licitacao.ajax',  compact("tipos", "formas"))->with('etapa', 7);
+        }
     }
 }

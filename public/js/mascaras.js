@@ -7,7 +7,7 @@ $('#pregao').mask('000/0000');
 $('#numero').mask('000/0000');
 $('#data').mask('00/00/0000');
 $('#hora').mask('00:00');
-
+$('#processoOrigem').mask('00000.000000/0000-00');
 
 /*
 * Toda vez que um valor for digitado ONKEYUP está função e chamada para formatar o valor
