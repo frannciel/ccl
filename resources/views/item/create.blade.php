@@ -11,7 +11,7 @@
 
 	<div class="panel panel-success">
 		<div class="panel-heading">
-			<h3 class="panel-title">Requisição n° <a href="{{route('requisicaoExibir', [$requisicao->id])}}">{{$requisicao->numero ?? '' }} / {{$requisicao->ano ?? ''}}</a></h3>
+			<h3 class="panel-title">Requisição n° <a href="{{route('requisicaoExibir', [$requisicao->uuid])}}">{{$requisicao->numero ?? '' }} / {{$requisicao->ano ?? ''}}</a></h3>
 		</div>
 		<div class="panel-body">
 			<label> Objeto:</label> {{$requisicao->descricao ?? ''}}
@@ -19,7 +19,7 @@
 	</div>
 
 	{{Form::open(['url' => 'item/store', 'method' => 'post', 'class' => 'form-padrao'])}}
-		{{ Form::hidden('requisicao', $requisicao->id)}}
+		{{ Form::hidden('requisicao', $requisicao->uuid)}}
 		<div class="row">
 			@include('form.number', [
 			'input' => 'quantidade',

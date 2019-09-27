@@ -15,6 +15,7 @@ class CreateEnquadramentosTable extends Migration
     {
         Schema::create('enquadramentos', function (Blueprint $table) {
             $table->increments('id');
+            $table->uuid('uuid');
             $table->string('processo', 20);
             $table->string('numero', 30)->nullable();
             $table->string('objeto', 300);

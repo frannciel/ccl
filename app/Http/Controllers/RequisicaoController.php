@@ -42,13 +42,20 @@ class RequisicaoController extends Controller
      */
     public function store(RequisicaoRequest $request)
     {
+
+        //return Requisitante::find(1)->requisicoes()->save(Requisicao::find(10));
+       //return Requisicao::all();
+       //return Requisicao::find(1)->requisitante()->first();
 		$requisicao = Requisicao::create([
             'numero' => Requisicao::where('ano', date('Y'))->max('numero') + 1,// Retona o número da ultima requisção e acarescenta mais um
             'ano' => date('Y'),
             'descricao' => $request['descricao'],
+            'justificativa' => $request['justificativa']
         ]);
-        $requisicao->requisitantes()->attach($request->requisitante); // request->requisitante representa o id do solicitante
+        $requisicao->requisitante()->associate($request->requisitante); // request->requisitante representa o id do solicitante
+        $requisicao->save();
         return redirect()->route('requisicaoExibir', [ $requisicao->id]);
+        /**/
     }
 
     /**
@@ -57,12 +64,12 @@ class RequisicaoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($uuid)
     {
         $requisitantes = array();
-        foreach (Requisitante::all() as $key => $value)
+        foreach (Requisitante::all() as $value)
             $requisitantes += [$value->id => $value->nome];
-        return view('requisicao.show', compact('requisitantes'))->with('requisicao', Requisicao::find($id));
+        return view('requisicao.show', compact('requisitantes'))->with('requisicao', Requisicao::findByUuid($uuid));
     }
 
     /**
@@ -88,11 +95,12 @@ class RequisicaoController extends Controller
      */
     public function update(RequisicaoRequest $request)
     {
-        $requisicao = Requisicao::find($request->requisicao);
+        $requisicao = Requisicao::findByUuid($request->requisicao);
         $requisicao->descricao = $request->descricao;
+        $requisicao->justificativa = $request->justificativa;
         $requisicao->save();
-        $requisicao->requisitantes()->detach(); // remove todas as relações
-        $requisicao->requisitantes()->attach($request->requisitante); // refaz as relaçoes
+        $requisicao->requisitantes()->dissossiate(); // remove todas as relações
+        $requisicao->requisitantes()->associate($request->requisitante); // refaz as relaçoes
         return redirect()->route('requisicaoExibir', [ $requisicao->id]);
     }
 
@@ -102,9 +110,12 @@ class RequisicaoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($uuid)
     {
-       Requisicao::destroy($id);
+
+        $requisicao = Requisicao::findByUuid($uuid)->delete();
+       //Requisicao::destroy(Requisicao::findByUuid($uuid)->id);
+        return redirect()->route('requisicaoExibir', [$uuid]);
     }
 	
 	public function ajax(Request $request)

@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Pregao;
+use App\Item;
+use App\Participante;
 use App\Informacao;
+use App\Unidade;
 use Illuminate\Http\Request;
 
 //https://github.com/YourAppRocks/eloquent-uuid
@@ -30,7 +33,7 @@ class PregaoController extends Controller
         $formas = array();
         foreach (Informacao::where('classe', 1)->get() as $value)
             $formas +=  [$value->id => $value->dado];
-        foreach (Informacao::where('classe', 2)->get() as $value)
+        foreach (Informacao::where('dado', 'Menor Preço')->get() as $value)
             $tipos +=  [$value->id => $value->dado];
         return view('licitacao.pregao.create', compact('formas', 'tipos'));
     }
@@ -70,7 +73,7 @@ class PregaoController extends Controller
         $licitacao = Pregao::findByUuid($uuid)->licitacao;
         foreach (Informacao::where('classe', 1)->get() as $value)
             $formas +=  [$value->id => $value->dado];
-        foreach (Informacao::where('dado', 'Menor Preços')->get() as $value)
+        foreach (Informacao::where('dado', 'Menor Preço')->get() as $value)
             $tipos +=  [$value->id => $value->dado];
         return view('licitacao.pregao.show', compact('formas', 'tipos', 'licitacao'));
     }
@@ -107,5 +110,27 @@ class PregaoController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function itemEdit($uuid){
+        $item = Item::findByUuid($uuid);
+        $licitacao = $item->licitacao()->first();
+        $fornecedores = $item->fornecedores()->get();
+
+        $participantes = array();
+        $uasgs = Participante::with(['cidade','uasg'])->where('item_id', $item->id)->get();
+        foreach ($uasgs as  $uasg) {
+            $participante += [
+            'quantidade' => $uasg->quantidade,
+            'cidade' => $uasg->cidade->nome,
+            'estado' => $uasg->cidade->estado,
+            'nome' => $uasg->uasg->nome,
+            'nome' => $uasg->uasg->codigo ];
+        }
+
+        $unidades = array();
+        foreach (Unidade::all() as $value)
+            $unidades += [$value->id => $value->nome];
+        return view('licitacao.pregao.itemEdit',  compact('item', 'licitacao', 'fornecedores', 'participantes', 'unidades'));
     }
 }

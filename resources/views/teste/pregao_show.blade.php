@@ -1,5 +1,13 @@
 <div class="row">
 	@include('form.radioButton', [
+	'input' => 'forma', 
+	'label' => 'Forma*', 
+	'value' => old($input ?? '') ?? $licitacao->licitacaoable->forma ?? '', 
+	'largura' => 3,
+	'options' => $formas ?? '', 
+	'attributes' => ['id' => 'forma']])
+
+	@include('form.radioButton', [
 	'input' => 'srp',
 	'label' => 'Registro de Preços*',
 	'value' => old($input ?? '') ?? $licitacao->licitacaoable->srp ?? '',
@@ -8,12 +16,12 @@
 	'attributes' => ['id' => 'srp']])
 
 	@include('form.radioButton', [
-	'input' => 'forma', 
-	'label' => 'Forma*', 
-	'value' => old($input ?? '') ?? $licitacao->licitacaoable->forma ?? '', 
-	'largura' => 3,
-	'options' => $formas ?? '', 
-	'attributes' => ['id' => 'forma']])
+	'input' => 'srp_externo',
+	'label' => 'Adesão/Participação',
+	'value' => old($input ?? ''),
+	'largura' => 3, 
+	'options' => ['1' => 'Carona', '2' => 'Participante',], 
+	'attributes' => ['id' => 'srp_externo']])
 
 	@include('form.select', [
 	'input' => 'tipo', 
@@ -23,4 +31,6 @@
 	'options' => $tipos ?? '', 
 	'attributes' => ['id' => 'tipo', 'readonly' => '']])
 </div>
+
+@include('licitacao.forms.pregao_show')
 

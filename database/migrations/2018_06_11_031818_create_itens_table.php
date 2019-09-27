@@ -15,18 +15,18 @@ class CreateItensTable extends Migration
     {
         Schema::create('itens', function (Blueprint $table) {
             $table->increments('id');
+            $table->uuid('uuid');
             $table->smallInteger('numero');
             $table->integer('quantidade');
             $table->integer('codigo')->nullable();
-            $table->string('objeto', 100)->nullable();
+            $table->string('objeto', 300)->nullable();
             $table->text('descricao');
-            $table->integer('requisicao_id')->unsigned();
+            $table->integer('requisicao_id')->unsigned()->nullable();
             $table->integer('unidade_id')->unsigned();
             $table->foreign('unidade_id')->references('id')->on('unidades');
-            $table->foreign('requisicao_id')->references('id')->on('requisicoes');
+            $table->foreign('requisicao_id')->references('id')->on('requisicoes')->onDelete('cascade');
             $table->timestamps();
         });
-
     }
 
     /**

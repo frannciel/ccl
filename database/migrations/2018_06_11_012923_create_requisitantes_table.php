@@ -15,6 +15,7 @@ class CreateRequisitantesTable extends Migration
     {
         Schema::create('requisitantes', function (Blueprint $table) {
             $table->increments('id');
+            $table->uuid('uuid');
             $table->string('nome', 150);
             $table->string('sigla', 30);
             $table->integer('ramal')->nullable();

@@ -487,17 +487,17 @@
             });
         }
 
-        function getDescricao(id){
+        function getDescricao(id, local){
             $.ajax({
                 method:'POST',
                 url: '/requisicao/ajax',
                 data: {
-                    numeroAno: $('#'+id).val(),
+                    numeroAno: $(id).val(),
                     "_token": "{{ csrf_token() }}"
                 },
                 success: function(data) {
                     $('#descricao').val(data.requisicao.descricao);
-                    $('form').append("<input type='hidden' id='requisicao' name='requisicao' value='"+data.requisicao.id+"'>");
+                    $(local).empty().append("<input  id='requisicao' name='requisicao' type='hidden' value='"+data.requisicao.uuid+"'>");
                 }
             });
         }

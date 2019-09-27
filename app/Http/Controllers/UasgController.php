@@ -7,6 +7,7 @@ use App\Uasg;
 use App\Item;
 use App\Estado;
 use App\Cidade;
+use App\Participante;
 
 class UasgController extends Controller
 {
@@ -17,7 +18,18 @@ class UasgController extends Controller
      */
     public function index()
     {
+        $id = 1;
 
+        $uasg = Participante::with(['cidade','uasg'])->where('item_id', $id)->first();
+        #$comissoes = Participante::with(['item','uasg'])->where('cidade_id', $id)->get();
+        #$comissoes = Participante::with(['item','uasg'])->where('cidade_id', $id)->get();
+        /*
+        $dados = array();
+        foreach ($uasgs as  $uasg) {
+            $dados += ['quantidade' => $uasg->quantidade, 'cidade' => $uasg->cidade->nome, 'uasg' => $uasg->uasg->nome ];
+        }*/
+        #https://www.schoolofnet.com/forum/topico/many-to-many-entre-3-tabelas-5831
+        return response()->json(['quantidade' => $uasg->quantidade, 'cidade' => $uasg->cidade->nome, 'uasg' => $uasg->uasg->nome ]);
     }
 
     /**

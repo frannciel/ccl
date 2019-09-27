@@ -3,9 +3,11 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use YourAppRocks\EloquentUuid\Traits\HasUuid;
 
 class Cotacao extends Model
 {
+    use HasUuid;
     protected $table = 'cotacoes';
     /**
     * The attributes that are mass assignable.

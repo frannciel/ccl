@@ -3,9 +3,11 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use YourAppRocks\EloquentUuid\Traits\HasUuid;
 
 class Cidade extends Model
 {
+    use HasUuid;
     protected $table = 'cidades';
 
 	protected $fillable = ['nome', 'estado_id'];
@@ -19,7 +21,7 @@ class Cidade extends Model
     {
         return $this->hasMany('App\Fornecedor');
     }
-
+/*
     public function uasgs()
     {
         return $this->belongsToMany('App\Uasg', 'cidade_uasg')->withPivot('quantidade');
@@ -28,5 +30,10 @@ class Cidade extends Model
 	public function itens()
     {
         return $this->belongsToMany('App\Item', 'cidade_participante')->withPivot('quantidade');
+    }
+*/
+    public function participantes()
+    {
+        return $this->belongsToMany('App\Participante');
     }
 }

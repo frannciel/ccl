@@ -3,11 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use YourAppRocks\EloquentUuid\Traits\HasUuid;
 
 class Item extends Model
 {
+    use HasUuid;
     protected $table = 'itens';
-
     protected $fillable = [
         'numero', 'quantidade', 'codigo', 'objeto', 'descricao', 'unidade_id', 'requisicao_id'
     ];
@@ -17,9 +18,19 @@ class Item extends Model
         return $this->belongsTo('App\Requisicao', 'requisicao_id');
     }
 
-    public function licitacoes()
+    /**
+     * Auto realcionamento para mesclar itens de uam requisicao
+     *
+     * @return     <type>  ( description_of_the_return_value )
+     */
+    public function itens()
     {
-        return $this->belongsToMany('App\Licitacao', 'item_licitacao')->withPivot('numero');
+        return $this->belongsToMany('App\Item', 'mesclados', 'mesclado_id', 'item_id')->withPivot('licitacao_id')->withTimestamps();
+    }
+
+    public function licitacao()
+    {
+        return $this->belongsToMany('App\Licitacao', 'item_licitacao', 'item_id', 'licitacao_id')->withPivot('ordem');
     }
 
     public function unidade()
@@ -27,6 +38,11 @@ class Item extends Model
         return $this->belongsTo('App\Unidade', 'unidade_id');
     }
 
+    public function participantes()
+    {
+        return $this->belongsToMany('App\Participante');
+    }
+/*
     public function uasgs()
     {
         return $this->belongsToMany('App\Uasg', 'cidade_uasg')->withPivot('quantidade');
@@ -36,7 +52,7 @@ class Item extends Model
     {
         return $this->belongsToMany('App\Cidade', 'cidade_uasg')->withPivot('quantidade');
     }
-
+*/
     public function fornecedores()
     {
         return $this->belongsToMany('App\Fornecedor', 'fornecedor_item')->withPivot('quantidade', 'valor', 'marca', 'modelo' )->withTimestamps();

@@ -17,13 +17,13 @@
 	'input' => 'processo',
 	'label' => 'Processo*',
 	'value' => old($input ?? ''),
-	'largura' => 3, 
+	'largura' => 4, 
 	'attributes' => ['id' => 'processo', 'required' => '']])
 
 	@include('form.text', [
 	'input' => 'processoOrigem',
 	'label' => 'Processo Original',
 	'value' => old($input ?? ''),
-	'largura' => 3, 
+	'largura' => 4, 
 	'attributes' => ['id' => 'processoOrigem', 'placeholder' => 'Processo Externo']])
 </div>

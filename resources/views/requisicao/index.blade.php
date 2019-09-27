@@ -40,11 +40,11 @@
 				</thead>
 				<tbody>
 					@forelse ($requisicoes as $requisicao)
-						<tr onclick="location.href ='{{url('/requisicao/exibir', $requisicao->id)}}'; target='_blank';" style="cursor: hand;">
+						<tr onclick="location.href ='{{url('/requisicao/exibir', $requisicao->uuid)}}'; target='_blank';" style="cursor: hand;">
 							<td>{{$requisicao->numero}}</td>
 							<td>{{$requisicao->ano}}</td>
 							<td>{{$requisicao->descricao}}</td>
-							<td>{{$requisicao->requisitantes()->first()['sigla']}}</td>
+							<td>{{$requisicao->requisitante->sigla}}</td>
 							<td>{{$requisicao->created_at}}</td>
 						</tr>
 					@empty

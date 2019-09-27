@@ -28,6 +28,15 @@
 			'largura' => 12, 
 			'attributes' => ['id' => 'descricao', 'required' => '']])
 	   </div>
+
+	   	<div class="row">
+			@include('form.textarea', [
+			'input' => 'justificativa',
+			'label' => 'Justificativa da Contratação*',
+			'value' => old($input ?? ''),
+			'largura' => 12, 
+			'attributes' => ['id' => 'justificativa', 'required' => '',  'rows'=>'5']])
+	    </div>
 	   
 		<div class="row">
 			@include('form.submit', [

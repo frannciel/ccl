@@ -8,7 +8,7 @@
 </div>
 
 {{ Form::open(['url' => '/requisicao/update', 'method' => 'post', 'class' => 'form-padrao']) }}
-	{{ Form::hidden('requisicao', $requisicao->id)}}
+	{{ Form::hidden('requisicao', $requisicao->uuid)}}
 	<div class="row">
 		@include('form.text', [
 		'input' => 'numero',
@@ -28,7 +28,7 @@
 		'input' => 'requisitante', 
 		'label' => 'Requisitante', 
 		'largura' => 6,
-		'selected' => $requisicao->requisitantes, 
+		'selected' => $requisicao->requisitante->uuid, 
 		'options' => $requisitantes, 
 		'attributes' => ['id' => 'requisitante']])
 	</div>
@@ -42,17 +42,28 @@
 	</div>
 
 	<div class="row">
+		@include('form.textarea', [
+		'input' => 'justificativa',
+		'label' => 'Justificativa da Contratação*',
+		'value' => old($input ?? '') ?? $requisicao->descricao,
+		'largura' => 12, 
+		'attributes' => ['id' => 'justificativa', 'required' => '',  'rows'=>'5']])
+    </div>
+
+	<div class="row">
+		<div class="col-md-3  col-md-offset-3 mt-2">
+			<a href="{{route('requisicao')}}" class="btn btn-primary btn-block" type="button">Voltar</a>
+		</div>
+
 		@include('form.submit', [
 		'input' => 'Salvar', 
-		'recuo' => 3,
-		'largura' => 6,
-		])
+		'largura' => 3 ])
 	</div>
 {{ Form::close() }} 
 
 <div class="row mt-4 p-2">
 	<div class="col-md-3 col-6">
-		<a href="{{route('itemNovo', ['id' => $requisicao->id])}}" class="btn btn-primary btn-outline btn-block" type="button">
+		<a href="{{route('itemNovo', ['id' => $requisicao->uuid])}}" class="btn btn-primary btn-outline btn-block" type="button">
 		   	<i class="fa fa-plus fa-3x"></i><br>Incluir Item
 		</a>
 	</div>
@@ -74,6 +85,16 @@
 	<div class="col-md-3 col-6 mt-2">
 		<a href="{{route('documento', ['id' => $requisicao->id])}}" class="btn btn-primary btn-outline btn-block" type="button">
 		   	<i class="fa fa-list-alt fa-3x"></i><br>Tabela de Itens
+		</a>
+	</div>
+	<div class="col-md-3 col-6 mt-2">
+		<a href="{{route('cotacaoRelatorio', ['id' => $requisicao->id])}}" class="btn btn-primary btn-outline btn-block" type="button">
+		   	<i class="fa fa-list-alt fa-3x"></i><br>Remover Itens
+		</a>
+	</div>
+	<div class="col-md-3 col-6 mt-2">
+		<a href="{{url('/requisicao/apagar', $requisicao->uuid)}}"  class="btn btn-primary btn-outline btn-block" type="button">
+		   	<i class="fa fa-list-alt fa-3x"></i><br>Excluir 
 		</a>
 	</div>
 </div>
@@ -100,7 +121,7 @@
    <table class="table table-striped table-bordered">
       <tbody>
          @forelse ($requisicao->itens as $item)
-         <tr onclick="location.href ='{{route('itemEditar', $item->id)}}'; target='_blank';" style="cursor: hand;">
+         <tr onclick="location.href ='{{route('itemEditar', $item->uuid)}}'; target='_blank';" style="cursor: hand;">
             <td class="w-1 center">{{$item->numero}}</td>
             <td class="w-4 justicado">@php print($item->descricaoCompleta) @endphp</td>
             <td class="w-2 center">{{$item->unidade->nome}}</td>

@@ -29,12 +29,12 @@ class ItemController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($requisicao_id)
+    public function create($uuid)
     {
         $unidades = array();
         foreach (Unidade::orderBy('nome', 'asc')->get() as $value)
             $unidades += [$value->id => $value->nome];
-        return view('item.create', compact('unidades'))->with('requisicao', Requisicao::find($requisicao_id));
+        return view('item.create', compact('unidades'))->with('requisicao', Requisicao::findByUuid($uuid));
     }
 
     /**
@@ -46,14 +46,26 @@ class ItemController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'requisicao' => 'required|integer',
+            'requisicao' => 'required|string',
             'quantidade' => 'required|integer',
             'codigo'     => 'integer|nullable',
-            'objeto'     => 'string|nullable|max:100',
+            'objeto'     => 'string|nullable|max:300',
             'descricao'  => 'required|string',
             'unidade'    => 'required|integer',
             'grupo'      => 'integer|nullable'
         ]);
+        $requisicao = Requisicao::findByUuid($request->requisicao);
+
+        $requisicao->itens()->create([
+            'numero'        => $requisicao->max('numero') + 1,
+            'quantidade'    => $request['quantidade'],
+            'codigo'        => $request['codigo'],
+            'objeto'        => $request['objeto'],
+            'descricao'     => nl2br($request['descricao']),
+            'unidade_id'    => $request['unidade'],
+        ]);
+        return redirect()->route('requisicaoExibir', ['uuid' => $requisicao->uuid]);
+        /*
         $item = Item::create([
             'numero' 		=> Item::where('requisicao_id', $request->requisicao)->max('numero') + 1,
             'quantidade' 	=> $request['quantidade'],
@@ -62,8 +74,8 @@ class ItemController extends Controller
             'descricao' 	=> nl2br($request['descricao']),
             'unidade_id' 	=> $request['unidade'],
             'requisicao_id' => $request->requisicao
-        ]);
-        return redirect()->route('requisicaoExibir', ['id' => $request->requisicao]);
+        ]);*/
+
     }
 
     /**
@@ -84,25 +96,24 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($uuid)
     {
-        $item = Item::find($id);
-
-        $dados = DB::table('cidade_participante')
+        $item = Item::findByUuid($uuid);
+       /* $dados = DB::table('cidade_participante')
             ->join('participantes', 'participantes.id', '=', 'cidade_participante.participante_id')
             ->join('cidades', 'cidades.id', '=', 'cidade_participante.cidade_id')
             ->select('participantes.uasg', 'participantes.nome as participante' , 'cidades.nome', 'cidades.estado_id', 'cidade_participante.quantidade')
             ->where('cidade_participante.item_id', '=', $item->id)
             ->Join('estados', 'estados.id', '=', 'estado_id')
             ->select('participantes.uasg', 'participantes.nome as participante' , 'cidades.nome as cidade', 'estados.sigla as estado','cidade_participante.quantidade')
-            ->get();
+            ->get();*/
      
         $unidades = array();
         foreach (Unidade::all() as $value)
             $unidades += [$value->id => $value->nome];
 
         //$item->with('cidades', 'participantes')->where('id', '=', $item->id)->first();
-        return view('item.edit', compact('unidades', 'dados', 'item'));
+        return view('requisicao.itemEdit', compact('unidades', 'item'));
     
     }
 
@@ -116,7 +127,7 @@ class ItemController extends Controller
     public function update(Request $request)
     {
         $this->validate($request, [
-            'item'       => 'required|integer',
+            'item'       => 'required|string',
             'quantidade' => 'required|integer',
             'codigo'     => 'integer|nullable',
             'objeto'     => 'string|nullable|max:100',
@@ -125,7 +136,7 @@ class ItemController extends Controller
             'grupo'      => 'integer|nullable'
         ]);
 
-        $item = Item::find($request->item);
+        $item = Item::findByUuid($request->item);
         $item->quantidade 	= $request->quantidade;
         $item->codigo 		= $request->codigo;
         $item->objeto       = $request->objeto;
@@ -134,7 +145,7 @@ class ItemController extends Controller
         //$item->grupo_id 	= $request->grupo;
         $item->save();
 
-        return redirect()->route('requisicaoExibir', ['id' => $item->requisicao->id]);
+        return redirect()->route('requisicaoExibir', ['uuid' => $item->requisicao->uuid]);
     }
 
     /**

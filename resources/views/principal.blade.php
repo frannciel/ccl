@@ -43,7 +43,7 @@
 <div class="row">
 	<div class="col-md-12">
 		<h1 Class="page-header">Sobre Nós</h1>
-		<p>Ferramenta de software desenvolvida com intito de assessorar a Coordenação de Compras e Licitações na realização de sua atividaes regimentares e disponibiliar às demais unidades administrativas formulários eletrônicos de cadastro de modo a padronizar e dar seleridade aos sua contratações</p>
+		<p>Ferramenta de software desenvolvida com intuito de assessorar a Coordenação de Compras e Licitações na realização de sua atividades regimentares e disponibilizar às demais unidades administrativas um interface simples e intuitiva para eleboração requisições de bens e serviços,  de modo a padronizar e dar seleridade às suas contratações públicas</p>
 	</div>
 </div>
 
@@ -134,7 +134,7 @@
 
 	<div class="row">
 		<div class="col-md-3 col-6">
-			<div class="panel panel-default"><!-- orchid -->
+			<div class="panel panel-gold"><!-- orchid -->
 				<div class="panel-heading">
 					<div class="row">
 						<div class="col-md-12 text-center">
@@ -142,7 +142,7 @@
 						</div>
 					</div>
 				</div>
-				<a href="#">
+				<a href="{{route('licitacao')}}">
 					<div class="panel-footer">
 						<span class="pull-left">Licitações</span>
 						<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>

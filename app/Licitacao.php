@@ -9,14 +9,13 @@ class Licitacao extends Model
 {
     use HasUuid;
     protected $table = 'licitacoes';
-
     protected $fillable = [
         'numero', 'ano', 'objeto', 'processo'
     ];
 
     public function itens()
     {
-        return $this->belongsToMany('App\Item', 'item_licitacao')->withPivot('numero');
+        return $this->belongsToMany('App\Item', 'item_licitacao', 'licitacao_id', 'item_id')->withPivot('ordem');
     }
 
     public function processoOrigem()
@@ -27,6 +26,11 @@ class Licitacao extends Model
     public function licitacaoable()
     {
         return $this->morphTo();
+    }
+
+    public function requisicoes()
+    {
+        return $this->belongsToMany('App\Requisicao', 'licitacao_requisicao')->withTimestamps();
     }
 
     public function getValorTotalEstimadoAttribute()

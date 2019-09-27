@@ -47,7 +47,7 @@
 			'recuo' => 3 ])
 
 			<div class="col-md-3" style="margin-top:20px;">
-				<a href="{{route('licitacaoNovo')}}" class="btn btn-primary btn-block" type="button">Novo</a>
+				<a href="{{route('pregaoNovo')}}" class="btn btn-primary btn-block" type="button">Novo</a>
 			</div>
 		</div>
 	{{ Form::close() }} 

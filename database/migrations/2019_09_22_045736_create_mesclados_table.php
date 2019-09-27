@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCotacoesTable extends Migration
+class CreateMescladosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateCotacoesTable extends Migration
      */
     public function up()
     {
-        Schema::create('cotacoes', function (Blueprint $table) {
+        Schema::create('mesclados', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uuid');
-            $table->string('fonte', 60);
-            $table->double('valor', 10, 4);
-            $table->datetime('data')->nullable();
+            $table->integer('mesclado_id')->unsigned();
             $table->integer('item_id')->unsigned();
+            $table->integer('licitacao_id')->unsigned();
+            $table->foreign('mesclado_id')->references('id')->on('itens');
             $table->foreign('item_id')->references('id')->on('itens');
+            $table->foreign('licitacao_id')->references('id')->on('licitacoes');
             $table->timestamps();
         });
     }
@@ -32,6 +32,6 @@ class CreateCotacoesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cotacoes');
+        Schema::dropIfExists('mesclados');
     }
 }

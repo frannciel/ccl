@@ -3,9 +3,11 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use YourAppRocks\EloquentUuid\Traits\HasUuid;
 
 class Requisitante extends Model
 {
+    use HasUuid;
    	protected $table = 'requisitantes';
     /**
     * The attributes that are mass assignable.
@@ -18,6 +20,6 @@ class Requisitante extends Model
 
     public function requisicoes()
     {
-        return $this->belongsToMany('App\Requisicao', 'requisicao_requisitante');
+        return $this->hasMany('App\Requisicao');
     }
 }

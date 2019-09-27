@@ -15,6 +15,7 @@ class CreateFornecedoresTable extends Migration
     {
         Schema::create('fornecedores', function (Blueprint $table) {
             $table->increments('id');
+            $table->uuid('uuid');
             $table->string('cpf_cnpj', 18);
             $table->string('razao_social', 150);
             $table->string('endereco', 300)->nullable();

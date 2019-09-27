@@ -3,13 +3,14 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use YourAppRocks\EloquentUuid\Traits\HasUuid;
 
 class Requisicao extends Model
 {
+    use HasUuid;
     protected $table = 'requisicoes';
-
     protected $fillable = [
-        'numero', 'ano', 'descricao'
+        'numero', 'ano', 'descricao', 'justificativa', 'requisitante_id',
     ];
 
     public function itens()
@@ -17,9 +18,14 @@ class Requisicao extends Model
         return $this->hasMany('App\Item');
     }
 
-    public function requisitantes()
+    public function requisitante()
     {
-        return $this->belongsToMany('App\Requisitante', 'requisicao_requisitante');
+       return $this->belongsTo('App\Requisitante', 'requisitante_id');
+    }
+
+    public function licitacoes()
+    {
+        return $this->belongsToMany('App\Licitacao', 'licitacao_requisicao');
     }
 
     public function getValorTotalAttribute()

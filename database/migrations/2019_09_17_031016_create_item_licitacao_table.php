@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCotacoesTable extends Migration
+class CreateItemLicitacaoTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,13 @@ class CreateCotacoesTable extends Migration
      */
     public function up()
     {
-        Schema::create('cotacoes', function (Blueprint $table) {
+        Schema::create('item_licitacao', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uuid');
-            $table->string('fonte', 60);
-            $table->double('valor', 10, 4);
-            $table->datetime('data')->nullable();
+            $table->integer('ordem');
             $table->integer('item_id')->unsigned();
+            $table->integer('licitacao_id')->unsigned();
             $table->foreign('item_id')->references('id')->on('itens');
-            $table->timestamps();
+            $table->foreign('licitacao_id')->references('id')->on('licitacoes');
         });
     }
 
@@ -32,6 +30,6 @@ class CreateCotacoesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cotacoes');
+        Schema::dropIfExists('item_licitacao');
     }
 }
