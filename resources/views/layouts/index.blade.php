@@ -39,6 +39,12 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+    <!-- Page-Level Plugin CSS - Tables -->
+    <link href="{{ elixir('vendor/datatables/css/dataTables.bootstrap.css') }}" rel="stylesheet">
+    <!--
+    <link href="css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+    -->
 	<style>
         .notActive{ 
             color: #4cae4c;
@@ -357,11 +363,30 @@
     Chama o arquivo de mascaras
     -->
     <script src="{{ elixir('js/mascaras.js') }}"></script>
-
     <!-- 
         http://blog.conradosaud.com.br/artigo/26
     -->
+    <!-- 
+        Page-Level Plugin Scripts - Tables
+     -->
+        <script src="{{ elixir('vendor/datatables/js/jquery.dataTables.js') }}"></script>
+        <script src="{{ elixir('vendor/datatables/js/dataTables.bootstrap.js') }}"></script>
+    <!-- 
+    <script src="js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="js/plugins/dataTables/dataTables.bootstrap.js"></script>
+    -->
     <script type="text/javascript">
+
+        $(document).ready(function() {
+            $('#dataTables-example').dataTable();
+        });
+
+        $("#ckAll").click(function()  {  // minha chk que marcará as outras
+            if ($("#ckAll").prop("checked"))   // se ela estiver marcada... 
+                $(".chk").prop("checked", true);  // as que estiverem nessa classe ".chk" tambem serão marcadas
+            else 
+                $(".chk").prop("checked", false);   // se não, elas tambem serão desmarcadas
+         });
 
 
 /*   $('#radioBtn a').on('change', function(){

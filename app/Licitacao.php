@@ -33,6 +33,16 @@ class Licitacao extends Model
         return $this->belongsToMany('App\Requisicao', 'licitacao_requisicao')->withTimestamps();
     }
 
+    /**
+     * Relação do Objeto Licitação com os seus itens mesclados 
+     *
+     * @return     <Item>  (relação de itens mesclados)
+     */
+    public function mesclados()
+    {
+        return $this->belongsToMany('App\Item', 'mesclados', 'licitacao_id', 'mesclado_id');
+    }
+
     public function getValorTotalEstimadoAttribute()
     {
         return number_format($this->total, 2, ',', '.');

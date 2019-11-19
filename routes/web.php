@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Http\Request;
+use App\Licitacao;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,6 +16,8 @@ Route::get('welcome', function () {
     return view('welcome');
 });
 
+
+
 Route::get('/', function () {
     return view('principal');
 })->name('principal');
@@ -29,7 +32,7 @@ Route::post('pregao/update', 			'PregaoController@update');
 Route::get('pregao/exibir/{uuid}',		'PregaoController@show');
 Route::get('pregao/item/editar/{uuid}',	'PregaoController@itemEdit');
 
-
+Route::post('licitacao/item/duplicar',				'LicitacaoController@itemDuplicar');
 Route::post('licitacao/modalidade', 				'LicitacaoController@modalidade')->name('modalidade');
 
 Route::get('licitacao/', 							'LicitacaoController@index')->name('licitacao');
@@ -38,7 +41,7 @@ Route::get('licitacao/exibir/{uuid}',				'LicitacaoController@show')->name('lici
 Route::post('licitacao/store', 						'LicitacaoController@store');
 Route::post('licitacao/atribuir/requisicao', 		'LicitacaoController@atribuirRequisicao');
 Route::post('licitacao/atribuir/item', 				'LicitacaoController@atribuirItem');
-Route::get('licitacao/item/mesclar/novo/{uuid}',	'LicitacaoController@mesclarCreate');
+Route::get('licitacao/item/mesclar/novo/{uuid}',	'LicitacaoController@mesclarCreate')->name('licitacaoMesclar');
 Route::post('licitacao/item/mesclar/store',			'LicitacaoController@mesclarStore');
 Route::get('licitacao/item/editar/{uuid}',			'LicitacaoController@itemEdit');
 

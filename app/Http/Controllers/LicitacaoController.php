@@ -169,7 +169,7 @@ class LicitacaoController extends Controller
             'itens' => 'required|min:2',
             ], [ 
             'principal.required' => 'Clique no item que terá as características mantidas!',
-            'itens.min' => 'É necessários no mínimos dos itens para mesclar'
+            'itens.min' => 'É necessários no mínimos dois itens de requisicoes diferentes para realizar a mescla.'
         ]);
 
         $itens  = $request->itens; // uuid dos itens a serem mesclados nesta licitacao
@@ -219,7 +219,7 @@ class LicitacaoController extends Controller
         $itens =  $licitacao->itens()->get();  // reorna todos os itens associado a esta licitação
         $requisicoes = $licitacao->requisicoes()->get(); // retorna todas as requisições associaddas a esta aquisicao
         $itens_array = array(); # array de arrays contendo itens com atributos uuid e numero concatenado com objetos item
-
+        $mesclados = $licitacao->mesclados()->distinct()->get();
         # separa os itens por requisicao e insere no array de tens
         foreach ($requisicoes as  $requisicao) { 
             $lista = array();
@@ -247,10 +247,26 @@ class LicitacaoController extends Controller
             $itens[] = $lista;
         }*/
 
-        return view('licitacao.mesclarCreate', compact('itens_array', 'objetos'));
+        return view('licitacao.mesclarCreate', compact('itens_array', 'objetos', 'mesclados'));
     }
 
+    public function itemDuplicar(Request $request){
 
+        $array_itens = $request->itens; // array contendo os uuid dos itens a serem duplicados
+        $licitacao = Item::findByUuid($array_itens[0])->licitacao()->first();
 
+       foreach ($array_itens as  $uuid) {
+            $item = Item::findByUuid($uuid);
+
+            $mesclado = $licitacao->itens()->create([
+                'numero'        => 20000, // este número indicara itens mesclados nas  licitcaoes, eles não pertencem a nenhuma requisicão
+                'quantidade'    => 0,
+                'codigo'        => $item->codigo,
+                'objeto'        => $item->objeto,
+                'descricao'     => $item->descricao,
+                'unidade_id'    => $item->unidade_id,
+            ], ['ordem' => $licitacao->itens()->max('ordem')+1]); // Ordem é um pivot da tabela item_licitação
+        }
+    }
  
 }
