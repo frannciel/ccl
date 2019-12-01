@@ -11,7 +11,7 @@
 	</div>
 
 	{{Form::open(['url' => '/fornecedor/update', 'method' => 'post', 'class' => 'form-padrao'])}}
-      	{{ Form::hidden('fornecedor', $fornecedor->id)}}
+      	{{ Form::hidden('fornecedor', $fornecedor->uuid)}}
 		<div class="row">
 			@include('form.text', [
 			'input' => 'cpf_cnpj',

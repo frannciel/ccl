@@ -13,20 +13,21 @@ class Item extends Model
         'numero', 'quantidade', 'codigo', 'objeto', 'descricao', 'unidade_id', 'requisicao_id'
     ];
 
-    public function requisicao()
-    {
-        return $this->belongsTo('App\Requisicao', 'requisicao_id');
-    }
-
     /**
-     * Auto realcionamento para mesclar itens de uam requisicao
+     * Auto realcionamento para mesclar itens de duas ou mais requisições
      *
-     * @return     <type>  ( description_of_the_return_value )
+     * @return     <Collect>  App\Item
      */
     public function itens()
     {
         return $this->belongsToMany('App\Item', 'mesclados', 'mesclado_id', 'item_id')->withPivot('licitacao_id')->withTimestamps();
     }
+
+    public function requisicao()
+    {
+        return $this->belongsTo('App\Requisicao', 'requisicao_id');
+    }
+
 
     public function licitacao()
     {
@@ -38,21 +39,34 @@ class Item extends Model
         return $this->belongsTo('App\Unidade', 'unidade_id');
     }
 
+    /**
+     * @Descrition Método que retorna as Uasg que são participantes do item.
+     * 
+     * @return <Collect> App\Uasg
+     */
     public function participantes()
     {
-        return $this->belongsToMany('App\Participante');
+        return $this->belongsToMany('App\Uasg', 'cidade_uasg', 'item_id', 'uasg_id')
+            ->using('App\Participante')
+            ->withPivot('cidade_id')
+            ->withPivot('quantidade');
     }
-/*
-    public function uasgs()
-    {
-        return $this->belongsToMany('App\Uasg', 'cidade_uasg')->withPivot('quantidade');
+
+    // $item->participantes->first()->pivot->cidade->nome ?? ''
+
+    /**
+     * @Descrition Método que retorna as cidades onde os itens deverão ser entregues. 
+     * Estás cidades estão relacionadas as unidades participantes mais ógão gereciador.
+     * 
+     * @return <Collect> App\Cidade
+     */
+    public function localEntrega(){
+        return $this->belongsToMany('App\Cidade', 'cidade_uasg', 'item_id', 'cidade_id')
+            ->using('App\Participante')
+            ->withPivot('uasg_id')
+            ->withPivot('quantidade');
     }
-	
-	public function cidades()
-    {
-        return $this->belongsToMany('App\Cidade', 'cidade_uasg')->withPivot('quantidade');
-    }
-*/
+
     public function fornecedores()
     {
         return $this->belongsToMany('App\Fornecedor', 'fornecedor_item')->withPivot('quantidade', 'valor', 'marca', 'modelo' )->withTimestamps();
@@ -74,6 +88,11 @@ class Item extends Model
         return $objeto.$this->descricao;
     }
 
+    /** 
+     *   @Descrition Metodo que retorna o valor médio das cotações formatado na forma de moeda R$ 0.000 0,00
+     *
+     *   @return <Double> valor médio
+     */
     public function getValorMedioAttribute()
     {
         return number_format($this->media, 2, ',', '.');
@@ -84,6 +103,11 @@ class Item extends Model
         return $this->media * $this->quantidade;
     }
 
+    /** 
+     *   @Descrition Metodo que retorna o valor médio das cotações de preços coletados. 
+     *
+     *   @return <Double> valor médio
+     */
     public function getMediaAttribute()
     {
         $cotacoes = $this->cotacoes;
@@ -96,6 +120,35 @@ class Item extends Model
         } else {
             return 0;
         }
+    }
+
+    /**  
+     *  @Descrition Metodo que retorna a quantidade total disponível para atribuição de fornecedor
+     *  Esta quantidade disponível será calculada subitraindo a quntidade já atribuida ao(s) fornecedor(s)
+     *  da quntidade total do item, obitido do método $his->getQuantidadeTotalAttribute.
+     *  Método atende a entidade Licitação.
+     *
+     *  @return <Integer> quantidade disponível
+     */
+    public function getQuantidadeTotalDisponivelAttribute(){
+        $soma = 0;
+        foreach ($this->fornecedores as  $fornecedor)
+            $soma += $fornecedor->pivot->quantidade;
+        return $this->quantidadeTotal - $soma;
+    }
+    
+    /**  
+     *  @Descrition Metodo que retorna a quantidade total do item. 
+     *  Esta quantidade será calculada somando a quantidade do item  com o quantidade de possíveis unidades participantes
+     *  Método atende a entidade Licitação.
+     *
+     *  @return     <Integer> quantidade total
+     */
+    public function getQuantidadeTotalAttribute(){
+        $soma = 0;
+        foreach ($this->participantes as $participante)
+             $soma += $participante->pivot->quantidade;
+        return $soma + $this->quantidade;
     }
 }
 	

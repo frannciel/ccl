@@ -5,6 +5,7 @@
 	<div class="panel-heading">
 		<h2>Alterar ou Excluir Pregão</h1>
 	</div>
+	
 	<div class="panel-body">
 		{{ Form::open(['url' => 'pregao/update', 'method' => 'post', 'class' => 'form-padrao']) }} <!-- Formulário de update de pregão -->
 		<div class="row">
@@ -105,6 +106,9 @@
 				<div class="panel-heading">
 					<div class="btn-group btn-group-justified" role="group" aria-label="...">
 						<div class="btn-group" role="group">
+							<button type="submit" formaction="{{url('item/primeiro')}}" class="btn btn-success btn-outline btn-lg" title="Atribuir Fornecedor"><i class="glyphicon glyphicon-briefcase"></i></button>
+						</div>
+						<div class="btn-group" role="group">
 							<button type="button" class="btn btn-success btn-outline btn-lg" title="Importar Dados"><i class="fa fa-upload"></i></button>
 						</div>
 						<div class="btn-group" role="group">
@@ -127,7 +131,7 @@
 					<ul class="nav nav-pills nav-justified mt-2">
 						<li class="active"><a data-toggle="tab" href="#guiaItens">Item</a></li>
 						<li><a data-toggle="tab" href="#guiaRequisicao">Requisição</a></li>
-						<li><a data-toggle="tab" href="#guiaForncedor">Fornecedor</a></li>
+						<li><a data-toggle="tab" href="#guiaFornecedor">Fornecedor</a></li>
 						<li><a data-toggle="tab" href="#guiaParticipante">Participante</a></li>
 					</ul>
 				</div><!-- panel-heading -->
@@ -139,7 +143,7 @@
 								<table class="table table-striped table-bordered table-hover" id="dataTables-example">
 									<thead>
 										<tr>
-											<th> &nbsp &nbsp <input type="checkbox" id="ckAll" name="example1"> &nbsp Marcar</th>
+											<td> &nbsp &nbsp <input type="checkbox" id="ckAll" name="example1"> &nbsp Marcar</td>
 										    <th class="w-1 center">Número</th>
 										    <th class="w-4 center">Descrição Detalhada</th>
 										    <th class="w-2 center">Unidade</th>
@@ -164,7 +168,7 @@
 											<td class="w-4 justicado">@php print($item->descricaoCompleta) @endphp</td>
 											<td class="w-2 center">{{$item->unidade->nome}}</td>
 											<td class="w-1 center">{{$item->codigo =='0'?'': $item->codigo}}</td>
-											<td class="w-1 center">{{$item->quantidade}}</td>
+											<td class="w-1 center">{{$item->quantidadeTotal}}</td>
 											<td class="w-1 center"></td>
 
 
@@ -180,32 +184,30 @@
 						</div><!-- / tab item-->
 						
 						<div id="guiaRequisicao" class="tab-pane fade">
-						   <table class="table table-hover tablesorter">
-					         <thead>
-					            <tr>
-					               <th>Requisição</th>
-					               <th>Descrição</th>
-					               <th>Solicitante</th>
-					               <th></th>
-					            </tr>
-					         </thead>
-					         <tbody>
-					            @forelse ($licitacao->requisicoes as $value)
-					            <tr onclick="location.href ='{{route('itemEditar', [$licitacao->uuid])}}'; target='_blank';" style="cursor: hand;">
-					               <td>{{$value->numero}}/{{$value->ano}}</td>
-					               <td>{{$value->descricao}}</td>
-					               <td>{{$value->requisitante->first()['sigla']}}</td>
-					               <td>
-						               <button type="button" class="btn btn-danger btn-circle btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
-	                           </td>
-					            </tr>
-					            @empty
-					            <tr><td colspan=4><center><i> Nenhuma unidade participante encontrada </i></center></td></tr>
-					            @endforelse
-					         </tbody>
-				      	</table>
-
-
+							<table class="table table-hover tablesorter">
+								<thead>
+									<tr>
+										<th>Requisição</th>
+										<th>Descrição</th>
+										<th>Solicitante</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									@forelse ($licitacao->requisicoes as $value)
+									<tr onclick="location.href ='{{route('itemEditar', [$licitacao->uuid])}}'; target='_blank';" style="cursor: hand;">
+										<td>{{$value->numero}}/{{$value->ano}}</td>
+										<td>{{$value->descricao}}</td>
+										<td>{{$value->requisitante->first()['sigla']}}</td>
+										<td>
+											<button type="button" class="btn btn-danger btn-circle btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
+										</td>
+									</tr>
+									@empty
+									<tr><td colspan=4><center><i> Nenhuma unidade participante encontrada </i></center></td></tr>
+									@endforelse
+								</tbody>
+							</table>
 
 							<div class="row mt-2">								
 								<div class="col-md-3">
@@ -243,9 +245,29 @@
 							</div>
 						</div><!-- / tab requisição -->
 
-						<div id="guiaForncedor" class="tab-pane fade">
-							<h3>Menu 2</h3>
-		  					<p>Some content in menu 2.</p>
+						<div id="guiaFornecedor" class="tab-pane fade">
+							<table class="table table-hover tablesorter">
+								<thead>
+									<tr>
+										<th>CNPJ</th>
+										<th>Razão Social</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									@forelse ($lista as $value)
+									<tr onclick="location.href ='{{route('itemEditar', [$value[0]])}}'; target='_blank';" style="cursor: hand;">
+										<td>{{$value[1]}}</td>
+										<td>{{$value[2]}}</td>
+										<td>
+											<button type="button" class="btn btn-danger btn-circle btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
+										</td>
+									</tr>
+									@empty
+									<tr><td colspan=4><center><i> Nenhum forncedor encontrado </i></center></td></tr>
+									@endforelse
+								</tbody>
+							</table>
 						</div>
 
 						<div id="guiaParticipante" class="tab-pane fade">

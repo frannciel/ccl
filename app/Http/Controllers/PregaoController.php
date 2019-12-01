@@ -6,6 +6,7 @@ use App\Pregao;
 use App\Item;
 use App\Participante;
 use App\Informacao;
+use App\Fornecedor;
 use App\Unidade;
 use Illuminate\Http\Request;
 
@@ -71,11 +72,22 @@ class PregaoController extends Controller
         $tipos = array();
         $formas = array();
         $licitacao = Pregao::findByUuid($uuid)->licitacao;
+        //$licitacao->itens()->with('fornecedores')->join('fornecedor_item', 'fornecedor_item.item_id', '=', 'item_licitacao.item_id')->distinct()->get();
+
+        $itens = $licitacao->itens()->has('fornecedores')->with('fornecedores')->get();
+        $lista = collect();
+        foreach ($itens as  $item) {
+            foreach ($item->fornecedores as  $fornecedor) {
+                $lista->push([$fornecedor->uuid, $fornecedor->cpf_cnpj, $fornecedor->razao_social]);
+            }
+        }
+        $lista = $lista->unique()->sortBy('razao_social');
+
         foreach (Informacao::where('classe', 1)->get() as $value)
             $formas +=  [$value->id => $value->dado];
         foreach (Informacao::where('dado', 'Menor Preço')->get() as $value)
             $tipos +=  [$value->id => $value->dado];
-        return view('licitacao.pregao.show', compact('formas', 'tipos', 'licitacao'));
+        return view('licitacao.pregao.show', compact('formas', 'tipos', 'licitacao', 'lista'));
     }
 
     /**

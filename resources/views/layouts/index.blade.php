@@ -521,7 +521,7 @@
                     "_token": "{{ csrf_token() }}"
                 },
                 success: function(data) {
-                    $('#descricao').val(data.requisicao.descricao);
+                    $('#objeto').val(data.requisicao.descricao);
                     $(local).empty().append("<input  id='requisicao' name='requisicao' type='hidden' value='"+data.requisicao.uuid+"'>");
                 }
             });

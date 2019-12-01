@@ -63,9 +63,9 @@ class FornecedorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($uuid)
     {
-        $fornecedor = Fornecedor::find($id);
+        $fornecedor = Fornecedor::find($uuid);
         return response()->json(['fornecedor' => $fornecedor]);
     }
 
@@ -75,12 +75,12 @@ class FornecedorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($uuid)
     {
         $estados = array();
         foreach (Estado::orderBy('nome', 'asc')->get() as $value)
             $estados += [$value->id => $value->nome];
-        return view('fornecedor.edit', compact('estados'))->with('fornecedor', Fornecedor::find($id));
+        return view('fornecedor.edit', compact('estados'))->with('fornecedor', Fornecedor::findByUuid($uuid));
     }
 
     /**

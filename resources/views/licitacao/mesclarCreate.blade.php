@@ -89,7 +89,7 @@
 			<table class="table table-bordered table-hover" id="dataTables-example">
 				<thead>
 					<tr>
-						<th class="w-1 center">Lista de Itens Mesclados </th>
+						<td class="w-1 center">Lista de Itens Mesclados </td>
 					</tr>
 				</thead>
 
@@ -145,5 +145,9 @@
 				</tbody>
 			</table>
 		</div><!-- / panel-body -->
+
+		<div class="panel-footer">
+			ssssssssssssssssssssss
+		</div>
 	</div> <!-- / panel  -->
 @endsection

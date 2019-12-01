@@ -9,6 +9,7 @@ use App\Unidade;
 Use App\Estado;
 use App\Requisicao;
 use App\Fornecedor;
+use App\Licitacao;
 use DB;
 
 
@@ -158,6 +159,41 @@ class ItemController extends Controller
     {
         Item::destroy($id);
     }
+
+    /**
+     *  @Descrition método que retorna a interface que permnite a vinculação item / fornecedor
+     *
+     *  @param      \Illuminate\Http\Request  $request  The request
+     *  @return     View
+     */
+    public function primeiro (Request $request)
+    {
+        $lista = $request->itens;  // lista de itens selecionados na view de 
+        $licitacao = Licitacao::findByUuid($request->licitacao);
+        $itens = collect();
+        if ($lista == null) {
+            $itens = $licitacao->itens()->doesntHave('fornecedores')->get(); // Itens não  vinculados a fornecedores 
+            $vinculados = $licitacao->itens()->has('fornecedores')->get(); // Itens já vinculado a um ou mais fornecedores
+            foreach ($vinculados as $item){
+                if ($item->quantidadeTotalDisponivel > 0)
+                    $itens->push($item);
+            }
+
+        } else { // lista de itens não vazia
+            foreach ($lista as $value) {
+                $item = Item::findByUuid($value);
+                if ($licitacao->itens->contains($item)){
+                    if ($item->quantidadeTotalDisponivel > 0) {
+                        $itens->push($item);
+                    } else{
+
+                    }
+                }
+            }
+        }   
+        return view('item.atribuir', compact('itens', 'licitacao'));
+    }
+
 
     /**
      * Remove the specified resource from storage.

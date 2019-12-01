@@ -9,7 +9,6 @@ class Cidade extends Model
 {
     use HasUuid;
     protected $table = 'cidades';
-
 	protected $fillable = ['nome', 'estado_id'];
 
     public function estado()
@@ -21,19 +20,20 @@ class Cidade extends Model
     {
         return $this->hasMany('App\Fornecedor');
     }
-/*
+
     public function uasgs()
     {
-        return $this->belongsToMany('App\Uasg', 'cidade_uasg')->withPivot('quantidade');
+        return $this->belongsToMany('App\Uasg', 'cidade_uasg','cidade_id', 'uasg_id')
+            ->using('App\Participante')
+            ->withPivot('item_id')
+            ->withPivot('quantidade');
     }
 	
 	public function itens()
     {
-        return $this->belongsToMany('App\Item', 'cidade_participante')->withPivot('quantidade');
-    }
-*/
-    public function participantes()
-    {
-        return $this->belongsToMany('App\Participante');
+        return $this->belongsToMany('App\Item', 'cidade_uasg','cidade_id', 'item_id')
+            ->using('App\Participante')
+            ->withPivot('uasg_id')
+            ->withPivot('quantidade');
     }
 }

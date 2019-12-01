@@ -15,23 +15,22 @@ class Uasg extends Model
     * @var array
     */
     protected $fillable = [ 'nome', 'codigo', 'cidade_id'];
-/*
-    public function itens()
-    {
-        return $this->belongsToMany('App\Item', 'cidade_uasg')->withPivot('quantidade');
-    }
-
+    
     public function cidades()
     {
-        return $this->belongsToMany('App\Cidade', 'cidade_uasg')->withPivot('quantidade');
+        return $this->belongsToMany('App\Cidades', 'cidade_uasg', 'uasg_id','cidade_id')
+            ->using('App\Participante')
+            ->withPivot('item_id')
+            ->withPivot('quantidade');
     }
-*/
 
-    public function participantes()
+    public function itens()
     {
-        return $this->belongsToMany('App\Participante');
+        return $this->belongsToMany('App\Item', 'cidade_uasg', 'uasg_id','item_id')
+            ->using('App\Participante')
+            ->withPivot('cidade_id')
+            ->withPivot('quantidade');
     }
-
 
     public function processos()
     {

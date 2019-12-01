@@ -41,7 +41,7 @@
 		
 		<tbody>
 			@forelse ($fornecedores as $fornecedor)
-				<tr onclick="location.href ='{{route('fornecedorEditar', $fornecedor->id)}}'; target='_blank';" style="cursor: hand;">
+				<tr onclick="location.href ='{{route('fornecedorEditar', $fornecedor->uuid)}}'; target='_blank';" style="cursor: hand;">
 					<td>{{$fornecedor->cpf_cnpj}}</td>
 					<td>{{$fornecedor->razao_social}}</td>
 					<td>{{$fornecedor->cidade->nome ?? ''}}</td>

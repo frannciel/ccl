@@ -22,41 +22,47 @@ Route::get('/', function () {
     return view('principal');
 })->name('principal');
 
+
+Route::get('atribuir', function () {
+
+    return view('item.atribuir');
+});
+
 Route::get('uasg', 'UasgController@index');
 
 
 
-Route::get('pregao/novo', 				'PregaoController@create')->name('pregaoNovo');
-Route::post('pregao/store', 			'PregaoController@store');
-Route::post('pregao/update', 			'PregaoController@update');
-Route::get('pregao/exibir/{uuid}',		'PregaoController@show');
-Route::get('pregao/item/editar/{uuid}',	'PregaoController@itemEdit');
+Route::get('pregao/novo', 										'PregaoController@create')->name('pregaoNovo');
+Route::post('pregao/store', 									'PregaoController@store');
+Route::post('pregao/update', 									'PregaoController@update');
+Route::get('pregao/exibir/{uuid}',								'PregaoController@show');
+Route::get('pregao/item/editar/{uuid}',							'PregaoController@itemEdit');
 
-Route::post('licitacao/item/duplicar',				'LicitacaoController@itemDuplicar');
-Route::post('licitacao/modalidade', 				'LicitacaoController@modalidade')->name('modalidade');
+Route::post('licitacao/item/duplicar',							'LicitacaoController@itemDuplicar');
+Route::post('licitacao/modalidade', 							'LicitacaoController@modalidade')->name('modalidade');
 
-Route::get('licitacao/', 							'LicitacaoController@index')->name('licitacao');
-Route::get('licitacao/novo', 						'LicitacaoController@create')->name('licitacaoNovo');
-Route::get('licitacao/exibir/{uuid}',				'LicitacaoController@show')->name('licitacaoExibir');
-Route::post('licitacao/store', 						'LicitacaoController@store');
-Route::post('licitacao/atribuir/requisicao', 		'LicitacaoController@atribuirRequisicao');
-Route::post('licitacao/atribuir/item', 				'LicitacaoController@atribuirItem');
-Route::get('licitacao/item/mesclar/novo/{uuid}',	'LicitacaoController@mesclarCreate')->name('licitacaoMesclar');
-Route::post('licitacao/item/mesclar/store',			'LicitacaoController@mesclarStore');
-Route::get('licitacao/item/editar/{uuid}',			'LicitacaoController@itemEdit');
+Route::get('licitacao/', 										'LicitacaoController@index')->name('licitacao');
+Route::get('licitacao/novo', 									'LicitacaoController@create')->name('licitacaoNovo');
+Route::get('licitacao/exibir/{uuid}',							'LicitacaoController@show')->name('licitacaoExibir');
+Route::post('licitacao/store', 									'LicitacaoController@store');
+Route::post('licitacao/atribuir/requisicao', 					'LicitacaoController@atribuirRequisicao');
+Route::post('licitacao/atribuir/item', 							'LicitacaoController@atribuirItem');
+Route::get('licitacao/item/mesclar/novo/{uuid}',				'LicitacaoController@mesclarCreate')->name('licitacaoMesclar');
+Route::post('licitacao/item/mesclar/store',						'LicitacaoController@mesclarStore');
+Route::get('licitacao/item/editar/{uuid}',						'LicitacaoController@itemEdit');
 
-
-
-Route::get('item/novo/{requisicao_id}', 'ItemController@create')->name('itemNovo');
-Route::get('item/editar/{id}',  		'ItemController@edit')->name('itemEditar');
-Route::get('item/fornecedor/novo',		'ItemController@fornecedorCreate')->name('itemFornecNovo');
+Route::get('item/novo/{requisicao_id}', 						'ItemController@create')->name('itemNovo');
+Route::get('item/editar/{id}',  								'ItemController@edit')->name('itemEditar');
+Route::get('item/fornecedor/novo',								'ItemController@fornecedorCreate')->name('itemFornecNovo');
 Route::get('item/fornecedor/exibir/{fornecedor_id}/{item_id}', 	'ItemController@fornecedorShow')->name('itemFornecShow');
-Route::post('item/store', 	 			'ItemController@store');
-Route::post('item/update', 				'ItemController@update');
-Route::post('item/ajax', 				'ItemController@ajax');
-Route::post('item/fornecedor/store', 	'ItemController@fornecedorStore');
-Route::post('item/fornecedor/update', 	'ItemController@fornecedorUpdate')->name('itemFornecUpdate');
+Route::post('item/store', 	 									'ItemController@store');
+Route::post('item/update', 										'ItemController@update');
+Route::post('item/ajax', 										'ItemController@ajax');
+Route::post('item/fornecedor/store', 							'ItemController@fornecedorStore');
+Route::post('item/fornecedor/update', 							'ItemController@fornecedorUpdate')->name('itemFornecUpdate');
 
+
+Route::post('item/primeiro', 	 									'ItemController@primeiro');
 
 
 Route::get('requisicao/ata/{id}', 		'RequisicaoController@ataShow')->name('ataShow');
@@ -75,8 +81,8 @@ Route::get('requisicao/apagar/{uuid}', 	'RequisicaoController@destroy');
 
 Route::get('fornecedor/', 				'FornecedorController@index')->name('fornecedor');
 Route::get('fornecedor/novo/',			'FornecedorController@create')->name('fornecedorNovo');
-Route::get('fornecedor/editar/{id}',  	'FornecedorController@edit')->name('fornecedorEditar');
-Route::get('fornecedor/deleta/{id}',  	'FornecedorController@delete')->name('fornecedorApagar');
+Route::get('fornecedor/editar/{uuid}',  'FornecedorController@edit')->name('fornecedorEditar');
+Route::get('fornecedor/deleta/{uuid}',  'FornecedorController@delete')->name('fornecedorApagar');
 Route::post('fornecedor/store', 	 	'FornecedorController@store');
 Route::post('fornecedor/update', 		'FornecedorController@update');
 Route::post('fornecedor/ajax', 			'FornecedorController@ajax');

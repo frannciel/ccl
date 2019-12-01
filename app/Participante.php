@@ -3,15 +3,15 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class Participante extends Model
+class Participante extends Pivot
 {
 	protected $table = 'cidade_uasg';
-	protected $fillable = ['quantidade'];
 
-	public function uasg()
+	public function cidade()
 	{
-		return $this->belongsTo('App\Uasg', 'uasg_id');
+		return $this->belongsTo('App\Cidade', 'cidade_id');
 	}
 
 	public function item()
@@ -19,9 +19,8 @@ class Participante extends Model
 		return $this->belongsTo('App\Item', 'item_id');
 	}
 
-	public function cidade()
+	public function uasg()
 	{
-		return $this->belongsTo('App\Cidade', 'cidade_id');
+		return $this->belongsTo('App\Uasg', 'uasg_id');
 	}
-
 }
