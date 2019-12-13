@@ -13,9 +13,14 @@ class Licitacao extends Model
         'numero', 'ano', 'objeto', 'processo'
     ];
 
-    public function itens()
+/*   public function itens()
     {
         return $this->belongsToMany('App\Item', 'item_licitacao', 'licitacao_id', 'item_id')->withPivot('ordem');
+    }*/
+
+    public function itens()
+    {
+        return $this->hasMany('App\Item');
     }
 
     public function processoOrigem()

@@ -58,7 +58,7 @@ class ItemController extends Controller
         $requisicao = Requisicao::findByUuid($request->requisicao);
 
         $requisicao->itens()->create([
-            'numero'        => $requisicao->max('numero') + 1,
+            'numero'        => $requisicao->itens()->max('numero') + 1,
             'quantidade'    => $request['quantidade'],
             'codigo'        => $request['codigo'],
             'objeto'        => $request['objeto'],
@@ -193,6 +193,61 @@ class ItemController extends Controller
         }   
         return view('item.atribuir', compact('itens', 'licitacao'));
     }
+
+
+    public function segundo (Request $request)
+    {
+        if (!isset($request->fornecedor) ) {
+            return response()->json(['codigo' =>  500, 'message' => 'Fornecedor inválido ou não encontrado !!!']);
+            
+        } elseif (!isset($request->item)) {
+            return response()->json(['codigo' =>  500, 'message' => 'Item inválido ou não encontrado !!!']);
+            
+        } elseif (!isset($request->marca)) {
+            return response()->json(['codigo' =>  500, 'message' => 'A marca deve ser informada !!!']);
+            
+        } elseif (!isset($request->quantidade)) {
+            return response()->json(['codigo' =>  500, 'message' => 'A quantidade deve ser informada !!!']);
+            
+        } elseif (!isset($request->valor)) {
+            return response()->json(['codigo' =>  500, 'message' => 'O valor deve ser informado !!!']);
+            
+        } elseif (!isset($request->licitacao)) {
+            return response()->json(['codigo' =>  500, 'message' => 'Uma licitacão deve ser informada !!!']);
+            
+        } else{
+
+            $fornecedor = Fornecedor::findByUuid($request->fornecedor);
+            if ($fornecedor == null)
+                return response()->json(['codigo' =>  300, 'message' => 'Fornecedor não encontrado 2 !!!']);
+
+            $item = Item::findByUuid($request->item);
+            if ($item == null) 
+                return response()->json(['codigo' =>  300, 'message' => 'Item não encontrado !!!']);
+
+            if (!$item->licitacao->uuid === $request->licitacao) 
+                return response()->json(['codigo' =>  200, 'message' => 'Item não pertence a esta licitação ou licitação não encontrada']);
+
+            if ($item->quantidadeTotalDisponivel >= $request->quantidade) {
+                $atributos = [
+                    'marca' => $request->marca,
+                    'modelo'   => $request->modelo,
+                    'quantidade'  => $request->quantidade,
+                    'valor' => $this->getFloat($request->valor)
+                ];
+                $item->fornecedores()->attach($fornecedor, $atributos);
+                return response()->json([
+                    'codigo' => 100,
+                    'item' => $item->uuid,
+                    'quantidade' => Item::findByUuid($request->item)->quantidadeTotalDisponivel,
+                    'message' => "Cadastrado com sucesso !!! \n Item: ".$item->ordem.' - '.$item->objeto."\n Quantidade:".$request->quantidade
+                    ]);
+            } else{
+                return response()->json(['codigo' =>  200, 'message' => 'Verifique a quantidade informada !!!']);
+            }
+        }
+    }
+
 
 
     /**

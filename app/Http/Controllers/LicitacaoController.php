@@ -129,16 +129,40 @@ class LicitacaoController extends Controller
       }
     }
 
-    public function atribuirItem()
-    {
-        foreach ($requisicao->itens()->get() as $item)
-            $licitacao->itens()->save($item, ['numero' => $requisicao->itens()->max('numero')+1]);
+    public function atribuirRequisicao(Request $request){
+        $lista = $request->itens;
+        $requisicao = Requisicao::findByUuid($request->requisicao);
+        $licitacao = Licitacao::findByUuid($request->licitacao);
+
+        if ($requisicao != null) {
+            $this->atribuirItem($requisicao->itens()->get(), $licitacao);
+            $licitacao->requisicoes()->attach($requisicao);
+
+        } else if($lista != null){
+            $itens = collect(); // define uma coleção de itens
+            foreach ($lista as $uuid) 
+                $itens->push(Item::findByUuid($uuid)); // busca todos os objetos item a partir de seus respectivos uuid
+            $this->atribuirItem($itens, $licitacao); // invoca o método para atribuir itens
+            foreach ($itens as $item) { 
+                if (!$licitacao()->contains($item->requisicao)) // verifica se a requisição já esta associada á licitação
+                    $licitacao->requisicoes()->attach($item->requisicao); // associa a requisição á licitação casa esta relação ainda não exista
+            }
+        }
         return redirect()->action('PregaoController@show', [ $licitacao->licitacaoable->uuid]);
-
-
     }
 
-    public function atribuirRequisicao(Request $request)
+    protected function atribuirItem($itens, $licitacao)
+    {
+        $max = $licitacao->itens()->max('ordem')+1;
+        foreach ($itens as $item){
+            $item->ordem = $max; // atualiza o campo ordem com próximo número de ordem da licitação
+            $item->save();
+            $licitacao->itens()->save($item); // associa item com a licitação
+            $max += 1; // incrementa o número da ordem
+        }
+    }
+
+    public function atribuir(Request $request)
     {
         $requisicao = Requisicao::findByUuid($request->requisicao);
         $licitacao  = Licitacao::findByUuid($request->licitacao);
@@ -247,7 +271,7 @@ class LicitacaoController extends Controller
             $itens[] = $lista;
         }*/
 
-        return view('licitacao.mesclarCreate', compact('itens_array', 'objetos', 'mesclados'));
+        return view('licitacao.mesclarCreate', compact('itens_array', 'objetos', 'mesclados', 'licitacao'));
     }
 
     public function itemDuplicar(Request $request){

@@ -8,6 +8,21 @@ $('#numero').mask('000/0000');
 $('#data').mask('00/00/0000');
 $('#hora').mask('00:00');
 $('#processoOrigem').mask('00000.000000/0000-00');
+$('#cep').mask('00000-000');
+$('#cpf_cnpj').mask('00.000.000/0000-00');
+$('#telefone').mask('(00)00000-00000');
+
+
+/*var options =  {
+  onKeyPress: function(cpf_cnpj, e, field, options) {
+    var masks = ['000.000.000-00', '00.000.000/0000-00'];
+    var mask = (cpf_cnpj.length < 14 ) ? masks[0] : masks[1];
+    $('#cpf_cnpj').mask(mask, options);
+}};
+
+$('#cpf_cnpj').mask('00.000.000/0000-00', options);
+
+*/
 
 /*
 * Toda vez que um valor for digitado ONKEYUP está função e chamada para formatar o valor

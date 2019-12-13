@@ -6,8 +6,8 @@
 			$attributes + ['class' => 'form-control form-control-sm' ])
 		!!}
         <span class="input-group-btn">
-            <button class="btn btn-success" type="button">
-                <i class="fa fa-search"></i>
+            <button class="btn btn-success" type="button" id="{{$buttonId}}">
+                <i class="glyphicon glyphicon-search"></i>
             </button>
         </span>
     </div>

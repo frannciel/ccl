@@ -83,11 +83,20 @@ class PregaoController extends Controller
         }
         $lista = $lista->unique()->sortBy('razao_social');
 
+        $itens = $licitacao->itens()->has('participantes')->get();
+        $uasgs = collect();
+        foreach ($itens as $item) {
+            foreach ($item->participantes as $participante){
+                    $uasgs->push(['codigo' => $participante->codigo, 'nome' => $participante->nome]);
+            }
+        }
+        $uasgs = $uasgs->unique()->sortBy('nome');
+
         foreach (Informacao::where('classe', 1)->get() as $value)
             $formas +=  [$value->id => $value->dado];
         foreach (Informacao::where('dado', 'Menor Preço')->get() as $value)
             $tipos +=  [$value->id => $value->dado];
-        return view('licitacao.pregao.show', compact('formas', 'tipos', 'licitacao', 'lista'));
+        return view('licitacao.pregao.show', compact('formas', 'tipos', 'licitacao', 'lista', 'uasgs'));
     }
 
     /**
@@ -126,23 +135,27 @@ class PregaoController extends Controller
 
     public function itemEdit($uuid){
         $item = Item::findByUuid($uuid);
-        $licitacao = $item->licitacao()->first();
+        $licitacao = $item->licitacao;
         $fornecedores = $item->fornecedores()->get();
+        $uasgs = $item->participantes;
 
-        $participantes = array();
+        /*$participantes = array();
+
+        //$participantes = $item->participantes;
         $uasgs = Participante::with(['cidade','uasg'])->where('item_id', $item->id)->get();
         foreach ($uasgs as  $uasg) {
             $participante += [
-            'quantidade' => $uasg->quantidade,
-            'cidade' => $uasg->cidade->nome,
-            'estado' => $uasg->cidade->estado,
-            'nome' => $uasg->uasg->nome,
-            'nome' => $uasg->uasg->codigo ];
+                'quantidade' => $uasg->quantidade,
+                'cidade' => $uasg->cidade->nome,
+                'estado' => $uasg->cidade->estado,
+                'nome' => $uasg->uasg->nome,
+                'codigo' => $uasg->uasg->codigo 
+            ];
         }
-
+*/
         $unidades = array();
         foreach (Unidade::all() as $value)
             $unidades += [$value->id => $value->nome];
-        return view('licitacao.pregao.itemEdit',  compact('item', 'licitacao', 'fornecedores', 'participantes', 'unidades'));
+        return view('licitacao.pregao.itemEdit',  compact('item', 'licitacao', 'fornecedores', 'uasgs', 'unidades'));
     }
 }

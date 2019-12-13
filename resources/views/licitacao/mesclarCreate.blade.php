@@ -75,7 +75,7 @@
 			
 			<div class="row mb-2">
 				<div class="col-md-3 col-6 col-md-offset-3 mt-2">
-					<a href="{{route('licitacaoExibir', [$mesclados->first()->licitacao()->first()->uuid])}}" class="btn btn-primary btn-block" type="button">Voltar</a>
+					<a href="{{route('licitacaoExibir', [$licitacao->uuid])}}" class="btn btn-primary btn-block" type="button">Voltar</a>
 				</div>
 
 				@include('form.submit', [
@@ -103,7 +103,7 @@
 										<div class="row">
 											<div data-toggle="collapse" data-parent="#accordion" href="#collapse{{$mesclado->id}}" aria-expanded="true" aria-controls="collapseOne" style="cursor: hand;">
 												<div class="col-lg-2">
-													Item: {{$mesclado->licitacao()->first()->pivot->ordem}}
+													Item: {{$mesclado->ordem}}
 												</div>
 												<div class="col-lg-9">
 													Descrição: {{$mesclado->objeto }}

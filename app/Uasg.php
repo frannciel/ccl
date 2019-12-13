@@ -14,11 +14,11 @@ class Uasg extends Model
     *
     * @var array
     */
-    protected $fillable = [ 'nome', 'codigo', 'cidade_id'];
+    protected $fillable = [ 'nome', 'codigo', 'email', 'telefone', 'cidade_id'];
     
     public function cidades()
     {
-        return $this->belongsToMany('App\Cidades', 'cidade_uasg', 'uasg_id','cidade_id')
+        return $this->belongsToMany('App\Cidades', 'cidade_uasg', 'uasg_id', 'cidade_id')
             ->using('App\Participante')
             ->withPivot('item_id')
             ->withPivot('quantidade');
@@ -35,5 +35,15 @@ class Uasg extends Model
     public function processos()
     {
         return $this->hasMany('App\Processo');
+    }
+
+    /**
+     *  Método que retorna a cidade sede da uasg
+     *
+     * @return     <Objeto>  ( Cidade )
+     */
+    public function cidade()
+    {
+        return $this->belongsTo('App\Cidade', 'cidade_id', 'id');
     }
 }

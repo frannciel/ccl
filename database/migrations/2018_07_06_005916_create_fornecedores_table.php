@@ -16,13 +16,13 @@ class CreateFornecedoresTable extends Migration
         Schema::create('fornecedores', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uuid');
-            $table->string('cpf_cnpj', 18);
-            $table->string('razao_social', 150);
             $table->string('endereco', 300)->nullable();
             $table->string('cep', 10)->nullable();
             $table->string('email', 100)->nullable();
-            $table->string('telefone', 20)->nullable();
-            $table->string('representante', 80)->nullable();
+            $table->string('telefone_1', 20)->nullable();
+            $table->string('telefone_2', 20)->nullable();
+            $table->integer('fornecedorable_id')->unsigned();
+            $table->string('fornecedorable_type', 100);
             $table->integer('cidade_id')->nullable()->unsigned();
             $table->foreign('cidade_id')->references('id')->on('cidades');
             $table->timestamps();

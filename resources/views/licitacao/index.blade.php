@@ -72,7 +72,7 @@
 							<td>"Em analise"</td>
 						</tr>
 					@empty
-						<tr><td><center><i> Nenhum item encontrado </i></center></td></tr>
+						<tr><td><center><i> Nenhuma Contratação  Encontrada </i></center></td></tr>
 					@endforelse
 				</tbody>
 			</table> 

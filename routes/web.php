@@ -30,8 +30,6 @@ Route::get('atribuir', function () {
 
 Route::get('uasg', 'UasgController@index');
 
-
-
 Route::get('pregao/novo', 										'PregaoController@create')->name('pregaoNovo');
 Route::post('pregao/store', 									'PregaoController@store');
 Route::post('pregao/update', 									'PregaoController@update');
@@ -59,10 +57,16 @@ Route::post('item/store', 	 									'ItemController@store');
 Route::post('item/update', 										'ItemController@update');
 Route::post('item/ajax', 										'ItemController@ajax');
 Route::post('item/fornecedor/store', 							'ItemController@fornecedorStore');
-Route::post('item/fornecedor/update', 							'ItemController@fornecedorUpdate')->name('itemFornecUpdate');
+Route::get('item/fornecedor/update', 							'ItemController@fornecedorUpdate')->name('itemFornecUpdate');
 
 
-Route::post('item/primeiro', 	 									'ItemController@primeiro');
+
+
+Route::post('item/primeiro', 	 								'ItemController@primeiro');
+Route::get('item/segundo', 	 								'ItemController@segundo');
+Route::post('cep', 												'FornecedorController@buscarCEP');
+
+
 
 
 Route::get('requisicao/ata/{id}', 		'RequisicaoController@ataShow')->name('ataShow');
@@ -85,7 +89,7 @@ Route::get('fornecedor/editar/{uuid}',  'FornecedorController@edit')->name('forn
 Route::get('fornecedor/deleta/{uuid}',  'FornecedorController@delete')->name('fornecedorApagar');
 Route::post('fornecedor/store', 	 	'FornecedorController@store');
 Route::post('fornecedor/update', 		'FornecedorController@update');
-Route::post('fornecedor/ajax', 			'FornecedorController@ajax');
+Route::post('fornecedor/fornecedor', 	'FornecedorController@getFornecedor');
 
 
 Route::get('participante/{item_id}',	'ParticipanteController@create')->name('participante');

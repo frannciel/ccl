@@ -10,7 +10,7 @@ class Item extends Model
     use HasUuid;
     protected $table = 'itens';
     protected $fillable = [
-        'numero', 'quantidade', 'codigo', 'objeto', 'descricao', 'unidade_id', 'requisicao_id'
+        'numero',  'quantidade', 'codigo', 'objeto', 'descricao', 'unidade_id', 'requisicao_id', 'ordem', 'licitacao_id'
     ];
 
     /**
@@ -28,11 +28,16 @@ class Item extends Model
         return $this->belongsTo('App\Requisicao', 'requisicao_id');
     }
 
-
     public function licitacao()
     {
-        return $this->belongsToMany('App\Licitacao', 'item_licitacao', 'item_id', 'licitacao_id')->withPivot('ordem');
+        return $this->belongsTo('App\Licitacao', 'licitacao_id');
     }
+
+
+    /*public function licitacao()
+    {
+        return $this->belongsToMany('App\Licitacao', 'item_licitacao', 'item_id', 'licitacao_id')->withPivot('ordem');
+    }*/
 
     public function unidade()
     {
@@ -69,7 +74,9 @@ class Item extends Model
 
     public function fornecedores()
     {
-        return $this->belongsToMany('App\Fornecedor', 'fornecedor_item')->withPivot('quantidade', 'valor', 'marca', 'modelo' )->withTimestamps();
+        return $this->belongsToMany('App\Fornecedor', 'fornecedor_item', 'item_id', 'fornecedor_id')
+            ->withPivot('quantidade', 'valor', 'marca', 'modelo' )
+            ->withTimestamps();
     }
 
     public function cotacoes()

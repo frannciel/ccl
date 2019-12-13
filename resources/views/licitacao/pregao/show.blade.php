@@ -99,7 +99,8 @@
 </div>
 
 
-{{ Form::open(['url' => 'licitacao/item/duplicar', 'method' => 'post', 'class' => 'form-padrao']) }}
+{{ Form::open(['url' => 'licitacao/item/duplicar', 'method' => 'POST', 'class' => 'form-padrao']) }}
+	{{ Form::hidden('licitacao', $licitacao->uuid,  array('id' => 'licitacao')) }}
 	<div class="row">
 		<div class="col-lg-12">
 			<div class="panel panel-default">
@@ -140,16 +141,16 @@
 					<div class="tab-content">
 						<div id="guiaItens" class="tab-pane fade in active">
 							<div class="table-responsive">
-								<table class="table table-striped table-bordered table-hover" id="dataTables-example">
+								<table class="table table-striped table-bordered" id="dataTables-example">
 									<thead>
 										<tr>
-											<td> &nbsp &nbsp <input type="checkbox" id="ckAll" name="example1"> &nbsp Marcar</td>
-										    <th class="w-1 center">Número</th>
-										    <th class="w-4 center">Descrição Detalhada</th>
-										    <th class="w-2 center">Unidade</th>
-										    <th class="w-1 center">Código</th>
-										    <th class="w-1 center">Quantidade</th>
-										    <th class="w-1 center">Grupo</th>
+											<th class=" center"><input type="checkbox" id="ckAll" name="example1"></th>
+										    <th class=" center">Número</th>
+										    <th class=" center">Descrição Detalhada</th>
+										    <th class=" center">Unidade</th>
+										    <th class=" center">Código</th>
+										    <th class=" center">Quantidade</th>
+										    <th class=" center">Grupo</th>
 										</tr>
 									</thead>
 
@@ -164,25 +165,27 @@
 													<a class="btn btn-default" href="{{url('licitacao/item/editar', $item->uuid)}}" role="button">Detalhar</a>
 												</div>
 											</td>
-											<td class="w-1 center">{{$item->licitacao()->first()->pivot->ordem}}</td>
-											<td class="w-4 justicado">@php print($item->descricaoCompleta) @endphp</td>
-											<td class="w-2 center">{{$item->unidade->nome}}</td>
-											<td class="w-1 center">{{$item->codigo =='0'?'': $item->codigo}}</td>
-											<td class="w-1 center">{{$item->quantidadeTotal}}</td>
-											<td class="w-1 center"></td>
+											<td class=" center">{{$item->ordem}}</td>
+											<td class=" justicado">@php print($item->descricaoCompleta) @endphp</td>
+											<td class=" center">{{$item->unidade->nome}}</td>
+											<td class=" center">{{$item->codigo =='0'?'': $item->codigo}}</td>
+											<td class=" center">{{$item->quantidadeTotal}}</td>
+											<td class=" center">""</td>
 
 
 											<!--<td>isset($item->grupo->numero) ? $item->grupo->numero : ''</td>-->
 										</tr>
 										@empty
-										<tr><td><center><i> Nenhum item encontrado </i></center></td></tr>
+										<tr><td colspan=7><center><i> Nenhum item encontrado </i></center></td></tr>
 										@endforelse
 
 									</tbody>
 								</table>
 							</div><!-- table-responsive -->
 						</div><!-- / tab item-->
-						
+
+{{ Form::close() }} 	
+
 						<div id="guiaRequisicao" class="tab-pane fade">
 							<table class="table table-hover tablesorter">
 								<thead>
@@ -190,7 +193,7 @@
 										<th>Requisição</th>
 										<th>Descrição</th>
 										<th>Solicitante</th>
-										<th></th>
+										<th>Remover</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -204,7 +207,7 @@
 										</td>
 									</tr>
 									@empty
-									<tr><td colspan=4><center><i> Nenhuma unidade participante encontrada </i></center></td></tr>
+									<tr><td colspan=4><center><i> Nenhuma Requisição Encontrada </i></center></td></tr>
 									@endforelse
 								</tbody>
 							</table>
@@ -212,9 +215,9 @@
 							<div class="row mt-2">								
 								<div class="col-md-3">
 									<div class="input-group custom-search-form">
-										<input type="text" name="requisicao"  id="requisicao" class="form-control form-control-sm" placeholder="Exemplo 012019 ...">
+										<input type="text" name="requisicao"  id="requisicao" class="form-control form-control-sm" placeholder="Ex. 012019">
 										<span class="input-group-btn">
-											<button class="btn btn-success" type="button" onclick="getDescricao('#requisicao', '#local')">
+											<button class="btn btn-success" type="button" onclick="getDescricao('#requisicao', '#local')" title="Buscar Requisição">
 												<i class="fa fa-search"></i>
 											</button>
 										</span>
@@ -223,24 +226,24 @@
 
 								{{ Form::open(['url' => 'licitacao/atribuir/requisicao', 'method' => 'post', 'class' => 'form-padrao']) }}
 
-								<div class="col-md-3">
-									<button type="submit" class="btn btn-success btn-block">Adicionar</button>
-								</div>
+									<div class="col-md-3">
+										<button type="submit" class="btn btn-success btn-block">Adicionar</button>
+									</div>
 
-								<div class="col-md-3">
-									<button type="button" class="btn btn-warning btn-block">Limpar</button>
-								</div>
+									<div class="col-md-3">
+										<button type="button" class="btn btn-warning btn-block">Limpar</button>
+									</div>
 
-								@include('form.textarea', [
-								'input' => 'objeto',
-								'label' => 'Descricão',
-								'value' => old($input ?? ''),
-								'largura' => 12, 
-								'attributes' => ['id' => 'descricao', 'required' => '',  'rows'=>'3', 'id' => 'descricao', 'disabled' => '']])
+									@include('form.textarea', [
+									'input' => 'descricao',
+									'label' => 'Descricão',
+									'value' => old($input ?? ''),
+									'largura' => 12, 
+									'attributes' => ['id' => 'descricao', 'required' => '',  'rows'=>'3', 'id' => 'descricao', 'disabled' => '']])
 
-								<div id='local'></div>
+									<div id='local'></div>
 
-								{{ Form::hidden('licitacao', $licitacao->uuid,  array('id' => 'licitacao')) }}
+									{{ Form::hidden('licitacao', $licitacao->uuid,  array('id' => 'licitacao')) }}
 								{{ Form::close() }} 
 							</div>
 						</div><!-- / tab requisição -->
@@ -251,7 +254,7 @@
 									<tr>
 										<th>CNPJ</th>
 										<th>Razão Social</th>
-										<th></th>
+										<th>Remover</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -264,20 +267,40 @@
 										</td>
 									</tr>
 									@empty
-									<tr><td colspan=4><center><i> Nenhum forncedor encontrado </i></center></td></tr>
+									<tr><td colspan=4><center><i> Nenhum fornecedor encontrado </i></center></td></tr>
 									@endforelse
 								</tbody>
 							</table>
 						</div>
 
 						<div id="guiaParticipante" class="tab-pane fade">
-							<h3>Menu 2</h3>
-		  					<p>Some content in menu 2.</p>
+							<table class="table table-hover tablesorter">
+								<thead>
+									<tr>
+										<th>Código Uasg</th>
+										<th>Órgão ou Entidade Participante</th>
+										<th>Remover</th>
+									</tr>
+								</thead>
+								<tbody>
+									@forelse ($uasgs as $uasg)
+									<tr onclick="location.href ='{{route('itemEditar', [$value[0]])}}'; target='_blank';" style="cursor: hand;">
+										<td>{{$uasg['codigo']}}</td>
+										<td>{{$uasg['nome']}}</td>
+										<td>
+											<button type="button" class="btn btn-danger btn-circle btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
+										</td>
+									</tr>
+									@empty
+									<tr><td colspan=4><center><i> Nenhum fornecedor encontrado </i></center></td></tr>
+									@endforelse
+								</tbody>
+							</table>
 						</div>
 					</div>
 				</div><!-- panel-body -->
 			</div><!-- /.panel -->
 		</div><!-- /.col-lg-12 -->
 	</div>
-{{ Form::close() }} 
+
 @endsection

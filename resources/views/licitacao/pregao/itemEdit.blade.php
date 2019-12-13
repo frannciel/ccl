@@ -94,12 +94,12 @@
 			         </tr>
 			    </thead>
 		    	<tbody>
-		    		@forelse ($participantes as $value)
+		    		@forelse ($uasgs as $uasg)
 				        <tr onclick="location.href ='{{route('itemEditar', [$item->id])}}'; target='_blank';" style="cursor: hand;">
-				            <td class="center">{{$value->uasg}}</td>
-				            <td class="center">{{$value->participante}}</td>
-				            <td class="center">{{$value->cidade}} - {{$value->estado}}</td>
-				           	<td class="center">{{$value->quantidade}}</td>
+				            <td class="center">{{$uasg->codigo}}</td>
+				            <td class="center">{{$uasg->nome}}</td>
+				            <td class="center">{{$uasg->pivot->cidade->nome}} - {{$uasg->pivot->cidade->estado->nome}}</td>
+				           	<td class="center">{{$uasg->pivot->quantidade}}</td>
 				        </tr>
 			        @empty
 			        	<tr><td colspan=4 class="center"><i> Nenhuma unidade participante encontrada </i></td></tr>

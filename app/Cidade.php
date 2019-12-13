@@ -21,7 +21,7 @@ class Cidade extends Model
         return $this->hasMany('App\Fornecedor');
     }
 
-    public function uasgs()
+    public function participantes()
     {
         return $this->belongsToMany('App\Uasg', 'cidade_uasg','cidade_id', 'uasg_id')
             ->using('App\Participante')
@@ -35,5 +35,15 @@ class Cidade extends Model
             ->using('App\Participante')
             ->withPivot('uasg_id')
             ->withPivot('quantidade');
+    }
+
+    /**
+     * Indica as unidades administrativas de serviços gerais sediadas na cidade
+     *
+     * @return     <Collect>  (de objetos cidades)
+     */
+    public function uasgs()
+    {
+        return $this->hasMany('App\Uasg');
     }
 }

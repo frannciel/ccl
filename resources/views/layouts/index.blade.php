@@ -54,6 +54,7 @@
 		   height: 500px;
 		   overflow-y: scroll;
 		}
+        .pointer{ cursor: pointer; }
 		.t-display {display: block;}
 		.t-float{ float: center; }
 		.w-1 { width: 10%;}
@@ -369,8 +370,8 @@
     <!-- 
         Page-Level Plugin Scripts - Tables
      -->
-        <script src="{{ elixir('vendor/datatables/js/jquery.dataTables.js') }}"></script>
-        <script src="{{ elixir('vendor/datatables/js/dataTables.bootstrap.js') }}"></script>
+    <script src="{{ elixir('vendor/datatables/js/jquery.dataTables.js') }}"></script>
+    <script src="{{ elixir('vendor/datatables/js/dataTables.bootstrap.js') }}"></script>
     <!-- 
     <script src="js/plugins/dataTables/jquery.dataTables.js"></script>
     <script src="js/plugins/dataTables/dataTables.bootstrap.js"></script>
@@ -386,7 +387,7 @@
                 $(".chk").prop("checked", true);  // as que estiverem nessa classe ".chk" tambem serão marcadas
             else 
                 $(".chk").prop("checked", false);   // se não, elas tambem serão desmarcadas
-         });
+        });
 
 
 /*   $('#radioBtn a').on('change', function(){
@@ -401,8 +402,8 @@
         /*
          * A clicar no botão copiar o conteudo da <div> para a àrea de transferêcia
          */
-         var clipboard = new Clipboard('.btn'); 
-         clipboard.on('success', function(e){
+        var clipboard = new Clipboard('.btn'); 
+        clipboard.on('success', function(e){
             console.log(e); 
         });     
          clipboard.on('error', function(e){
@@ -418,6 +419,215 @@
             });
         });
     });
+
+
+    /**
+     *  Função do botão que  insere a quantdade disponível no campo quantidade
+     *  View item.atribuir fornecedor
+     */
+    $(document).on("click", "#disponivel", function(){
+        $("#quantidade").val(parseInt($(this).attr("data-disponivel")));
+    });
+
+    /**
+     *  Função do botão que  seleciona o item da tabela de itens a atribuir fornecedor
+     *  View item.atribuir fornecedor
+     */
+    $(document).on("click", ".linha", function(){
+         setValores(this);
+    });
+
+    /**
+     *  Função do botão de navegação que retorna os dados do item selecionador 
+     *  View item.atribuir fornecedor
+     */
+    function setValores(elemento){
+        var anterior = parseInt($(elemento).attr("id"))-1;
+        var proximo = parseInt($(elemento).attr("id"))+1;
+        var qtd = parseInt($("#qtd").val());
+        $("#modelo").val(''); // limpa campo troca de item
+        $("#marca").val(''); // limpa campo troca de item
+        $("#valor").val(''); // limpa campo troca de item
+        $("#quantidade").val(''); // limpa campo troca de item
+        $('#ordem').html("<label>Item</label>"+": "+      $(elemento).find(".ordem").text());
+        $('#descricao').html(                             $(elemento).find(".descricao").html());
+        $('#unidade').html("<label>Unidade</label>"+": "+ $(elemento).find(".unidade").text());
+        $('#grupo').html("<label>Grupo</label>"+": "+     $(elemento).find(".grupo").text());
+        $("#disponivel").attr("data-disponivel",          $(elemento).attr("data-disponivel"));
+        $("#disponivel > i > span").text(                 $(elemento).attr("data-disponivel"));
+        $("#item").val(                                   $(elemento).attr("data-uuid"));
+        
+        if (anterior > 0 && anterior < qtd) {
+            $('.previous').attr("data-item", anterior).attr("class", "previous");
+        }else{
+            $('.previous').attr("data-item", 0).attr("class", "previous disabled");
+        }
+
+        if (proximo >= 0 && proximo < qtd ) {
+            $('.next').attr("data-item", proximo).removeClass("disabled");
+        }else{ 
+            $('.next').attr("data-item", 0).addClass("disabled");
+        }
+    }
+
+    /**
+     *  Função do botão de navegação movendo para o item anterior
+     *  View item.atribuir fornecedor
+     */
+    $('.previous').click(function(){
+        var qtd = parseInt($("#qtd").val());
+        var anterior = $(this).attr("data-item");
+        if (anterior > 0 && anterior < qtd){
+            if (!$("#"+anterior).get().length) { // verifica se o elemento HTML existe
+                for(i = anterior; i > 0; i-- ){
+                    if ($("#"+i).get().length){
+                        setValores($("#"+i).get());// caso não exista avança para o imediatemente anterior
+                        break;
+                    }
+                }
+            }else{
+                setValores($("#"+anterior).get()) // elemento existe
+            }
+        }
+    });
+
+    /**
+     *  Função do botão de navegação para frente
+     *  View item.atribuir fornecedor
+     */
+    $('.next').click(function(){
+        var qtd = parseInt($("#qtd").val());
+        var proximo = $(this).attr("data-item");
+        if (proximo > 0 && proximo < qtd){
+            if (!$("#"+proximo).get().length) { // verifica se o elemento HTML existe
+                for(i = proximo; i < qtd; i++ ){
+                    if ($("#"+i).get().length){
+                        setValores($("#"+i).get()); // caso n existe avança para imediatemente mais próximo
+                        break;
+                    }
+                }
+            }else{
+                setValores($("#"+proximo).get())
+            }
+        }
+    });
+
+
+    $(document).on("click", "#salvar", function(){
+        $.ajax({
+            method:'GET',
+            url: '/item/segundo',
+            data: {
+                licitacao: $('#licitacao').val(),
+                fornecedor: $('#fornecedor').val(),
+                item: $('#item').val(),
+                quantidade: $('#quantidade').val(),
+                marca: $('#marca').val(),
+                modelo: $('#modelo').val(),
+                valor: $('#valor').val(),
+                "_token": "{{ csrf_token() }}"
+            },
+            success: function(data) {
+                //console.log(data);
+                if (data.codigo == 100) {
+                    if(data.quantidade == 0){
+                        $('tr[data-uuid="'+data.item+'"').remove();
+   
+                    } else{
+                        $('tr[data-uuid="'+data.item+'"').attr('data-disponivel', data.quantidade);
+                    }
+                    $("#disponivel").attr("data-disponivel", '');// excluir valor do data do button
+                    $("#disponivel > i > span").text(''); // excluir a quantidade do button
+                    $("#item").val(''); // excluir valor do input item
+                    $("#modelo").val(''); // excluir valor do input modelo
+                    $("#marca").val(''); // excluir valor do input modelom
+                    $("#valor").val(''); // excluir valor do input valor
+                    $("#quantidade").val(''); // excluir valor do input quantidade
+                    $('#ordem').html('Selecione');// excluir valor do campo ordem
+                    $('#descricao').html('Selecione');// excluir valor do campo descricao
+                    $('#unidade').html('Selecione');// excluir valor do campo unidade
+                    $('#grupo').html('Selecione');// excluir valor do campo grupo
+                } 
+                alert(data.message);
+    
+            }
+        });
+    });
+
+    /**
+     *  Função que busca o endereço a partir do cep informado no campo CEP
+     *  View create fornecedor
+     *  
+     *  @paran $cep
+     */
+    $(document).on("click", "#buscarCep", function(){
+         $.ajax({
+            method:'POST',
+            url: '/cep',
+            data: {
+                cep: $('#cep').val(),
+                "_token": "{{ csrf_token() }}"
+            },
+            success: function(data) {
+                var endereco = JSON.parse(data);
+                if (endereco.erro) {
+                    $('#cidade').removeAttr("readonly", "").val('');
+                    $('#estado').removeAttr("readonly", "").val('');
+                    $('#endereco').val(''); 
+                    alert('CEP inválido ou não encontrado !!!')
+                } else {
+                    $('#cidade').val(endereco.localidade).attr("readonly", "");
+                    $('#estado').val(endereco.uf).attr("readonly", "");
+                    $('#endereco').val(endereco.logradouro + ', ' + endereco.bairro);
+                }               
+            }
+        });
+    });
+
+    $(document).on("click", "#buscarForncecedor", function(){
+        $.ajax({
+            method:'POST',
+            url: '/fornecedor/fornecedor',
+            data: {
+                cpf_cnpj: $('#cpf_cnpj').val(),
+                "_token": "{{ csrf_token() }}"
+            },
+            success: function(data) {
+                if (data.fornecedor == true) {
+                    alert("CPF / CNPJ inválido ou Fornecedor não encontrado !!!");
+                } else{
+                    $('#razaoSocial').val(data.fornecedor);
+                    $('#fornecedor').val(data.uuid);
+                }
+            },
+            error: function(e){
+                 alert("Falha ao buscar fornecedor, tente novamente mais tarde");
+            }
+        });
+    });
+
+
+    $(document).on("click", ".buscar", function(){
+        $.ajax({
+            method:'POST',
+            url: '/licitacao/modalidade',
+            data: {
+                opcao: $('#modalidade').val(),
+                "_token": "{{ csrf_token() }}"
+            },
+            success: function(data) {
+                if ( data.length > 0) {
+                    $('#adicioanis').empty();
+                    $('#adicioanis').html(data);
+                    $('.page-header').text('Incluir '+$('#modalidade option:selected').text())
+                }else{
+                    $('#adicioanis').empty();
+                }
+            }
+        });
+    });
+
+
 
     $('#modalidade').change(function () {
         $.ajax({
@@ -440,37 +650,37 @@
     });
 
 
-        function radioButton(toggle, title){
-            var group = 'G'+toggle;       
-            $('#'+toggle).prop('value', title); 
-            $('a[data-toggle="'+toggle+'"]').not('[data-title="'+title+'"]').removeClass('active').addClass('notActive');
-            $('a[data-toggle="'+toggle+'"][data-title="'+title+'"]').removeClass('notActive').addClass('active');
-        }
+    function radioButton(toggle, title){
+        var group = 'G'+toggle;       
+        $('#'+toggle).prop('value', title); 
+        $('a[data-toggle="'+toggle+'"]').not('[data-title="'+title+'"]').removeClass('active').addClass('notActive');
+        $('a[data-toggle="'+toggle+'"][data-title="'+title+'"]').removeClass('notActive').addClass('active');
+    }
 
-        function enviar(nome){
-            $.ajax({
-                method:'POST',
-                url: '/enquadramento/dados',
-                data: {
-                    selecao: nome,
-                    opcao: $('#'+nome).val(),
-                    "_token": "{{ csrf_token() }}"
-                },
-                success: function(data) {
-                    if ( data.length > 0) {
-                        if (nome == 'normativa'){
-                            $('#conteudo').html(data);
-                            $('#complemento').empty();
-                        }
-                        if (nome == 'modalidade' )
-                            $('#complemento').html(data);
-                    }else{
-                        if (nome == 'normativa')
-                            $('#complemento, #conteudo').empty();
+    function enviar(nome){
+        $.ajax({
+            method:'POST',
+            url: '/enquadramento/dados',
+            data: {
+                selecao: nome,
+                opcao: $('#'+nome).val(),
+                "_token": "{{ csrf_token() }}"
+            },
+            success: function(data) {
+                if ( data.length > 0) {
+                    if (nome == 'normativa'){
+                        $('#conteudo').html(data);
+                        $('#complemento').empty();
                     }
+                    if (nome == 'modalidade' )
+                        $('#complemento').html(data);
+                }else{
+                    if (nome == 'normativa')
+                        $('#complemento, #conteudo').empty();
                 }
-            });
-        }
+            }
+        });
+    }
 
         function enviar(nome){
             $.ajax({
@@ -506,6 +716,7 @@
                     "_token": "{{ csrf_token() }}"
                 },
                 success: function(data) {
+                    console.log(data);
                     $('#razao_social').val(data.fornecedor.razao_social);
                     $('form').append("<input type='hidden' id='fornecedor' name='fornecedor'  value='"+data.fornecedor.id+"'>");
                 }
@@ -521,7 +732,7 @@
                     "_token": "{{ csrf_token() }}"
                 },
                 success: function(data) {
-                    $('#objeto').val(data.requisicao.descricao);
+                    $('#descricao').val(data.requisicao.descricao);
                     $(local).empty().append("<input  id='requisicao' name='requisicao' type='hidden' value='"+data.requisicao.uuid+"'>");
                 }
             });

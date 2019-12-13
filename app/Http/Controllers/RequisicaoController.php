@@ -47,14 +47,14 @@ class RequisicaoController extends Controller
        //return Requisicao::all();
        //return Requisicao::find(1)->requisitante()->first();
 		$requisicao = Requisicao::create([
-            'numero' => Requisicao::where('ano', date('Y'))->max('numero') + 1,// Retona o número da ultima requisção e acarescenta mais um
-            'ano' => date('Y'),
-            'descricao' => $request['descricao'],
+            'numero'        => Requisicao::where('ano', date('Y'))->max('numero') + 1,// Retona o número da ultima requisção e acarescenta mais um
+            'ano'           => date('Y'),
+            'descricao'     => $request['descricao'],
             'justificativa' => $request['justificativa']
         ]);
         $requisicao->requisitante()->associate($request->requisitante); // request->requisitante representa o id do solicitante
         $requisicao->save();
-        return redirect()->route('requisicaoExibir', [ $requisicao->id]);
+        return redirect()->route('requisicaoExibir', [ $requisicao->uuid]);
         /**/
     }
 
@@ -101,7 +101,7 @@ class RequisicaoController extends Controller
         $requisicao->save();
         $requisicao->requisitantes()->dissossiate(); // remove todas as relações
         $requisicao->requisitantes()->associate($request->requisitante); // refaz as relaçoes
-        return redirect()->route('requisicaoExibir', [ $requisicao->id]);
+        return redirect()->route('requisicaoExibir', [ $requisicao->uuid]);
     }
 
     /**
