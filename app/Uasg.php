@@ -46,4 +46,5 @@ class Uasg extends Model
     {
         return $this->belongsTo('App\Cidade', 'cidade_id', 'id');
     }
+
 }

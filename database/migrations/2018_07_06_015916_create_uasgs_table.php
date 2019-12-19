@@ -16,10 +16,10 @@ class CreateUasgsTable extends Migration
         Schema::create('uasgs', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uuid');
-            $table->string('nome', 200)->nullable();
+            $table->string('nome', 200);
             $table->string('telefone', 15)->nullable();
             $table->string('email', 50)->nullable();
-            $table->integer('codigo')->nullable();
+            $table->integer('codigo')->unique();
             $table->integer('cidades_id')->nullable()->unsigned();
             $table->foreign('cidades_id')->references('id')->on('cidades');
             $table->timestamps();

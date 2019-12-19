@@ -390,6 +390,20 @@
         });
 
 
+        $(document).on("click", "#marcarTodos", function(){
+            if($(this).attr("data-check") == 'true'){
+                $('input[type="checkbox"]').prop("checked", false);
+                $(this).attr("data-check", 'false');
+                $('.input').attr("disabled", '');
+            } else{
+                $('input[type="checkbox"]').prop("checked", true);
+                $(this).attr("data-check", 'true');
+                $('.input').removeAttr("disabled", "");
+            }
+        });
+
+
+
 /*   $('#radioBtn a').on('change', function(){
     var sel = $(this).data('title');
     var tog = $(this).data('toggle');

@@ -10,7 +10,7 @@
 	</div>
 
 	{{ Form::open(['url' => '/importar/store', 'method' => 'post', 'class' => 'form-padrao']) }}
-		{{ Form::hidden('requisicao', $requisicao)}}
+		{{ Form::hidden('uuid', $uuid)}}
 		<div class="row">
 			@include('form.select', [
 			'input' => 'tipo', 
@@ -40,6 +40,14 @@
 			@include('form.submit',  ['input' => 'Enviar', 'largura' => '6', 'recuo' => '3', 'attributes' => ['class' => 'btn btn-primary btn-block']])
 		</div>	
 	{{ Form::close() }} 
+
+		<div class="{{$errors->has('principal') ? ' has-error' : '' }} col-lg-12">
+			@if ($errors->has('principal'))
+			<span class="help-block">
+				<strong>Falha Encontrada: {{ $errors->first('principal') }}</strong>
+			</span>
+			@endif 
+		</div>
 
 	<div class="panel panel-warning" style="margin-top:20px;">
 		<div class="panel-heading">

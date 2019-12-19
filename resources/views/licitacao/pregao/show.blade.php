@@ -110,7 +110,7 @@
 							<button type="submit" formaction="{{url('item/primeiro')}}" class="btn btn-success btn-outline btn-lg" title="Atribuir Fornecedor"><i class="glyphicon glyphicon-briefcase"></i></button>
 						</div>
 						<div class="btn-group" role="group">
-							<button type="button" class="btn btn-success btn-outline btn-lg" title="Importar Dados"><i class="fa fa-upload"></i></button>
+							<a type="button" href="{{url('importar/novo',['uuid' => $licitacao->uuid])}}" class="btn btn-success btn-outline btn-lg" title="Importar Dados"><i class="fa fa-upload"></i></a>
 						</div>
 						<div class="btn-group" role="group">
 							<button type="button" class="btn btn-success btn-outline btn-lg" title="Adicionar Novo Item"><i class="glyphicon glyphicon-plus"></i></button>

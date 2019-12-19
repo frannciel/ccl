@@ -10,7 +10,7 @@
 				<div class="col-md-12">
 					<h1 class="center">Atribuir Fornecedor</h1>
 				</div>
-			</div>
+			</div><!-- / row -->
 
 			<div class="alert alert-default" role="alert">
 				<h3>

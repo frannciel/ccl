@@ -120,9 +120,9 @@ class LicitacaoController extends Controller
 
     public function itemEdit($uuid){
 
-      $licitacao = Item::findByUuid($uuid)->licitacao()->first();
+      $licitacao = Item::findByUuid($uuid)->licitacao;
       switch ($licitacao->licitacaoable_type) {
-         case 'App\Pregao':
+         case 'Pregão Eletrônico':
             return redirect()->action('PregaoController@itemEdit', [$uuid]);
          case 'App\Dispensa':
             return redirect()->action('PregaoController@itemEdit', [$uuid]);

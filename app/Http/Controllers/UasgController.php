@@ -36,13 +36,21 @@ class UasgController extends Controller
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
-     */
+     *
     public function create($id)
     {
         $estados = array();
         foreach (Estado::orderBy('nome', 'asc')->get() as $value)
             $estados += [$value->id => $value->nome];
         return view('participante', compact('estados'))->with('item', Item::find($id));
+    }*/
+
+    public function create()
+    {
+        $estados = array();
+        foreach (Estado::orderBy('nome', 'asc')->get() as $estado)
+            $estados += [$estado->sigla => $estado->nome];
+        return view('uasg.create', compact('estados'));
     }
 
     /**
@@ -53,18 +61,57 @@ class UasgController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'nome'      => 'required|string',
+            'codigo'    => 'required|integer|unique:uasgs,codigo',
+            'telefone'  => 'nullable|string',
+            'email'     => 'nullable|email',
+            'cidade'    => 'nullable|string',
+            'estado'    => 'nullable|string|max:2'
+        ]);
+
+        $cidade = Cidade::firstOrCreate(['nome' => $request->cidade, 'estado_id'=> Estado::where('sigla', $request->estado)->first()->id]); 
+
+        $uasg = Uasg::create([
+            'nome'       => $request['nome'],
+            'codigo'     => $request['codigo'],
+            'telefone'   => $request['telefone'],
+            'email'      => $request['email'],
+            'cidade_id' => $cidade->id
+        ]);
+        return redirect()->route('uasg');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function participanteStore(Request $request)
+    {
 		//http://comprasnet.gov.br/livre/uasg/Estrutura.asp?coduasg=158145
 		$uasg = Uasg::firstOrCreate(['codigo' => $request->codigo, 'nome' => $request->nome]); 
 		$cidade = Cidade::firstOrCreate(['nome' => $request->cidade, 'estado_id'=> $request->estado]); 
-		$item = Item::find($request->item);
+		$item = Item::findByUuid($request->item);
 		
 		//https://coredump.pt/questions/32655167/building-ternary-relationship-using-laravel-eloquent-relationships
 		//$item->cidades()->attach($cidade->id => ['participante_id' => $participante->id], ['quantidade' =>  $request->quantidade]);
         $uasg->cidades()->attach($cidade->id, ['item_id' => $item->id, 'quantidade' =>  $request->quantidade]);
-        //$participante->cidades()->attach($cidade->id, ['quantidade' =>  $request->quantidade]);
-        //$item->participantes()->attach($participante->id);
-	
-        return redirect()->route('itemEditar', [ 'item' => $item]);
+        return redirect()->route('itemEditar', [ 'item' => $item->uuid]);
+    }
+
+    /**
+     * { function_description }
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function participanteCreate()
+    {
+        $estados = array();
+        foreach (Estado::orderBy('nome', 'asc')->get() as $estado)
+            $estados += [$estado->sigla => $estado->nome];
+        return view('uasg.create', compact('estados'));
     }
 
     /**
@@ -73,9 +120,9 @@ class UasgController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($uuid)
     {
-        $uasg = Uasg::find($id);
+        $uasg = Uasg::findByUuid($id);
         return response()->json(['uasg' => $uasg]);
     }
 
@@ -85,9 +132,13 @@ class UasgController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($uuid)
     {
-		return view('participante.edit')->with('uasg', Uasg::find($id));
+        $estados = array();
+        $uasg = Uasg::findByUuid($uuid);
+        foreach (Estado::orderBy('nome', 'asc')->get() as $estado)
+            $estados += [$estado->sigla => $estado->nome];
+		return view('uasg.edit', compact('estados', 'uasg'));
     }
 
     /**
@@ -99,13 +150,25 @@ class UasgController extends Controller
      */
     public function update(Request $request) // corrigir método
     {
-        $uasg = Uasg::find($request->uasg);
+
+        $this->validate($request, [
+            'uasg'      => 'required|exists:uasgs,uuid', // verifica se o objeto existe no banco
+            'nome'      => 'required|string',
+            'codigo'    => 'required|integer', // verifica se o código é único
+            'telefone'  => 'nullable|string',
+            'email'     => 'nullable|email',
+            'cidade'    => 'nullable|string',
+            'estado'    => 'nullable|string|max:2'
+        ]);
+
+        $uasg = Uasg::findByUuid($request->uasg);
         $uasg->nome 		= $request->nome;
-        $uasg->codigo 		= $request->uasg;
-        $uasg->cidade 		= $request->cidade;
-        $uasg->estado 		= $request->estado;
+        $uasg->codigo 		= $request->codigo;
+        $uasg->telefone     = $request->telefone;
+        $uasg->email        = $request->email;
+        $uasg->cidade_id 	= Cidade::firstOrCreate(['nome' => $request->cidade, 'estado_id'=> Estado::where('sigla', $request->estado)->first()->id])->id;
         $uasg->save();
-        return view('participante.edit')->with('uasg', $uasg);
+        return redirect()->route('uasg')->with('uasg', $uasg);
     }
 
     /**
@@ -114,9 +177,9 @@ class UasgController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($uuid)
     {
-        Uasg::destroy($id);
+        Uasg::destroy(Uasg::findByUuid($uuid)->id);
     }
 
 }

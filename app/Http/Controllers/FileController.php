@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Input;
 use App\Requisicao;
+use App\Licitacao;
 use App\Unidade;
 use App\Estado;
 use App\Cidade;
 use App\Item;
 use App\Participante;
 use App\Fornecedor;
+use App\PessoaJuridica;
 use DateTime;
 class FileController extends Controller
 {
@@ -24,9 +26,9 @@ class FileController extends Controller
 	 *
 	 * @return     <type>  ( description_of_the_return_value )
 	 */
-	public function create($id)
+	public function create($uuid)
 	{
-		return view('importe')->with('requisicao', $id);
+		return view('importe')->with('uuid', $uuid);
 	}
 
 	public function redirecionar(Request $request){
@@ -43,20 +45,15 @@ class FileController extends Controller
 		$celulas = explode("&", substr($request->dados,  0, -1)); // remove o ultimo caracter e quebra a texto em ceelulas
 		switch ($request->tipo) {
 			case '1': 
-				return $this->setItem(array_chunk($celulas,5), $request->requisicao); 
-				
+				return $this->setItem(array_chunk($celulas,5), $request->uuid); 
 			case '2':
-				return $this->setCotacao(array_chunk($celulas,5), $request->requisicao); 
-				
+				return $this->setCotacao(array_chunk($celulas,5), $request->uuid); 
 			case '3': 
-				return $this->setParticipante(array_chunk($celulas,4), $request->requisicao); 
-			
+				return $this->setParticipante(array_chunk($celulas,4), $request->uuid); 
 			case '4': 
 				return $this->setFornecedor(array_chunk($celulas,9)); 
-			
 			case '5': 
-				return $this->setAta($request->dados, $request->requisicao); 
-				
+				return $this->AtaSrpShow($request->dados, $request->uuid); 	
 		}
 	}
 
@@ -198,7 +195,7 @@ class FileController extends Controller
 		# Implementar se o participante ja existe antes de importar
 		$requisicao = Requisicao::find($id);
 		$itens = $requisicao->itens;
-		$estados= Estado::all();
+		$estados = Estado::all();
 		foreach ($dados as $valor) {
 			$uasg_nome = explode("-", $valor[1], 2);
 			$cidade_uf = explode("/", $valor[2], 2);
@@ -268,7 +265,7 @@ class FileController extends Controller
 
 	protected function setAta($dados, $id)
 	{
-		$itens = [];
+		/*$itens = [];
 		$tamanho = 0;
 		$celulas = explode("&", $dados);
 		$primeiro = '';
@@ -311,8 +308,104 @@ class FileController extends Controller
 				'quantidade' => trim($value['quantidade']), 
 				'valor' => $this->getFloat(trim(str_replace('R$', '', $value['valor'])))
 			]);
-		}
+		}*/
 	}
+
+	protected function AtaSrpShow($dados, $uuid)
+	{
+
+		$itens = [];
+		$tamanho = 0;
+		$celulas = explode("&", $dados);
+		$primeiro = '';
+		$quantidade = count($celulas);
+
+		for ($i = 0; $i < $quantidade;$i++){
+			$tamanho = strlen($celulas[$i]);	
+			if($tamanho < 10){
+				if ($quantidade > $i + 8){
+					array_push($itens, [
+						'fornecedor' 	=> $primeiro, 
+						'item' 			=> $celulas[$i], 
+						'objeto' 		=> $celulas[$i+1], 
+						'unidade' 		=> $celulas[$i+2],
+						'quantidade' 	=> $celulas[$i+3],
+						'valor' 		=> $celulas[$i+4],
+						'descricao' 	=> $celulas[$i+7]
+					]); 
+					$i = $i + 8; 
+				}
+			} elseif($tamanho > 10 && $tamanho < 25) {
+				if ($quantidade > $i + 2)
+					$i = $i +  2; 
+			} else {
+				if ($quantidade > $i + 7){
+					$primeiro = $celulas[$i];
+					$i = $i + 7;
+				}
+			}	
+		}
+
+		$ata = collect();
+		$licitacao = Licitacao::findByUuid($uuid);
+		foreach ($itens as $value) {
+
+			/*$item = Item::where('ordem', trim($value['item']))->where('licitacao_id', $licitacao->id)->first();
+			$fornecedor = Fornecedor::firstOrCreate(['cpf_cnpj' => trim($fornec['cpfCnpj']), 'razao_social' => trim($fornec['razaoSocial'])]);
+			$item->fornecedores()->attach($fornecedor->id, [
+				'marca' => trim($marcaModelo['marca']), 
+				'modelo' => trim($marcaModelo['modelo']), 
+				'quantidade' => trim($value['quantidade']), 
+				'valor' => $this->getFloat(trim(str_replace('R$', '', $value['valor'])))
+			]);*/
+
+			$fornecedor = $this->getFornecedor($value['fornecedor']); //  Nome e cnpj/cpf do fornecedor
+			$marcaModelo = $this->getMarcaModelo($value['descricao']); // marca e modelo do item
+			$ata->push([
+				"cnpj" 			=> trim($fornecedor['cpfCnpj']), 
+				"razaoSocial" 	=> trim($fornecedor['razaoSocial']),
+				"ordem"			=> trim($value['item']),
+				"descricao"		=> trim($value['descricao']),
+				"unidade"		=> trim($value['unidade']),
+				"quantidade"	=> trim($value['quantidade']),
+				"marca" 		=> trim($marcaModelo['marca']),
+				"modelo" 		=> trim($marcaModelo['modelo']),
+				"valor" 		=> trim($value['valor'])
+			]);
+		}
+        return view('ata', compact('ata', 'licitacao'));
+	}
+
+	public function AtaSrpStore (Request $request)
+    {
+        $licitacao = Licitacao::findByUuid($request->licitacao);
+        // Verifica se os Array de dados possuem os mesmos tamanhos
+        if (count($request->ordem) == count($request->unidade) && 
+            count($request->quantidade) == count($request->valor) &&    
+            count($request->marca) ==  count($request->modelo) &&
+            count($request->razaoSocial) == count($request->cnpj))
+        {
+         	for ($i=0; $i < count($request->ordem) ; $i++) {
+                $item = Item::where('ordem', $request->ordem[$i])->where('licitacao_id', $licitacao->id)->first();
+                $PJuridica = PessoaJuridica::firstOrCreate(['cnpj' => $request->cnpj[$i], 'razao_social' => $request->razaoSocial[$i]]);
+				$fornecedor;
+				if(count($item) == 1 && $item->quantidadeTotalDisponivel >= $request->quantidade[$i]){
+					if (count($PJuridica->fornecedor) == 1) {
+						$fornecedor = $PJuridica->fornecedor;
+					} else{
+						$fornecedor = $PJuridica->fornecedor()->create([]);
+					}
+	                $item->fornecedores()->attach($fornecedor->id, [
+	                    'marca' => $request->marca[$i], 
+	                    'modelo' => $request->modelo[$i], 
+	                    'quantidade' =>$request->quantidade[$i], 
+	                    'valor' => $this->getFloat(trim(str_replace('R$', '', $request->valor[$i])))
+	                ]);
+	            }               
+            }
+        }
+        return redirect()->route('pregaoExibir', ['uuid' => $licitacao->licitacaoable->uuid]);
+    }
 	
 	/** 
 	 * função que converte string para o valor numérico float
@@ -372,7 +465,8 @@ class FileController extends Controller
 		}
 	}
 
-	protected function getFornecedor($valor){
+	protected function getFornecedor($valor)
+	{
 		if (strlen($valor) > 20 )  {
 			$vetor = explode("-", $valor, 3);
 			//$razaoSocial = '';
@@ -381,7 +475,6 @@ class FileController extends Controller
 			return ['cpfCnpj' => $vetor[0]."-".$vetor[1], 'razaoSocial' => $vetor[2]] ;
 		}
 	}
-
 
 	/**
      * função que converte a UF abreviada pelo nome completado da UF

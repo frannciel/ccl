@@ -21,6 +21,13 @@ class Cidade extends Model
         return $this->hasMany('App\Fornecedor');
     }
 
+
+    /**
+     * Método que permite retorna as Unidade Administrativas do Serviços Gerais (UASG) do sistema SISG
+     * que definiram a cidade como local de entrega em participações de pregões eletrônicos SRP.
+     *
+     * @return     <Collect>  (Uasg)
+     */
     public function participantes()
     {
         return $this->belongsToMany('App\Uasg', 'cidade_uasg','cidade_id', 'uasg_id')
@@ -29,6 +36,12 @@ class Cidade extends Model
             ->withPivot('quantidade');
     }
 	
+    /**
+     * Método que permite retorna todos os itens decorrentes de participações em pregões eletrônicos SRP que tiveram a cidade
+     * como local de entrega.
+     *
+     * @return     <Collect>  (Item)
+     */
 	public function itens()
     {
         return $this->belongsToMany('App\Item', 'cidade_uasg','cidade_id', 'item_id')

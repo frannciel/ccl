@@ -26,7 +26,7 @@
 				'largura' => 9, 
 				'value' => old($input ?? ''),
 				'attributes' => ['id' => 'razaoSocial', 'required' => '' ]])
-			</div>
+			</div><!-- / row-->
 		   
 			<div class="row">
 				@include('form.textButton', [
@@ -51,7 +51,7 @@
 				'largura' => 6, 
 				'value' => old($input ?? ''),
 				'attributes' => ['id' => 'cidade', 'required' => '']])
-			</div>
+			</div><!-- / row-->
 		   
 			<div class="row">
 				@include('form.text', [
@@ -74,7 +74,7 @@
 				'largura' => 3, 
 				'value' => old($input ?? ''),
 				'attributes' => ['id' => 'telefone2', 'placeholder' => 'Opcional...']])
-			</div>
+			</div><!-- / row-->
 		   
 			<div class="row">
 				@include('form.text', [
@@ -90,7 +90,7 @@
 				'largura' => 6, 
 				'value' => old($input ?? ''),
 				'attributes' => ['id' => 'representante', 'placeholder' => 'Apanas pessoa jurídica.']])
-			</div>
+			</div><!-- / row-->
 		   
 			<div class="row">
 				<div class="col-md-3  col-md-offset-3 mt-2">
@@ -100,7 +100,7 @@
 				@include('form.submit', [
 				'input' => 'Cadastrar',
 				'largura' => 3 ])
-			</div>	
+			</div>	<!-- / row-->
 		{{Form::close()}} 
 	</div>
 </div>

@@ -61,7 +61,7 @@ class Item extends Model
 
     /**
      * @Descrition Método que retorna as cidades onde os itens deverão ser entregues. 
-     * Estás cidades estão relacionadas as unidades participantes mais ógão gereciador.
+     * Estás cidades estão relacionadas as unidades participantes e o ógão gereciador.
      * 
      * @return <Collect> App\Cidade
      */

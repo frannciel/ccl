@@ -20,7 +20,6 @@ class FornecedorController extends Controller
      */
     public function index()
     {
-    	
 		return view('fornecedor.show')->with('fornecedores', Fornecedor::orderBy('created_at', 'desc')->get());
     }
 
@@ -166,16 +165,16 @@ class FornecedorController extends Controller
      */
     public function getFornecedor(Request $request)
     {
-         $cpf_cnpj = preg_replace("/[^0-9]/", "", $request->cpf_cnpj);
-         if (strlen($cpf_cnpj) === 11) {
+        $cpf_cnpj = preg_replace("/[^0-9]/", "", $request->cpf_cnpj);
+        if (strlen($cpf_cnpj) === 11) {
             $fornecedor = PessoaFisica::where('cpf', '=', $request->cpf_cnpj)->first();
             if ($fornecedor) 
                 return response()->json(['fornecedor' => $fornecedor->nome, 'uuid' => $fornecedor->fornecedor->uuid]); // retorna o uuid de Fornecedor
-         } elseif (strlen($cpf_cnpj) === 14) {
+        } elseif (strlen($cpf_cnpj) === 14) {
             $fornecedor = PessoaJuridica::where('cnpj', '=', $request->cpf_cnpj)->first();
             if ($fornecedor)
                 return response()->json(['fornecedor' => $fornecedor->razao_social, 'uuid' => $fornecedor->fornecedor->uuid]); // retorna o uuid de Fornecedor
-         }
+        }
         return response()->json(['fornecedor' => true]);
     }
     

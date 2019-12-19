@@ -161,7 +161,7 @@ class ItemController extends Controller
     }
 
     /**
-     *  @Descrition método que retorna a interface que permnite a vinculação item / fornecedor
+     *  @Descrition método que retorna a interface que permnite a vincular item ao fornecedor
      *
      *  @param      \Illuminate\Http\Request  $request  The request
      *  @return     View
