@@ -20,7 +20,7 @@ class FornecedorController extends Controller
      */
     public function index()
     {
-		return view('fornecedor.show')->with('fornecedores', Fornecedor::orderBy('created_at', 'desc')->get());
+		return view('fornecedor.show')->with('fornecedores', Fornecedor::orderBy('updated_at', 'desc')->get());
     }
 
     /**
@@ -51,14 +51,14 @@ class FornecedorController extends Controller
             'telefone1'     =>'required|string|between:10,15',
             'endereco'      =>'required|string',
             'cidade'        =>'required|string',
-            'estado'        =>'required|numeric',
+            'estado'        =>'required|string|size:2',
             'cep'           =>'string|nullable|max:9',
             'telefone2'     =>'string|nullable|between:10,15',
             'email'         =>'email|nullable',
             'representante' =>'string|nullable',
         ]);
         
-        $cidade = Cidade::firstOrCreate(['nome' => $request->cidade, 'estado_id'=> $request->estado]); 
+        $cidade = Cidade::firstOrCreate(['nome' => $request->cidade, 'estado_id'=> Estado::where('sigla', $request->estado)->first()->id]); 
 
         $fornecedor ;
         if(strlen(preg_replace("/[^0-9]/", "", $request->cpf_cnpj)) == 11){
@@ -79,7 +79,6 @@ class FornecedorController extends Controller
 
     protected function storePessoaFisica($request)
     {   
-
         $fornecedor = PessoaFisica::create([
             'cpf'    => $request['cpf_cnpj'],
             'nome'   => $request['razaoSocial']
@@ -129,9 +128,49 @@ class FornecedorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(FornecedorRequest $request)
+    public function update(Request $request)
     {
-		$cidade = Cidade::firstOrCreate(['nome' => $request->cidade, 'estado_id'=> $request->estado]); 
+        $this->validate($request, [
+            'cpf_cnpj'      =>'required|string|between:11,18', // se 11 cpf ou 14 cnpj max 18 pois pode incluir pontos 
+            'razao_social'  =>'required|string',
+            'telefone1'     =>'required|string|between:10,15',
+            'endereco'      =>'required|string',
+            'cidade'        =>'required|string',
+            'estado'        =>'required|string|size:2',
+            'cep'           =>'string|nullable|max:9',
+            'telefone2'     =>'string|nullable|between:10,15',
+            'email'         =>'email|nullable',
+            'representante' =>'string|nullable',
+        ]);
+
+        $cidade = Cidade::firstOrCreate(['nome' => $request->cidade, 'estado_id' => Estado::where('sigla', $request->estado)->first()->id]); 
+        $fornecedor = Fornecedor::findByUuid($request->fornecedor);
+        $fornecedor->telefone_1     = $request->telefone1;
+        $fornecedor->telefone_2     = $request->telefone2;
+        $fornecedor->email          = $request->email;
+        $fornecedor->endereco       = $request->endereco;
+        $fornecedor->cep            = $request->cep;
+        $fornecedor->cidade_id      = $cidade->id;
+        $fornecedor->save();
+
+        if($fornecedor->fornecedorable_type =='Pessoa Física')
+        {
+            $PF = $fornecedor->fornecedorable;
+            $PF->cpf    = $request->cpf_cnpj;
+            $PF->nome   = $request->razao_social;
+            $PF->save();
+        } 
+        elseif ($fornecedor->fornecedorable_type =='Pessoa Jurídica')
+        {
+            $PJ = $fornecedor->fornecedorable;
+            $PJ->cnpj           = $request->cpf_cnpj;
+            $PJ->razao_social   = $request->razao_social;
+            $PJ->representante  = $request->representante;
+            $PJ->save();
+        }
+
+/*  
+
         $fornecedor = Fornecedor::find($request->fornecedor);
         $fornecedor->cpf_cnpj 		= $request->cpf_cnpj;
         $fornecedor->razao_social 	= $request->razao_social;
@@ -142,8 +181,8 @@ class FornecedorController extends Controller
 		$fornecedor->cep            = $request->cep;
         $fornecedor->cidade_id      = $cidade->id;
         $fornecedor->save();
-         
-		return redirect()->route('fornecedorEditar', [ $fornecedor->id]);
+        */
+		return redirect()->route('fornecedor');
     }
 
     /**

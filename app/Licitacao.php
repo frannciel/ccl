@@ -10,7 +10,7 @@ class Licitacao extends Model
     use HasUuid;
     protected $table = 'licitacoes';
     protected $fillable = [
-        'numero', 'ano', 'objeto', 'processo'
+        'numero', 'ano', 'objeto', 'processo', 'publicacao'
     ];
 
 /*   public function itens()
@@ -36,6 +36,11 @@ class Licitacao extends Model
     public function requisicoes()
     {
         return $this->belongsToMany('App\Requisicao', 'licitacao_requisicao')->withTimestamps();
+    }
+
+    public function registroDePrecos()
+    {
+        return $this->hasMany('App\RegistroDePreco');
     }
 
     /**
@@ -70,5 +75,15 @@ class Licitacao extends Model
     {
         $soma = 0;
         return $soma;
+    }
+
+    protected function setPublicacaoAttribute($value)
+    {
+        $this->attributes['publicacao'] = date_format(date_create(str_replace("/", "-", $value)), 'Y-m-d');
+    }
+
+    protected function getPublicacaoAttribute()
+    {
+        return date('d/m/Y', strtotime($this->attributes['publicacao']));
     }
 }

@@ -181,7 +181,7 @@
                                     <a href="{{route('fornecedor')}}">Consultar</a>
                                 </li>
                                 <li>
-                                    <a href="{{route('importarNovo',  ['id' => 0])}}">Importar Dados</a>
+                                    <a href="{{url('importar')}}">Importar Dados</a>
                                 </li>
                             </ul><!-- /.nav-second-level -->
                         </li>

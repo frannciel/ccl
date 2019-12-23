@@ -41,11 +41,11 @@
 				<tbody>
 					@forelse ($requisicoes as $requisicao)
 						<tr onclick="location.href ='{{url('/requisicao/exibir', $requisicao->uuid)}}'; target='_blank';" style="cursor: hand;">
-							<td>{{$requisicao->numero}}</td>
-							<td>{{$requisicao->ano}}</td>
-							<td>{{$requisicao->descricao}}</td>
-							<td>{{$requisicao->requisitante->sigla}}</td>
-							<td>{{$requisicao->created_at}}</td>
+							<td>{{$requisicao->numero ?? 'error'}}</td>
+							<td>{{$requisicao->ano ?? 'error' }}</td>
+							<td>{{$requisicao->descricao ?? 'error'}}</td>
+							<td>{{$requisicao->requisitante->sigla ?? 'error'}}</td>
+							<td>{{$requisicao->created_at ?? 'error'}}</td>
 						</tr>
 					@empty
 						<tr><td><center><i> Nenhum item encontrado </i></center></td></tr>

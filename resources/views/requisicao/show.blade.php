@@ -19,22 +19,22 @@
 				'input' => 'numero',
 				'label' => 'Número', 
 				'largura' => 3,
-				'value' => $requisicao->numero,
-				'attributes' => ['id' => 'numero', 'disabled' => '' ]])
+				'value' => $requisicao->numero ?? '',
+				'attributes' => ['id' => 'numero', 'disabled' => 'error' ]])
 
 				@include('form.text', [
 				'input' => 'ano',
 				'label' => 'Ano', 
 				'largura' => 3,
-				'value' => $requisicao->ano,
-				'attributes' => ['id' => 'ano', 'disabled' => '']])
+				'value' => $requisicao->ano ?? '',
+				'attributes' => ['id' => 'ano', 'disabled' => 'error']])
 
 				@include('form.select', [
 				'input' => 'requisitante', 
 				'label' => 'Requisitante', 
 				'largura' => 6,
-				'selected' => $requisicao->requisitante->uuid, 
-				'options' => $requisitantes, 
+				'selected' => old($input ?? '') ?? $requisicao->requisitante->uuid, 
+				'options' => $requisitante, 
 				'attributes' => ['id' => 'requisitante']])
 			</div>
 
@@ -42,7 +42,7 @@
 				@include('form.text', [
 				'input' => 'descricao',
 				'label' => 'Objeto', 
-				'value' =>  $requisicao->descricao,
+				'value' => old($input ?? '') ?? $requisicao->descricao ?? 'error',
 				'attributes' => ['id' => 'descricao', 'required' => '', 'autocomplete' => 'off']])
 			</div>
 
@@ -50,7 +50,7 @@
 				@include('form.textarea', [
 				'input' => 'justificativa',
 				'label' => 'Justificativa da Contratação*',
-				'value' => old($input ?? '') ?? $requisicao->descricao,
+				'value' => old($input ?? '') ?? $requisicao->justificativa ?? 'error',
 				'largura' => 12, 
 				'attributes' => ['id' => 'justificativa', 'required' => '',  'rows'=>'5']])
 		    </div>
@@ -78,7 +78,7 @@
 		</a>
 	</div>
 	<div class="col-md-3 col-6">
-		<a href="{{route('importarNovo', ['id' => $requisicao->id])}}" class="btn btn-primary btn-outline btn-block" type="button">
+		<a href="{{route('importar', ['id' => $requisicao->id])}}" class="btn btn-primary btn-outline btn-block" type="button">
 		   	<i class="fa fa-upload fa-3x"></i><br>Importar
 		</a>
 	</div>
@@ -138,7 +138,7 @@
             <td class="w-1 center">{{$item->codigo =='0'?'': $item->codigo}}</td>
             <td class="w-1 center">{{$item->quantidade}}</td>
             <td class="w-1 center"></td>
-            <!--<td>isset($item->grupo->numero) ? $item->grupo->numero : ''</td>
+            <td>isset($item->grupo->numero) ? $item->grupo->numero : ''</td>
          </tr>
          @empty
          <tr><td><center><i> Nenhum item encontrado </i></center></td></tr>
@@ -157,7 +157,7 @@
 				<a type="button"  class="btn btn-success btn-outline btn-lg" title="Pesquisa de Preços" href="{{route('cotacaoNovo', ['uuid' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-shopping-cart"></i></a>
 			</div>
 			<div class="btn-group" role="group">
-				<a type="button" class="btn btn-success btn-outline btn-lg" title="Importar Dados" href="{{route('importarNovo', ['uuid' => $requisicao->uuid])}}"><i class="fa fa-upload"></i></a>
+				<a type="button" class="btn btn-success btn-outline btn-lg" title="Importar Dados" href="{{route('importar', ['uuid' => $requisicao->uuid])}}"><i class="fa fa-upload"></i></a>
 			</div>
 			<div class="btn-group" role="group">
 				<button type="submit" class="btn btn-success btn-outline  btn-lg" title="Duplicar Itens"><i class="glyphicon glyphicon-duplicate"></i></button>

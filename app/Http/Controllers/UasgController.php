@@ -37,15 +37,16 @@ class UasgController extends Controller
      *
      * @return \Illuminate\Http\Response
      *
+     */
     public function create($id)
     {
         $estados = array();
         foreach (Estado::orderBy('nome', 'asc')->get() as $value)
             $estados += [$value->id => $value->nome];
         return view('participante', compact('estados'))->with('item', Item::find($id));
-    }*/
+    }
 
-    public function create()
+    public function createDois()
     {
         $estados = array();
         foreach (Estado::orderBy('nome', 'asc')->get() as $estado)

@@ -10,7 +10,7 @@ use App\Unidade;
 use App\Estado;
 use App\Cidade;
 use App\Item;
-use App\Participante;
+use App\Uasg;
 use App\Fornecedor;
 use App\PessoaJuridica;
 use DateTime;
@@ -22,18 +22,28 @@ class FileController extends Controller
 	/**
 	 * { function_description }
 	 *
-	 * @param      <type>  $id     The identifier
-	 *
-	 * @return     <type>  ( description_of_the_return_value )
+	 * @param      <String>  $uuid     The identifier
+	 * @return     <Vie>  ( description_of_the_return_value )
 	 */
-	public function create($uuid)
+	public function create(String $uuid = '')
 	{
-		return view('importe')->with('uuid', $uuid);
+		$opcoes = [
+			'1' => '1 - Item',
+			'2' => '2 - Pesquisa de Preços', 
+			'3' => '3 - Unidade Participante',
+			'4' => '4 - Fornecedor', 
+			'5' => '5 - Ata de Registro de Preços'
+		];
+
+		if ($uuid == '') {
+			$opcoes = ['4' => '4 - Fornecedor'];
+		}
+		return view('importe',  compact('opcoes', 'uuid'));
 	}
 
-	public function redirecionar(Request $request){
+	/*public function redirecionar(Request $request){
         return redirect()->route('importarNovo', ['requsicao_id' => $request->requisicao]);
-    }
+    }*/
 
 	/**
 	 * { function_description }
@@ -51,7 +61,7 @@ class FileController extends Controller
 			case '3': 
 				return $this->setParticipante(array_chunk($celulas,4), $request->uuid); 
 			case '4': 
-				return $this->setFornecedor(array_chunk($celulas,9)); 
+				return $this->setFornecedor(array_chunk($celulas,10)); 
 			case '5': 
 				return $this->AtaSrpShow($request->dados, $request->uuid); 	
 		}
@@ -63,9 +73,9 @@ class FileController extends Controller
 	 * @param      <type>  $dados  The dados
 	 * @param      <type>  $id     The identifier
 	 */
-	protected function setItem($dados, $id)
+	protected function setItem($dados, $uuid)
 	{
-		$requisicao = Requisicao::find($id);
+		$requisicao = Requisicao::findByUuid($uuid);
 		$itens = $requisicao->itens; // retona tosdos os item relacionados com a requisição
 		foreach ($dados as $valor) {
 
@@ -113,7 +123,6 @@ class FileController extends Controller
 				} elseif(strpos($valor[1], "Descrição complementar:") !== false){
 					$descricao = explode("Descrição complementar:", $valor[1], 2);
 				} 
-
 			
 				// prepara o objeto do desrição infomada
 				if(!isset($descricao[1])){
@@ -139,12 +148,12 @@ class FileController extends Controller
 
 
 				$item = $requisicao->itens()->create([
-		            'numero' => intval($valor[0]), // convert em inteiro
-		            'descricao' => nl2br($descricao), // inserir as quebas de linha
-		            'objeto' => trim($objeto),
-		            'codigo' => $valor[2] == ''? 0 : intval($valor[2]),
-		            'unidade_id' => $unidade_id,
-		            'quantidade' =>  trim($valor[4])
+		            'numero' 		=> intval($valor[0]), // convert em inteiro
+		            'descricao' 	=> nl2br($descricao), // inserir as quebas de linha
+		            'objeto' 		=> trim($objeto),
+		            'codigo' 		=> $valor[2] == ''? 0 : intval($valor[2]),
+		            'unidade_id'	=> $unidade_id,
+		            'quantidade' 	=> trim($valor[4])
 	         	]);
 
 				// Insere um grupo no item ou cria caso o grupo ainda não exista no banco
@@ -158,7 +167,7 @@ class FileController extends Controller
 			}
 
 		}
-		return redirect()->route('requisicaoExibir', ['id' => $requisicao->id]);
+		return redirect()->route('requisicaoExibir', ['id' => $requisicao->uuid]);
 	}
 
 	/**
@@ -167,7 +176,7 @@ class FileController extends Controller
 	 * @param      Array  $dados   dados dos itens para importação
 	 * @param      Integer  $id     requisição
 	 */
-	protected function setCotacao($dados, $id)
+	protected function setCotacao($dados, $uuid)
 	{
 		$requisicao = Requisicao::find($id);
 		$itens = $requisicao->itens;
@@ -181,7 +190,7 @@ class FileController extends Controller
 				]);
 			}
 		}
-		return redirect()->route('requisicaoExibir', ['id' => $id]);
+		return redirect()->route('requisicaoExibir', ['uuid' => $uuid]);
 	}
 
 	/**
@@ -190,24 +199,23 @@ class FileController extends Controller
 	 * @param      <type>  $dados  The dados
 	 * @param      <type>  $id     The identifier
 	 */
-	protected function setParticipante($dados, $id)
+	protected function setParticipante($dados, $uuid)
 	{	
 		# Implementar se o participante ja existe antes de importar
-		$requisicao = Requisicao::find($id);
-		$itens = $requisicao->itens;
-		$estados = Estado::all();
+		$licitacao = Licitacao::findByUuid($uuid);
+		$itens = $licitacao->itens;
 		foreach ($dados as $valor) {
 			$uasg_nome = explode("-", $valor[1], 2);
 			$cidade_uf = explode("/", $valor[2], 2);
-			// verifica se á uasg é diferente do orgão geenciador
+			// verifica se á uasg é diferente do orgão gerenciador
 			if($this->gerenciador != $uasg_nome[0]) {
-				$item = $itens->where('numero', $valor[0])->first();
+				$item = $itens->where('ordem', $valor[0])->first();
 				// Verifica se o item não é nulo, ou seja, se ele existe no banco de dados
 				if ($item != null) {
 					// Quebra o conteúdo da celula 02 da linha dividindo a informação em código e nome da Uasg e busca ou cria o objeto participante
-					$participante = Participante::firstOrCreate(['uasg' => intval($uasg_nome[0]), 'nome' => $uasg_nome[1]]); 
+					$participante = Uasg::firstOrCreate(['codigo' => intval($uasg_nome[0])],['nome' => $uasg_nome[1]]); 
 					// Quebra o conteúdo da celula 03 da linha divididndo a informação em cidade e estado e busca ou cria objeto cidade
-					$cidade = Cidade::firstOrCreate(['nome' => $cidade_uf[0], 'estado_id' => $estados->where('sigla', $cidade_uf[1])->first()->id]); 
+					$cidade = Cidade::firstOrCreate(['nome' => $cidade_uf[0], 'estado_id' => Estado::where('sigla', $cidade_uf[1])->first()->id]); 
 					// faz a relação de item cidade e participante no banco de dados
 					$participante->cidades()->attach($cidade->id, ['item_id' => $item->id, 'quantidade' =>  $valor[3]]);
 				}
@@ -227,16 +235,54 @@ class FileController extends Controller
 				//$item->locais()->attach($local->id,[ 'quantidade' => $valor[2]]);
 			}*/
 		}
-		return redirect()->route('requisicaoExibir', ['id' => $requisicao->id]);
+		return redirect()->route('licitacaoExibir', ['uuid' => $requisicao->uuid]);
 	}
 	
 	protected function setFornecedor($dados)
 	{
-		$estados = Estado::all();
+		//$estados = Estado::all();
 		foreach ($dados as $valor) {
-			$fornecedor = Fornecedor::updateOrCreate(
+			$fornecedor ;
+			if(strlen(preg_replace("/[^0-9]/", "", trim($valor[0]))) == 11)
+			{
+				$fornecedor = PessoaFisica::firstOrCreate([
+					['cpf'    => trim($valor[0])],
+					['nome'   => trim($valor[1])]
+				]);
+			} 
+			elseif (strlen(preg_replace("/[^0-9]/", "", trim($valor[0]))) == 14)
+			{
+				$fornecedor = PessoaJuridica::firstOrCreate(
+					['cnpj'         => trim($valor[0])],
+					['razao_social'  => trim($valor[1]),
+					'representante' => trim($valor[9])]
+				);
+			}
+
+			// realiza a validação de estado e realiza a consulta na base de dados retornando incosiste caso não encontrado
+			$estado = null;
+			if (strlen(trim($valor[5])) == 2) {
+				$estado = Estado::where('sigla', strtoupper(trim($valor[5])))->first();
+			} elseif ($estado === null) {
+				$estado = Estado::where('nome', $valor[5])->first();
+			} elseif ($estado === null) {
+				$estado = Estado::where('nome', 'Inconsistente')->first();
+			}
+			// consulta a cidade criando uma cidade caso esta não esteja presente na base de dados
+			$cidade = Cidade::firstOrCreate(['nome' =>trim($valor[4]), 'estado_id'=> $estado->id]); 
+
+			$fornecedor->fornecedor()->updateOrCreate([
+				'endereco'      => trim($valor[2]),
+				'cep'           => trim($valor[3]),
+				'cidade_id'     => $cidade->id,
+				'email'         => trim($valor[6]),
+				'telefone_1'    => trim($valor[7]),
+				'telefone_2'    => trim($valor[8])
+			]);
+
+			/*$fornecedor = Fornecedor::updateOrCreate(
 				['cpf_cnpj' 	=> trim($valor[0])],
-				['razao_social' 	=> trim($valor[1]),
+				['razao_social' => trim($valor[1]),
 				'endereco' 		=> trim($valor[2]),
 				'cep' 			=> trim($valor[3]),
 				'email' 		=> trim($valor[6]),
@@ -244,21 +290,12 @@ class FileController extends Controller
 				'representante' => trim($valor[8])]
 			);
 
-			$estado;
-			if (strlen($valor[5]) == 2) {
-				$estado = $estados->where('sigla', strtoupper($valor[5]))->first();
-				if ($estado === null)
-					$estado = $estados->where('nome', 'Inconsistente')->first();
-			} else {
-				$estado = $estados->where('nome', $valor[5])->first();
-				if ($estado === null)
-					$estado = $estados->where('nome', 'Inconsistente')->first();
-			}
 
 			$fornecedor->cidade()->associate(
 				Cidade::firstOrCreate(['nome' => $valor[4], 'estado_id' => $estado->id])
 			);
 			$fornecedor->save();
+			*/
 		}
 		return redirect()->route('fornecedor');
 	}
@@ -379,7 +416,7 @@ class FileController extends Controller
 	public function AtaSrpStore (Request $request)
     {
         $licitacao = Licitacao::findByUuid($request->licitacao);
-        // Verifica se os Array de dados possuem os mesmos tamanhos
+        // Verifica se os Array de dados oriundos da View possuem os mesmos tamanhos
         if (count($request->ordem) == count($request->unidade) && 
             count($request->quantidade) == count($request->valor) &&    
             count($request->marca) ==  count($request->modelo) &&
@@ -389,12 +426,16 @@ class FileController extends Controller
                 $item = Item::where('ordem', $request->ordem[$i])->where('licitacao_id', $licitacao->id)->first();
                 $PJuridica = PessoaJuridica::firstOrCreate(['cnpj' => $request->cnpj[$i], 'razao_social' => $request->razaoSocial[$i]]);
 				$fornecedor;
+				//Verifica se o  item existe se está vinculado a licitação e se a quantidade a ser viculado está dispoível
 				if(count($item) == 1 && $item->quantidadeTotalDisponivel >= $request->quantidade[$i]){
+					// veriica se a pessoa jurrídica existe, cso contrário cria um Objeto pessoa PessoaJuridica e um Ojeto Fornecedor a ela ralacionado
 					if (count($PJuridica->fornecedor) == 1) {
 						$fornecedor = $PJuridica->fornecedor;
 					} else{
+						// Cria um Objeto Fornecedor com atributos todos nulos
 						$fornecedor = $PJuridica->fornecedor()->create([]);
 					}
+					// Relaciona o fornecedor com o item 
 	                $item->fornecedores()->attach($fornecedor->id, [
 	                    'marca' => $request->marca[$i], 
 	                    'modelo' => $request->modelo[$i], 

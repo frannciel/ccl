@@ -25,9 +25,30 @@ class Fornecedor extends Model
         return $this->belongsTo('App\Cidade', 'cidade_id', 'id');
     }
 
+    public function registroDePrecos()
+    {
+        return $this->hasMany('App\RegistroDePreco');
+    }
+
     public function fornecedorable()
     {
         return $this->morphTo();
+    }
+
+    public function getNomeAttribute()
+    {
+        if ($this->fornecedorable_type == 'Pessoa Física')
+            return $this->fornecedorable->nome;
+        if ($this->fornecedorable_type == 'Pessoa Jurídica')
+            return $this->fornecedorable->razao_social;
+    }
+
+    public function getCpfCnpjAttribute()
+    {
+        if ($this->fornecedorable_type == 'Pessoa Física')
+            return $this->fornecedorable->cpf;
+        if ($this->fornecedorable_type == 'Pessoa Jurídica')
+            return $this->fornecedorable->cnpj;
     }
 }
 	

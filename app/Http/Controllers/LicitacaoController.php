@@ -60,7 +60,7 @@ class LicitacaoController extends Controller
    {
       $licitacao = Licitacao::findByUuid($uuid);   
       switch ($licitacao->licitacaoable_type) {
-         case 'App\Pregao':
+         case 'Pregão Eletrônico':
             return redirect()->action('PregaoController@show', [$licitacao->licitacaoable()->first()->uuid]);
          case 'App\Dispensa':
             return redirect()->action('PregaoController@itemEdit', [$uuid]);
@@ -100,6 +100,25 @@ class LicitacaoController extends Controller
     {
         //
     }
+
+    public function removerRequisicao($requisiccao, $licitacao)
+    {
+        $licitacao = Licitacao::findByUuid($licitacao);
+        $requisicao = Requisicao::findByUuid($requisiccao);
+
+        $id = $requisicao->licitacoes()->where('licitacao_id',  $licitacao->id)->first()->id;
+        if ($licitacao->id === $id) {
+            foreach ($requisicao->itens as $key => $item) {
+                if ($item->licitacao->id === $id ) {
+                    $item->licitacao()->dissociate(); 
+                    $item->save();
+                }
+            }
+            $licitacao->requisicoes()->detach($requisicao);
+        }
+    }
+
+
 
 
             /**
@@ -274,23 +293,26 @@ class LicitacaoController extends Controller
         return view('licitacao.mesclarCreate', compact('itens_array', 'objetos', 'mesclados', 'licitacao'));
     }
 
-    public function itemDuplicar(Request $request){
+    public function itemDuplicar(Request $request)
+    {
+            // $array_itens = $request->itens; // array contendo os uuid dos itens a serem duplicados// 
+        $licitacao = Licitacao::findByUuid($request->licitacao);
+            //$licitacao = Item::findByUuid($array_itens[0])->licitacao();
 
-        $array_itens = $request->itens; // array contendo os uuid dos itens a serem duplicados
-        $licitacao = Item::findByUuid($array_itens[0])->licitacao()->first();
-
-       foreach ($array_itens as  $uuid) {
+        foreach ($request->itens as  $uuid) {
             $item = Item::findByUuid($uuid);
-
-            $mesclado = $licitacao->itens()->create([
-                'numero'        => 20000, // este número indicara itens mesclados nas  licitcaoes, eles não pertencem a nenhuma requisicão
-                'quantidade'    => 0,
-                'codigo'        => $item->codigo,
-                'objeto'        => $item->objeto,
-                'descricao'     => $item->descricao,
-                'unidade_id'    => $item->unidade_id,
-            ], ['ordem' => $licitacao->itens()->max('ordem')+1]); // Ordem é um pivot da tabela item_licitação
+            if ($item->licitacao->id == $licitacao->id) {
+               $mesclado = $licitacao->itens()->create([
+                      'numero'        => 20000, // este número indicara itens mesclados nas  licitcaoes, eles não pertencem a nenhuma requisicão
+                      'quantidade'    => 0,
+                      'codigo'        => $item->codigo,
+                      'objeto'        => $item->objeto,
+                      'descricao'     => $item->descricao,
+                      'unidade_id'    => $item->unidade_id,
+                      'ordem'         => $licitacao->itens()->max('ordem')+1 // Ordem é numero do item na licitação
+                ]);
+           }
         }
+       return redirect()->action('PregaoController@show', [ $licitacao->licitacaoable->uuid]);
     }
- 
 }

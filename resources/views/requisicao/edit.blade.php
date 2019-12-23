@@ -44,9 +44,16 @@
 	   </div>
 	   
 		<div class="row">
+			@include('form.button', [
+	    	'value' => 'Cancelar',
+	    	'largura' 	=> 3,
+	    	'class'		=> 'btn btn-primary btn-block',
+	    	'url' 		=> 	route('requisicao'),
+	    	'recuo' 	=> 3 ])
+
 			@include('form.submit', [
 			'input' => 'Salvar', 
-			'attributes' => ['class' => 'btn btn-primary btn-block']])
+			'largura' 	=> 3])
 		</div>	
 	{{ Form::close() }} 
 </div>

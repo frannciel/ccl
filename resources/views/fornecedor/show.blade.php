@@ -42,7 +42,7 @@
 		<tbody>
 			@forelse ($fornecedores as $fornecedor)
 				<tr onclick="location.href ='{{route('fornecedorEditar', $fornecedor->uuid)}}'; target='_blank';" style="cursor: hand;">
-					@if($fornecedor->fornecedorable_type == 'App\PessoaJuridica')
+					@if($fornecedor->fornecedorable_type == 'Pessoa Jurídica')
 						<td>
 							<button type="button" class="btn btn-info btn-circle btn-sm">PJ</i></button>
 							{{$fornecedor->fornecedorable->cnpj}}

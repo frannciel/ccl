@@ -58,7 +58,7 @@ class PregaoController extends Controller
             'processo'      => $request['processo'],
             'objeto'        => nl2br($request['objeto']),
         ]);
-        return redirect()->route('pregaoNovo');
+        return redirect()->action('PregaoController@show', ['uuid' => $pregao->uuid]);
     }
 
     /**
@@ -78,7 +78,7 @@ class PregaoController extends Controller
         $lista = collect();
         foreach ($itens as  $item) {
             foreach ($item->fornecedores as  $fornecedor) {
-                $lista->push([$fornecedor->uuid, $fornecedor->cpf_cnpj, $fornecedor->razao_social]);
+                $lista->push([$fornecedor->uuid, $fornecedor->cpfCnpj, $fornecedor->nome]);
             }
         }
         $lista = $lista->unique()->sortBy('razao_social');

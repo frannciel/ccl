@@ -18,7 +18,7 @@ class Uasg extends Model
     
     public function cidades()
     {
-        return $this->belongsToMany('App\Cidades', 'cidade_uasg', 'uasg_id', 'cidade_id')
+        return $this->belongsToMany('App\Cidade', 'cidade_uasg', 'uasg_id', 'cidade_id')
             ->using('App\Participante')
             ->withPivot('item_id')
             ->withPivot('quantidade');

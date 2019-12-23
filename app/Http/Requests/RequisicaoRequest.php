@@ -24,8 +24,9 @@ class RequisicaoRequest extends FormRequest
     public function rules()
     {
         return [   
-            'descricao'     => 'required|string|max:150',
-            'requisitante'  => 'required|integer'
+            'descricao'         => 'required|string',
+            'justificativa'     => 'required|string',
+            'requisitante'      => 'required|exists:requisitantes,uuid'
         ];
     }
 }

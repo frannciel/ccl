@@ -2,21 +2,21 @@
 
 @section('content')
 	<div id="copiar">
-		<h4 align=center>ATA DE REGISTRO DE PREÇOS N.º {{$dados['numero'] ?? 'XXX/XXXX'}}<br />
-		PREGÃO ELETRÔNICO SRP Nº {{$dados['pregao'] ?? 'XXX/XXXX'}}<br />
-		PROCESSO ADMINISTRATIVO Nº {{$dados['processo'] ?? '23291.000000/20XX-00'}}</h4>
+		<h4 align=center>ATA DE REGISTRO DE PREÇOS N.º {{$ata->numero}} / {{$ata->ano}}<br />
+		PREGÃO ELETRÔNICO SRP Nº {{$ata->licitacao->numero }} / {{ $ata->licitacao->ano }}<br />
+		PROCESSO ADMINISTRATIVO Nº {{$ata->licitacao->processo ?? '23291.000000/20XX-00'}}</h4>
 		
 		<p align=justify>O INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DA BAHIA – IFBA CAMPUS EUNÁPOLIS, com sede na Avenida David Jonas Fadini, S/n, Rosa Neto, Eunápolis – Bahia. 
 		CEP 45823-431, inscrito no CNPJ sob o nº 10.764.307/0010-03, neste ato representado pelo Diretor Geral pro tempore Fabíolo Moraes Amaral, nomeado pela Portaria nº 2.808, de 29 
 		de agosto de 2018, publicada no Diário Oficial da União de 30 de agosto de 2018, inscrito no CPF sob o nº 982.829.485-00 portador da Carteira de Identidade nº 08382171-68/SSP/BA, 
-		considerando o julgamento da licitação na modalidade de pregão, na forma eletrônica, para REGISTRO DE PREÇOS nº {{$dados['pregao'] ?? 'XXX/XXXX'}} publicada no D.O.U de {{$dados['publicacao'] ?? 'xx/xx/20xx'}} 
-		processo administrativo nº  {{$dados['processo'] ?? '23291.000000/20XX-00'}}, RESOLVE registrar os preços da(s)  empresa(s) indicada(s) e qualificada(s) nesta ATA, de acordo com a classificação 
+		considerando o julgamento da licitação na modalidade de pregão, na forma eletrônica, para REGISTRO DE PREÇOS nº {{$ata->licitacao->numero }} / {{$ata->licitacao->ano}} publicada no D.O.U de {{$ata->licitacao->publicacao ?? 'xx/xx/20xx'}} 
+		processo administrativo nº  {{ $ata->licitacao->processo ?? '23291.000000/20XX-00'}}, RESOLVE registrar os preços da(s)  empresa(s) indicada(s) e qualificada(s) nesta ATA, de acordo com a classificação 
 		por ela(s) alcançada(s) e na(s)  quantidade(s)  cotada(s), atendendo as condições previstas no edital, sujeitando-se as partes às normas constantes na Lei nº 8.666, de 21 de junho de 1993 
 		e suas alterações, no Decreto n.º 7.892, de 23 de janeiro de 2013, e em conformidade com as disposições a seguir:</p>
 		<ol>
 			<li>1.	DO OBJETO
 				<ol>
-					<li>A presente Ata tem por objeto o registro de preços para a eventual aquisição de {{$dados['objeto'] ?? ''}} conforme condições, quantidades e exigências estabelecidas no Termo de Referência, anexo I do edital de Pregão nº {{$dados['pregao'] ?? 'XXX/XXXX'}} que é parte integrante desta Ata, assim como a proposta vencedora, independentemente de transcrição.</li>
+					<li>A presente Ata tem por objeto o registro de preços para a eventual aquisição de {{$ata->licitacao->objeto ?? ''}} conforme condições, quantidades e exigências estabelecidas no Termo de Referência, anexo I do edital de Pregão nº {{$ata->licitacao->numero}}/{{$ata->licitacao->ano?? 'XXX/XXXX'}} que é parte integrante desta Ata, assim como a proposta vencedora, independentemente de transcrição.</li>
 				</ol>
 			</li>
 			<br />
@@ -28,54 +28,52 @@
 					<thead>
 						<tr>
 							<td colspan=5>
-							<b>Fornecedor: {{$fornecedor->razao_social}}</b><br />
-							<b>CPF/CNPJ:</b> {{$fornecedor->cpf_cnpj}}	 <br />
-							<b>Endereço:</b> {{$fornecedor->endereco}}	 <br />
-							<b>CEP:</b> {{$fornecedor->cep}} <br />
-							<b>Telefone:</b> {{$fornecedor->telefone}}	 <br />
-							<b>Email:</b> {{$fornecedor->email}}		 <br />
-							<b>Representante Legal:</b> {{$fornecedor->representante}}
+							<b>Fornecedor: {{$ata->fornecedor->nome}}</b><br />
+							<b>CPF/CNPJ:</b> {{$ata->fornecedor->cpfCnpj}}	 <br />
+							<b>Endereço:</b> {{$ata->fornecedor->endereco}}	 <br />
+							<b>CEP:</b> {{$ata->fornecedor->cep}} <br />
+							<b>Telefone:</b> {{$ata->fornecedor->telefone_1}} / {{$ata->fornecedor->telefone_2 ?? ''}} <br />
+							<b>Email:</b> {{$ata->fornecedor->email}}		 <br />
+							<b>Representante Legal:</b> {{$ata->fornecedor->fornecedorable->representante ?? ''}}
 							</td>
 						</tr>
 						<tr bgcolor="#ccc">
-							
 							<td align="center" width="5%"> <h4>Item		</h4></td>
 							<td align="center" width="55%"> <h4>Especificação		</h4></td>
 							<td align="center" width="10%"> <h4>Unidade		</h4></td>
 							<td align="center" width="10%"> <h4>Quantidade		</h4></td>
 							<td align="center" width="10%"> <h4>Valor Unitário		</h4></td>
-
 						</tr>
 					</thead>
 					<tbody>
-						@foreach($itens as $item)
+						@foreach($ata->itens as $item)
 						<tr>
-							<td align="center">{{$item->numero}}</td>
+							<td align="center">{{$item->ordem}}</td>
 							<td align="justify">
 								@php
 									print($item->descricaoCompleta);
-									$marca = $item->fornecedores()->where('fornecedor_id', $fornecedor->id)->first()->pivot->marca;
-									$modelo = $item->fornecedores()->where('fornecedor_id', $fornecedor->id)->first()->pivot->modelo;
+									$marca = $item->fornecedores()->where('fornecedor_id', $ata->fornecedor->id)->first()->pivot->marca;
+									$modelo = $item->fornecedores()->where('fornecedor_id', $ata->fornecedor->id)->first()->pivot->modelo;
 								@endphp
 								@if($marca)	<br><br> Marca: {{$marca}}	@endif
 								@if($modelo) - Modelo: {{$modelo}}	@endif
 							
 							</td>
 							<td align="center">{{$item->unidade->nome}}</td>
-							<td align="center">{{$item->fornecedores()->where('fornecedor_id', $fornecedor->id)->first()->pivot->quantidade}}</td>
-							<td align="center">{{number_format($item->fornecedores()->where('fornecedor_id', $fornecedor->id)->first()->pivot->valor, 4, ',', '.')}}</td>
+							<td align="center">{{$item->fornecedores()->where('fornecedor_id', $ata->fornecedor->id)->first()->pivot->quantidade}}</td>
+							<td align="center">R$ {{number_format($item->fornecedores()->where('fornecedor_id', $ata->fornecedor->id)->first()->pivot->valor, 4, ',', '.')}}</td>
 						</tr>
 						@endforeach
 						<tr>
 							<td align=right colspan=4> TOTAL</td>						
-							<td align="center"> {{number_format($total, 4,',', '.' )}}  </td>
+							<td align="center"> R$ {{number_format($total, 2,',', '.' )}}  </td>
 						</tr>
 					</tbody>
 				</table>
 			</li>
 			<br />							
 			<li>ÓRGÃO(S) GERENCIADOR E PARTICIPANTE(S)
-				@if ($participante < 0)
+				@if ($participantes > 0)
 					<ol>
 						<li>O órgão gerenciador será o Instituto Federal de Educação, Ciência E Tecnologia da Bahia campus Eunápolis.</li>
 						<li>São órgãos e entidades públicas participantes do registro de preços:</li>
@@ -89,12 +87,12 @@
 							</tr>
 						</thead>
 						<tbody>
-						@foreach($itens as $item)
-							@forelse ($item->uasgs()->get() as $uasg)
+						@foreach($ata->itens as $item)
+							@forelse ($item->participantes()->get() as $uasg)
 							<tr>
-								<td align="center">{{$item->numero}}</td>
+								<td align="center">{{$item->ordem}}</td>
 								<td>{{$uasg->codigo}} - {{$uasg->nome}}</td>
-								<td align="center">{{$item->uasgs()->where('uasg_id', $uasg->id)->first()->pivot->quantidade}}</td>
+								<td align="center">{{$item->participantes()->where('uasg_id', $uasg->id)->first()->pivot->quantidade}}</td>
 							</tr>
 							@empty
 							@endforelse
@@ -189,7 +187,7 @@
 		</li>
 		</ol>
 		<p align=justify>Para firmeza e validade do pactuado, a presente Ata foi lavrada em sistema eletrônico de informação, que, depois de lida e achada em ordem, vai assinada pelas partes via sistema eletrônico de informação e encaminhada cópia aos demais órgãos participantes (se houver). </p>
-		<center>Eunápolis – BA, {{$dados['data'] ?? date("d/m/Y")}}</center>
+		<center>Eunápolis – BA, {{ $ata->assinatura ?? date("d/m/Y")}}</center>
 		<center>Assinaturas</center>
 		<center>Representante legal do órgão gerenciador e representante(s) legal(is) do(s) fornecedor(s) registrado(s)</center>
 	</div"><!-- conteudo a ser copiado -->

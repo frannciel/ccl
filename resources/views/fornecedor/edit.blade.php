@@ -65,11 +65,11 @@
 				'attributes' => ['id' => 'endereco', 'required' => '']])
 
 				@include('form.text', [
-				'input' => 'telefone',
-				'label' => 'Telefone',
+				'input' => 'telefone1',
+				'label' => 'Telefone 01',
 				'largura' => 3, 
 				'value' => old($input ?? '')  ?? $fornecedor->telefone_1 ?? '',
-				'attributes' => ['id' => 'telefone', 'required' => '']])
+				'attributes' => ['id' => 'telefone1', 'required' => '']])
 
 				@include('form.text', [
 				'input' => 'telefone2',
@@ -96,10 +96,16 @@
 			</div>
 		   
 			<div class="row">
+				@include('form.button', [
+				'value' => 'Cancelar',
+				'largura' 	=> 3,
+				'class'		=> 'btn btn-primary btn-block',
+				'url' 		=> 	route('fornecedor'),
+				'recuo' 	=> 3 ])
+
 				@include('form.submit', [
-				'input' => 'Cadastrar',
-				'largura' => 6,
-				'recuo' => 3 ])
+				'input' => 'Salvar',
+				'largura' => 3 ])
 			</div>
 		{{Form::close()}} 
 	</div>

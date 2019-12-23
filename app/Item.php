@@ -84,6 +84,11 @@ class Item extends Model
         return $this->hasMany('App\Cotacao');
     }
 
+    public function registrosDePrecos()
+    {
+        return $this->belongsToMany('App\RegistrosDePrecos', 'item_registro_precos', 'item_id', 'registro_precos_id');
+    }
+
     public function getValorTotalAttribute()
     {
         return number_format($this->total, 2, ',', '.');

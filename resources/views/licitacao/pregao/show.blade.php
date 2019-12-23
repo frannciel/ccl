@@ -100,7 +100,7 @@
 
 
 {{ Form::open(['url' => 'licitacao/item/duplicar', 'method' => 'POST', 'class' => 'form-padrao']) }}
-	{{ Form::hidden('licitacao', $licitacao->uuid,  array('id' => 'licitacao')) }}
+	{{ Form::hidden('licitacao', $licitacao->uuid,  ['id' => 'licitacao']) }} <!-- o segundo parametro é o id do input hidden licitacao-->
 	<div class="row">
 		<div class="col-lg-12">
 			<div class="panel panel-default">
@@ -110,7 +110,10 @@
 							<button type="submit" formaction="{{url('item/primeiro')}}" class="btn btn-success btn-outline btn-lg" title="Atribuir Fornecedor"><i class="glyphicon glyphicon-briefcase"></i></button>
 						</div>
 						<div class="btn-group" role="group">
-							<a type="button" href="{{url('importar/novo',['uuid' => $licitacao->uuid])}}" class="btn btn-success btn-outline btn-lg" title="Importar Dados"><i class="fa fa-upload"></i></a>
+							<a type="button" href="{{url('importar',['uuid' => $licitacao->uuid])}}" class="btn btn-success btn-outline btn-lg" title="Importar Dados"><i class="fa fa-upload"></i></a>
+						</div>
+						<div class="btn-group" role="group">
+							<a type="button" href="{{url('registro/precos/novo',['uuid' => $licitacao->uuid])}}" class="btn btn-success btn-outline btn-lg" title="Ata de Registro de Preços"><i class="glyphicon glyphicon-book"></i></a>
 						</div>
 						<div class="btn-group" role="group">
 							<button type="button" class="btn btn-success btn-outline btn-lg" title="Adicionar Novo Item"><i class="glyphicon glyphicon-plus"></i></button>
@@ -122,10 +125,10 @@
 							<a type="button" class="btn btn-success btn-outline btn-lg" title="Mesclar Itens" href="{{route('licitacaoMesclar', ['uuid' => $licitacao->uuid])}}"><i class="glyphicon glyphicon-resize-small"></i></a>
 						</div>
 						<div class="btn-group" role="group">
-							<button type="submit" formaction="/action_page2.php" class="btn btn-success btn-outline btn-lg" title="Remover Itens"><i class="glyphicon glyphicon-trash"></i></button>
+							<button type="submit" class="btn btn-success btn-outline  btn-lg" title="Duplicar Itens"><i class="glyphicon glyphicon-duplicate"></i></button>
 						</div>
 						<div class="btn-group" role="group">
-							<button type="submit" class="btn btn-success btn-outline  btn-lg" title="Duplicar Itens"><i class="glyphicon glyphicon-duplicate"></i></button>
+							<button type="submit" formaction="/action_page2.php" class="btn btn-danger btn-outline btn-lg" title="Remover Itens"><i class="glyphicon glyphicon-trash"></i></button>
 						</div>
 					</div>
 					
@@ -197,13 +200,13 @@
 									</tr>
 								</thead>
 								<tbody>
-									@forelse ($licitacao->requisicoes as $value)
+									@forelse ($licitacao->requisicoes as $requisicao)
 									<tr onclick="location.href ='{{route('itemEditar', [$licitacao->uuid])}}'; target='_blank';" style="cursor: hand;">
-										<td>{{$value->numero}}/{{$value->ano}}</td>
-										<td>{{$value->descricao}}</td>
-										<td>{{$value->requisitante->first()['sigla']}}</td>
+										<td>{{$requisicao->numero}}/{{$requisicao->ano}}</td>
+										<td>{{$requisicao->descricao}}</td>
+										<td>{{$requisicao->requisitante->first()['sigla']}}</td>
 										<td>
-											<button type="button" class="btn btn-danger btn-circle btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
+											<a type="button"  href="{{url('licitacao/remover/requisicao', ['requisicao' => $requisicao->uuid, 'licitacao' => $licitacao->uuid])}}" class="btn btn-danger btn-circle btn-sm"><i class="glyphicon glyphicon-trash"></i></a>
 										</td>
 									</tr>
 									@empty
@@ -284,7 +287,7 @@
 								</thead>
 								<tbody>
 									@forelse ($uasgs as $uasg)
-									<tr onclick="location.href ='{{route('itemEditar', [$value[0]])}}'; target='_blank';" style="cursor: hand;">
+									<tr onclick="location.href ='{{route('itemEditar', $uasg['codigo'])}}'; target='_blank';" style="cursor: hand;">
 										<td>{{$uasg['codigo']}}</td>
 										<td>{{$uasg['nome']}}</td>
 										<td>

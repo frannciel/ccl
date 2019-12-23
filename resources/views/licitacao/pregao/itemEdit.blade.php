@@ -72,8 +72,8 @@
 		    	<tbody>
 		    		@forelse ($item->fornecedores()->get() as $value)
 				        <tr onclick="location.href ='{{route('itemFornecShow', [$value->id, $item->id])}}'; target='_blank';" style="cursor: hand;">
-				            <td class="center">{{$value->cpf_cnpj}}</td>
-				            <td class="center">{{$value->razao_social}}</td>
+				            <td class="center">{{$value->cpfCnpj}}</td>
+				            <td class="center">{{$value->nome}}</td>
 				            <td class="center">{{$value->pivot->quantidade}}</td>
 				           	<td class="center">{{number_format($value->pivot->valor, 4, ',', '.')}}</td>
 				        </tr>

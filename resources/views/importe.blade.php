@@ -17,13 +17,7 @@
 			'label' => 'Tipo de Importação', 
 			'selected' => '{{ old($input) }}', 
 			'largura' => '3',
-			'options' => [
-				'1' => '1 - Item',
-				'2' => '2 - Pesquisa de Preços', 
-				'3' => '3 - Unidade Participante',
-				'4' => '4 - Fornecedor', 
-				'5' => '5 - Ata SRP', 
-			], 
+			'options' => $opcoes ?? '', 
 			'attributes' => ['id' => 'tipo', 'required' => '', 'class' => 'form-control form-control-sm']])
 		</div>
 		
@@ -37,9 +31,19 @@
 		</div>
 		
 		<div class="row">
-			@include('form.submit',  ['input' => 'Enviar', 'largura' => '6', 'recuo' => '3', 'attributes' => ['class' => 'btn btn-primary btn-block']])
+			@include('form.button', [
+			'value' => 'Cancelar',
+			'largura' 	=> 3,
+			'class'		=> 'btn btn-primary btn-block',
+			'url' 		=> 	route('principal'),
+			'recuo' 	=> 3 ])
+
+			@include('form.submit',  
+			['input' => 'Enviar', 
+			'largura' => '3',
+			'attributes' => ['class' => 'btn btn-success btn-block']])
 		</div>	
-	{{ Form::close() }} 
+		{{ Form::close() }} 
 
 		<div class="{{$errors->has('principal') ? ' has-error' : '' }} col-lg-12">
 			@if ($errors->has('principal'))
@@ -103,7 +107,7 @@
 			</table>
 
 			<table class="table" border=1 cellspacing=0 cellpadding=2>
-				<tr><th>CPF/CNPJ</th><th>Razão Social</th><th>Endereço</th><th>CEP</th><th>Cidade</th><th>Estado</th><th>E-mail</th><th>Telefone</th><th>Representante Legal</th><th>Vazia</th></tr>
+				<tr><th>CPF/CNPJ</th><th>Razão Social</th><th>Endereço</th><th>CEP</th><th>Cidade</th><th>Estado</th><th>E-mail</th><th>Telefone 01</th><th>Telefone 02 (Opicional)</th><th>Representante Legal</th><th>Vazia</th></tr>
 				<small>Tabela 4. Fornecedor</small>
 			</table>
 		</div>

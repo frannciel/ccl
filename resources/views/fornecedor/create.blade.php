@@ -93,9 +93,12 @@
 			</div><!-- / row-->
 		   
 			<div class="row">
-				<div class="col-md-3  col-md-offset-3 mt-2">
-					<a href="{{route('fornecedor')}}" class="btn btn-primary btn-block" type="button">Voltar</a>
-				</div>
+				@include('form.button', [
+				'value' => 'Cancelar',
+				'largura' 	=> 3,
+				'class'		=> 'btn btn-primary btn-block',
+				'url' 		=> 	route('fornecedor'),
+				'recuo' 	=> 3 ])
 
 				@include('form.submit', [
 				'input' => 'Cadastrar',
