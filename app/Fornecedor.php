@@ -19,15 +19,29 @@ class Fornecedor extends Model
             ->withPivot('quantidade', 'valor', 'marca', 'modelo' )
             ->withTimestamps();
     }
-
+    /**
+     * Método que retorna a cidade onde o fornecedor está sediado
+     * @return <Objeto>  App\Cidade
+     */
     public function cidade()
     {
         return $this->belongsTo('App\Cidade', 'cidade_id', 'id');
     }
-
+    /**
+     * Método que retorna os todas os Registro de Preços do fornecedor
+     * @return <Collect>  App\RegistroDePreco
+     */
     public function registroDePrecos()
     {
         return $this->hasMany('App\RegistroDePreco');
+    }
+    /**
+     * Método que retorna os todas as contratação de um fornecedor
+     * @return <Collect>  App\Contratacao
+     */
+    public function contratacoes()
+    {
+        return $this->hasMany('App\Contratacao');
     }
 
     public function fornecedorable()

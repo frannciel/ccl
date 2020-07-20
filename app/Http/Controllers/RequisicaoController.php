@@ -80,12 +80,12 @@ class RequisicaoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($uuid)
     {
         $requisitante = array();
         foreach (Requisitante::all() as $value)
             $requisitante += [$value->uuid => $value->nome];
-        return view('requisicao.edit', compact('requisitante'))->with('requisicao', Requisicao::find($id));
+        return view('requisicao.edit', compact('requisitante'))->with('requisicao', Requisicao::findByUuid($uuid));
     }
 
     /**
@@ -180,8 +180,10 @@ class RequisicaoController extends Controller
         return view('requisicao.consultar', compact('acao'));
     }
 
-    public function documento($id)
+    public function documento($uuid)
     {
-       return  view('documentos.requisicao')->with('requisicao', Requisicao::find($id));
+       return  view('documentos.requisicao')->with('requisicao', Requisicao::findByUuid($uuid));
+
+      // return  view('documentos.requisicao')->with('requisicao', Requisicao::findByUuid($uuid));
     }
 }

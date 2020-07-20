@@ -81,7 +81,7 @@
 			'attributes' => ['id' => 'objeto', 'required' => '',  'rows'=>'5']])
 		</div>
 
-		<div class="row">
+		<div class="row row-fluid">
 			<div class="col-md-3 col-md-offset-1 mt-2">
 				<a href="{{route('licitacao')}}" class="btn btn-primary btn-block" type="button">Voltar</a>
 			</div>
@@ -131,7 +131,31 @@
 							<button type="submit" formaction="/action_page2.php" class="btn btn-danger btn-outline btn-lg" title="Remover Itens"><i class="glyphicon glyphicon-trash"></i></button>
 						</div>
 					</div>
-					
+
+					<div class="row">
+						<div class="col-md-12 mt-2 mb-2">
+							<button type="submit" formaction="{{url('item/primeiro')}}" class="btn  btn-outline btn-success rounded-pill">
+								<i class="fa fa-link" aria-hidden="true"></i> &nbsp; Relação de Itens
+							</button>
+	
+							<button type="submit" formaction="{{url('item/primeiro')}}" class="btn btn-outline btn-success rounded-pill">
+								<i class="fa fa-link" aria-hidden="true"></i> &nbsp; Itens por Fornecedor
+							</button>
+
+							<button type="submit" formaction="{{url('item/primeiro')}}" class="btn btn-outline btn-success rounded-pill">
+								<i class="fa fa-link" aria-hidden="true"></i> &nbsp; Resultado
+							</button>
+
+							<a type="submit" href="{{url('registro/precos/novo',['licitacao' => $licitacao->uuid])}}"  class="btn btn-outline btn-success rounded-pill">
+								<i class="fa fa-link" aria-hidden="true"></i> &nbsp; Atas SRP
+							</a>
+
+							<a type="button" href="{{url('contratacao/novo', ['licitacao' => $licitacao->uuid])}}" class="btn btn-outline btn-success rounded-pill">
+								<i class="fa fa-link" aria-hidden="true"></i> &nbsp; Contratações
+							</a>
+						</div>
+					</div>
+
 					<ul class="nav nav-pills nav-justified mt-2">
 						<li class="active"><a data-toggle="tab" href="#guiaItens">Item</a></li>
 						<li><a data-toggle="tab" href="#guiaRequisicao">Requisição</a></li>
@@ -158,7 +182,7 @@
 									</thead>
 
 									<tbody>
-										@forelse ($licitacao->itens as $item)
+										@forelse ($licitacao->itens->sortBy('ordem') as $item)
 										<tr>
 											<td>
 												<div class="input-group">

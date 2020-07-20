@@ -69,4 +69,9 @@ class RegistroDePreco extends Model
     {
         return date('d/m/Y', strtotime($value));
     }
+
+    protected function getOrdemAttribute()
+    {
+        return $this->numero.'/'. $this->ano;
+    }
 }

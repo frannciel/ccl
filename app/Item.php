@@ -86,39 +86,67 @@ class Item extends Model
 
     public function registrosDePrecos()
     {
-        return $this->belongsToMany('App\RegistrosDePrecos', 'item_registro_precos', 'item_id', 'registro_precos_id');
+        return $this->belongsToMany('App\RegistroDePreco', 'item_registro_precos', 'item_id', 'registro_precos_id');
     }
 
-    public function getValorTotalAttribute()
+    /**
+     * Metódo que retorna os itens da contratação, com a quantidade contratada e o valor unitário atual
+     *
+     * @return <Collect>  App\Item
+     */
+    public function cotratacoes()
     {
-        return number_format($this->total, 2, ',', '.');
+        return $this->belongsToMany('App\Contratacao', 'contratacao_item', 'contratacao_id', 'item_id')
+            ->withPivot(['quantidade', 'valor', 'fornecedor_id']);
     }
 
+    /**
+     * Método que retorna a concatenação do ojeto do item com sua descrição detalhada em formato para exibição
+     *
+     * @return     <type>  The descricao completa attribute.
+     */
     public function getDescricaoCompletaAttribute()
     {
         $objeto = $this->objeto != "" ? "<strong>Objeto: </strong>".$this->objeto."<br/><br/><strong>Descrição Detalhada: </strong>": "";
         return $objeto.$this->descricao;
     }
 
-    /** 
+    /**
+     * Método que retorna o valor tatoal do item em formato de moeda 0.000,00
+     * Este método utiliza o metodo total desta classe
+     *
+     * @return     <type>  The valor total attribute.
+     */
+    public function getValorTotalAttribute()
+    {
+        return number_format($this->total, 2, ',', '.');
+    }
+
+    /**
+     * Método que retorno o valor total estimado da item em formato numérico
+     * Este valor é calculado multiplicando o valor médio das cotações pela quantidade do item
+     *
+     * @return     <Float>  total.
+     */
+    public function getTotalAttribute()
+    {
+        return $this->media * $this->quantidade;
+    }
+
+     /** 
      *   @Descrition Metodo que retorna o valor médio das cotações formatado na forma de moeda R$ 0.000 0,00
      *
-     *   @return <Double> valor médio
+     *   @return <Float> valor médio
      */
     public function getValorMedioAttribute()
     {
         return number_format($this->media, 2, ',', '.');
     }
 
-    public function getTotalAttribute()
-    {
-        return $this->media * $this->quantidade;
-    }
-
     /** 
-     *   @Descrition Metodo que retorna o valor médio das cotações de preços coletados. 
+     *   @Descrition Metodo que retorna o valor médio das cotações de preços coletados em formato númerico
      *
-     *   @return <Double> valor médio
+     *   @return <Float> valor médio
      */
     public function getMediaAttribute()
     {
@@ -151,7 +179,7 @@ class Item extends Model
     
     /**  
      *  @Descrition Metodo que retorna a quantidade total do item. 
-     *  Esta quantidade será calculada somando a quantidade do item  com o quantidade de possíveis unidades participantes
+     *  Esta quantidade será calculada somando a quantidade do item com o quantidade de possíveis unidades participantes
      *  Método atende a entidade Licitação.
      *
      *  @return     <Integer> quantidade total

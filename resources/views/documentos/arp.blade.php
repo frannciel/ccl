@@ -46,7 +46,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						@foreach($ata->itens as $item)
+						@foreach($ata->itens->sortBy('ordem') as $item)
 						<tr>
 							<td align="center">{{$item->ordem}}</td>
 							<td align="justify">
@@ -87,7 +87,7 @@
 							</tr>
 						</thead>
 						<tbody>
-						@foreach($ata->itens as $item)
+						@foreach($ata->itens->sortBy('ordem') as $item)
 							@forelse ($item->participantes()->get() as $uasg)
 							<tr>
 								<td align="center">{{$item->ordem}}</td>

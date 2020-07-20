@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+
 use Input;
 use App\Requisicao;
 use App\Licitacao;
@@ -14,6 +16,7 @@ use App\Uasg;
 use App\Fornecedor;
 use App\PessoaJuridica;
 use DateTime;
+
 class FileController extends Controller
 {
 
@@ -178,7 +181,7 @@ class FileController extends Controller
 	 */
 	protected function setCotacao($dados, $uuid)
 	{
-		$requisicao = Requisicao::find($id);
+		$requisicao = Requisicao::findByUuid($uuid);
 		$itens = $requisicao->itens;
 		foreach ($dados as $valor) {
 			$item = $itens->where('numero', $valor[0])->first();
@@ -243,20 +246,21 @@ class FileController extends Controller
 		//$estados = Estado::all();
 		foreach ($dados as $valor) {
 			$fornecedor ;
-			if(strlen(preg_replace("/[^0-9]/", "", trim($valor[0]))) == 11)
-			{
+			if(strlen(preg_replace("/[^0-9]/", "", trim($valor[0]))) == 11){
 				$fornecedor = PessoaFisica::firstOrCreate([
 					['cpf'    => trim($valor[0])],
 					['nome'   => trim($valor[1])]
 				]);
-			} 
-			elseif (strlen(preg_replace("/[^0-9]/", "", trim($valor[0]))) == 14)
-			{
+			} elseif (strlen(preg_replace("/[^0-9]/", "", trim($valor[0]))) == 14){
 				$fornecedor = PessoaJuridica::firstOrCreate(
 					['cnpj'         => trim($valor[0])],
-					['razao_social'  => trim($valor[1]),
-					'representante' => trim($valor[9])]
+					['razao_social' => trim($valor[1]), 'representante' => trim($valor[9])]
 				);
+				// atualiza o representante caso este esteja vazio
+				if ($fornecedor->representante == '') {
+					$fornecedor->representante = trim($valor[9]);
+					$fornecedor->save();
+				}
 			}
 
 			// realiza a validação de estado e realiza a consulta na base de dados retornando incosiste caso não encontrado
@@ -271,14 +275,26 @@ class FileController extends Controller
 			// consulta a cidade criando uma cidade caso esta não esteja presente na base de dados
 			$cidade = Cidade::firstOrCreate(['nome' =>trim($valor[4]), 'estado_id'=> $estado->id]); 
 
-			$fornecedor->fornecedor()->updateOrCreate([
-				'endereco'      => trim($valor[2]),
-				'cep'           => trim($valor[3]),
-				'cidade_id'     => $cidade->id,
-				'email'         => trim($valor[6]),
-				'telefone_1'    => trim($valor[7]),
-				'telefone_2'    => trim($valor[8])
-			]);
+			$fornec = $fornecedor->fornecedor;
+			if ($fornec == null) {
+				$fornecedor->fornecedor()->updateOrCreate([
+					'endereco'      => trim($valor[2]),
+					'cep'           => trim($valor[3]),
+					'cidade_id'     => $cidade->id,
+					'email'         => trim($valor[6]),
+					'telefone_1'    => trim($valor[7]),
+					'telefone_2'    => trim($valor[8])
+				]);
+			} else{
+				$fornec->endereco 	= trim($valor[2]);
+				$fornec->cep 		= trim($valor[3]);
+				$fornec->cidade_id 	= $cidade->id;
+				$fornec->email 		= trim($valor[6]);
+				$fornec->telefone_1 = trim($valor[7]);
+				$fornec->telefone_2 = trim($valor[8]);
+				$fornec->save();
+			}
+
 
 			/*$fornecedor = Fornecedor::updateOrCreate(
 				['cpf_cnpj' 	=> trim($valor[0])],
@@ -350,15 +366,13 @@ class FileController extends Controller
 
 	protected function AtaSrpShow($dados, $uuid)
 	{
-
 		$itens = [];
 		$tamanho = 0;
 		$celulas = explode("&", $dados);
 		$primeiro = '';
 		$quantidade = count($celulas);
-
-		for ($i = 0; $i < $quantidade;$i++){
-			$tamanho = strlen($celulas[$i]);	
+		for ($i = 0; $i < $quantidade; $i++){
+			$tamanho = strlen($celulas[$i]);
 			if($tamanho < 10){
 				if ($quantidade > $i + 8){
 					array_push($itens, [
@@ -367,38 +381,39 @@ class FileController extends Controller
 						'objeto' 		=> $celulas[$i+1], 
 						'unidade' 		=> $celulas[$i+2],
 						'quantidade' 	=> $celulas[$i+3],
-						'valor' 		=> $celulas[$i+4],
+						'valor' 		=> $celulas[$i+5],
 						'descricao' 	=> $celulas[$i+7]
 					]); 
-					$i = $i + 8; 
+					$i = $i + 7; 
 				}
 			} elseif($tamanho > 10 && $tamanho < 25) {
 				if ($quantidade > $i + 2)
 					$i = $i +  2; 
-			} else {
+			} else {	
 				if ($quantidade > $i + 7){
 					$primeiro = $celulas[$i];
 					$i = $i + 7;
 				}
 			}	
 		}
-
-		$ata = collect();
+		$resultado = collect();
 		$licitacao = Licitacao::findByUuid($uuid);
+/*
+		$item = Item::where('ordem', trim($value['item']))->where('licitacao_id', $licitacao->id)->first();
+		$fornecedor = Fornecedor::firstOrCreate(['cpf_cnpj' => trim($fornec['cpfCnpj']), 'razao_social' => trim($fornec['razaoSocial'])]);
+		$item->fornecedores()->attach($fornecedor->id, [
+			'marca' => trim($marcaModelo['marca']), 
+			'modelo' => trim($marcaModelo['modelo']), 
+			'quantidade' => trim($value['quantidade']), 
+			'valor' => $this->getFloat(trim(str_replace('R$', '', $value['valor'])))
+		]);*/
+
+		//  http://www.comprasnet.gov.br/livre/pregao/FornecedorResultadoDecreto.asp?prgCod=822373
+		
 		foreach ($itens as $value) {
-
-			/*$item = Item::where('ordem', trim($value['item']))->where('licitacao_id', $licitacao->id)->first();
-			$fornecedor = Fornecedor::firstOrCreate(['cpf_cnpj' => trim($fornec['cpfCnpj']), 'razao_social' => trim($fornec['razaoSocial'])]);
-			$item->fornecedores()->attach($fornecedor->id, [
-				'marca' => trim($marcaModelo['marca']), 
-				'modelo' => trim($marcaModelo['modelo']), 
-				'quantidade' => trim($value['quantidade']), 
-				'valor' => $this->getFloat(trim(str_replace('R$', '', $value['valor'])))
-			]);*/
-
 			$fornecedor = $this->getFornecedor($value['fornecedor']); //  Nome e cnpj/cpf do fornecedor
 			$marcaModelo = $this->getMarcaModelo($value['descricao']); // marca e modelo do item
-			$ata->push([
+			$resultado->push([
 				"cnpj" 			=> trim($fornecedor['cpfCnpj']), 
 				"razaoSocial" 	=> trim($fornecedor['razaoSocial']),
 				"ordem"			=> trim($value['item']),
@@ -410,19 +425,55 @@ class FileController extends Controller
 				"valor" 		=> trim($value['valor'])
 			]);
 		}
-        return view('ata', compact('ata', 'licitacao'));
+		Session::put('resultado', $resultado);
+        return view('registro_de_preco.importe', compact('resultado', 'licitacao'));
 	}
-
+	/**
+	 * Método que realiza o registro na base de dodos as informações da relação itens com fornecedores.
+	 * Este método recebe da view um Array de itens a serem relacionados e o uuid da licitação.
+	 * Retira da sessão os dados do resultado da licitação e que serão utilizados no registro
+	 *
+	 * @param      \Illuminate\Http\Request  $request  
+	 */
 	public function AtaSrpStore (Request $request)
-    {
-        $licitacao = Licitacao::findByUuid($request->licitacao);
+    {    		
+       $licitacao = Licitacao::findByUuid($request->licitacao); // 
+       $resultado = Session::get('resultado');
+       $ordemItens = $request->itens;
+
         // Verifica se os Array de dados oriundos da View possuem os mesmos tamanhos
-        if (count($request->ordem) == count($request->unidade) && 
-            count($request->quantidade) == count($request->valor) &&    
-            count($request->marca) ==  count($request->modelo) &&
-            count($request->razaoSocial) == count($request->cnpj))
-        {
-         	for ($i=0; $i < count($request->ordem) ; $i++) {
+        if (count($ordemItens) > 0 && count($resultado) > 0 && count($ordemItens) <= count($resultado)) {
+        	foreach ($ordemItens as $key => $ordem) {
+                $item = Item::where('ordem', $ordem)->where('licitacao_id', $licitacao->id)->first();
+                $array = $resultado->where('ordem', $ordem)->first();
+				$PJuridica = PessoaJuridica::firstOrCreate(['cnpj' =>  $array["cnpj"], 'razao_social' => $array["razaoSocial"]]);
+				$fornecedor;
+				//Verifica se existe, se está vinculado a licitação e se a quantidade a ser viculada está dispoível
+				if(count($item) == 1 && $item->quantidadeTotalDisponivel >= $array["quantidade"]){
+					// verifica se existe, caso contrário cria uma PessoaJuridica e um Ojeto Fornecedor a ela ralacionado
+					if (count($PJuridica->fornecedor) == 1) {
+						$fornecedor = $PJuridica->fornecedor;
+					} else{
+						// Cria um Objeto Fornecedor com atributos todos nulos
+						$fornecedor = $PJuridica->fornecedor()->create([]);
+					}
+
+					// Relaciona o fornecedor com o item 
+	                $item->fornecedores()->attach($fornecedor->id, [
+	                    'marca' => $array["marca"], 
+	                    'modelo' => $array["modelo"], 
+	                    'quantidade' => $array["quantidade"], 
+	                    'valor' => $this->getFloat(trim(str_replace('R$', '', $array["valor"])))
+	                ]);
+	            }
+        	}
+        }
+        //35121414
+        //81384243
+
+        	/*
+         	
+         	for ($i=0; $i < count($ordemItens) ; $i++) {
                 $item = Item::where('ordem', $request->ordem[$i])->where('licitacao_id', $licitacao->id)->first();
                 $PJuridica = PessoaJuridica::firstOrCreate(['cnpj' => $request->cnpj[$i], 'razao_social' => $request->razaoSocial[$i]]);
 				$fornecedor;
@@ -443,8 +494,7 @@ class FileController extends Controller
 	                    'valor' => $this->getFloat(trim(str_replace('R$', '', $request->valor[$i])))
 	                ]);
 	            }               
-            }
-        }
+            }*/
         return redirect()->route('pregaoExibir', ['uuid' => $licitacao->licitacaoable->uuid]);
     }
 	
@@ -473,7 +523,8 @@ class FileController extends Controller
 	 * @param String $data, String $hora
 	 * @return datetime 
 	 */
-	protected function getDate($data, $hora) { 
+	protected function getDate($data, $hora)
+	{ 
 		$hora = preg_replace("/[^0-9]/", "", $hora);
 		$data = preg_replace("/[^0-9]/", "", $data);
 		if(strlen($data) == 8){
@@ -523,7 +574,8 @@ class FileController extends Controller
 	 * @param  String $sigla da federação 
 	 * @return String nome do estado outrocaso retorna incosistente
 	 */
-	protected function getUF($sigla){
+	protected function getUF($sigla)
+	{
 		switch (strtoupper($sigla)) {
 			case 'AC': return 'Acre';
 			case 'AL': return 'Alagoas';
@@ -553,33 +605,6 @@ class FileController extends Controller
 			case 'SE': return 'Sergipe';
 			case 'TO': return 'Tocantins';
 			default: return 'Inconsistente';
-			/*case 'AC': return 1;
-			case 'AL': return 2;
-			case 'AP': return 3;
-			case 'AM': return 4;
-			case 'BA': return 5;
-			case 'CE': return 6;
-			case 'DF': return 7;
-			case 'ES': return 8;
-			case 'GO': return 9;
-			case 'MA': return 10;
-			case 'MT': return 11;
-			case 'MS': return 12;
-			case 'MG': return 13;
-			case 'PA': return 14;
-			case 'PB': return 15;
-			case 'PR': return 16;
-			case 'PE': return 17;
-			case 'PI': return 18;
-			case 'RJ': return 19;
-			case 'RN': return 20;
-			case 'RS': return 21;
-			case 'RO': return 22;
-			case 'RR': return 23;
-			case 'SC': return 24;
-			case 'SP': return 25;
-			case 'SE': return 26;
-			case 'TO': return 27;*/
 		}
 	}
 

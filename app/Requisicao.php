@@ -40,4 +40,15 @@ class Requisicao extends Model
             $soma += $item->total;
         return $soma;
     }
+
+        /**
+     * Get the route key for the model. 
+     * Método para definir a chave usada na injeção de dependêcia dos model através das rotas
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
 }

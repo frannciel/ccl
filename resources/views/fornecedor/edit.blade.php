@@ -69,14 +69,15 @@
 				'label' => 'Telefone 01',
 				'largura' => 3, 
 				'value' => old($input ?? '')  ?? $fornecedor->telefone_1 ?? '',
-				'attributes' => ['id' => 'telefone1', 'required' => '']])
+				'attributes' => ['id' => 'telefone1', 'required' => '', 'class' => 'form-control form-control-sm telefone']])
 
 				@include('form.text', [
 				'input' => 'telefone2',
 				'label' => 'Telefone 02',
 				'largura' => 3, 
 				'value' => old($input ?? '') ?? $fornecedor->telefone_2 ?? '',
-				'attributes' => ['id' => 'telefone2', 'placeholder' => 'Opcional...']])
+				'attributes' => ['id' => 'telefone2', 'placeholder' => 'Opcional...', 'class' => 'form-control form-control-sm telefone']])
+
 			</div>
 		   
 			<div class="row">
@@ -95,9 +96,9 @@
 				'attributes' => ['id' => 'representante', 'required' => '']])
 			</div>
 		   
-			<div class="row">
+			<div class="row mt-2">
 				@include('form.button', [
-				'value' => 'Cancelar',
+				'value' => 'Voltar',
 				'largura' 	=> 3,
 				'class'		=> 'btn btn-primary btn-block',
 				'url' 		=> 	route('fornecedor'),

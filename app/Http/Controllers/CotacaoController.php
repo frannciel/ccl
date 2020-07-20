@@ -25,9 +25,9 @@ class CotacaoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($requisicao_id)
+    public function create(Requisicao $requisicao)
     {        
-        $requisicao = Requisicao::find($requisicao_id);
+        //$requisicao = Requisicao::findByUuid($uuid);
         $itens = $requisicao->itens()->orderBy('numero', 'asc')->get();
         $array = array();
 
@@ -124,9 +124,9 @@ class CotacaoController extends Controller
         Cotacao::destroy($id);
     }
 
-    public function relatorio($requisicao_id)
+    public function relatorio(Requisicao $requisicao)
     {   
-        return view('documentos.cotacao')->with('requisicao', Requisicao::find($requisicao_id));
+        return view('documentos.cotacao')->with('requisicao', $requisicao);
     }
 
     public function redirecionar(Request $request){

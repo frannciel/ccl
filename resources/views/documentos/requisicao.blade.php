@@ -26,10 +26,10 @@
             </thead>
 
             <tbody>
-               @forelse ($requisicao->itens as $item)
+               @forelse ($requisicao->itens->sortBy('numero') as $item)
                <tr>
                   <td align="center" class="center">{{$item->numero}}</td>
-                  <td align="center" class="justicado">@php print($item->descricaoCompleta) @endphp</td>
+                  <td align="center" class="justificado">@php print($item->descricaoCompleta) @endphp</td>
                   <td align="center" class="center">{{$item->codigo =='0'?'': $item->codigo}}</td>
                   <td align="center" class="center">{{$item->unidade->nome}}</td>
                   <td align="center" class="center">{{$item->quantidade}}</td>

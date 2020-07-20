@@ -49,6 +49,7 @@
 				'input' => 'cidade',
 				'label' => 'Cidade *',
 				'largura' => 6, 
+				'class' => 'telefone',
 				'value' => old($input ?? ''),
 				'attributes' => ['id' => 'cidade', 'required' => '']])
 			</div><!-- / row-->
@@ -66,14 +67,14 @@
 				'label' => 'Telefone 01 *',
 				'largura' => 3, 
 				'value' => old($input ?? ''),
-				'attributes' => ['id' => 'telefone1', 'required' => '']])
+				'attributes' => ['id' => 'telefone1', 'required' => '', 'class' => 'form-control form-control-sm telefone']])
 
 				@include('form.text', [
 				'input' => 'telefone2',
 				'label' => 'Telefone 02',
 				'largura' => 3, 
 				'value' => old($input ?? ''),
-				'attributes' => ['id' => 'telefone2', 'placeholder' => 'Opcional...']])
+				'attributes' => ['id' => 'telefone2', 'placeholder' => 'Opcional...', 'class' => 'form-control form-control-sm telefone']])
 			</div><!-- / row-->
 		   
 			<div class="row">
@@ -92,16 +93,16 @@
 				'attributes' => ['id' => 'representante', 'placeholder' => 'Apanas pessoa jurídica.']])
 			</div><!-- / row-->
 		   
-			<div class="row">
+			<div class="row mt-2">
 				@include('form.button', [
-				'value' => 'Cancelar',
+				'value' => 'Voltar',
 				'largura' 	=> 3,
 				'class'		=> 'btn btn-primary btn-block',
 				'url' 		=> 	route('fornecedor'),
 				'recuo' 	=> 3 ])
 
 				@include('form.submit', [
-				'input' => 'Cadastrar',
+				'input' => 'Salvar',
 				'largura' => 3 ])
 			</div>	<!-- / row-->
 		{{Form::close()}} 

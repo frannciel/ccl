@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Licitacao;
 use App\Fornecedor;
 use App\RegistroDePreco;
+use PDF;
+use Illuminate\Http\Request;
 
 class RegistroDePrecoController extends Controller
 {
@@ -16,7 +17,8 @@ class RegistroDePrecoController extends Controller
      */
     public function index()
     {
-        //
+        return view('registro_de_preco.index')
+        ->with('registroDePrecos', RegistroDePreco::orderBy('updated_at', 'desc')->get());
     }
 
     /**
@@ -50,7 +52,7 @@ class RegistroDePrecoController extends Controller
 
         foreach ($forncedores as $fornecedor)
             $empresas += [$fornecedor->uuid => $fornecedor->nome];
-        return view('requisicao.geradorAta', compact('licitacao', 'empresas', 'ata_numero', 'ata_ano'));
+        return view('registro_de_preco.create', compact('licitacao', 'empresas', 'ata_numero', 'ata_ano'));
     }
 
     /**
@@ -140,14 +142,15 @@ class RegistroDePrecoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(RegistroDePreco $registroDePreco)
     {
-        //
+        $registroDePreco->delete();
+        return redirect()->action('RegistroDePrecoController@create', $registroDePreco->licitacao);
     }
 
-    public function documentoCreate($uuid)
+    public function documentoCreate(RegistroDePreco $registroDePreco)
     {
-        $ata = RegistroDePreco::findByUuid($uuid);
+        //$ata = RegistroDePreco::findByUuid($uuid);
 
         //$requisicao = Requisicao::find($request->requisicao);
         //$fornecedor = Fornecedor::find($request->fornecedor);
@@ -161,15 +164,33 @@ class RegistroDePrecoController extends Controller
             'objeto'    => $request->objeto,
             'publicacao'=> $request->publicacao
         ];*/
-        $itens = $ata->itens()->get();
+        $itens = $registroDePreco->itens()->get();
         $total = 0;
         foreach($itens as $item){
-            $quantidade = $item->fornecedores()->where('fornecedor_id', $ata->fornecedor->id)->first()->pivot->quantidade;
-            $valor      = $item->fornecedores()->where('fornecedor_id', $ata->fornecedor->id)->first()->pivot->valor;
+            $quantidade = $item->fornecedores()->where('fornecedor_id', $registroDePreco->fornecedor->id)->first()->pivot->quantidade;
+            $valor      = $item->fornecedores()->where('fornecedor_id', $registroDePreco->fornecedor->id)->first()->pivot->valor;
             $total +=  floatval($valor) * intval($quantidade);
         }
-        $participantes = $ata->itens()->has('participantes')->count();
-        return view('documentos.ata', compact('ata', 'total', 'participantes'));
+        $participantes = $registroDePreco->itens()->has('participantes')->count();
+        return view('documentos.arp', compact('total', 'participantes'))->with('ata', $registroDePreco);
         //return view('documentos.ata', compact('fornecedor', 'itens', 'dados', 'total'))->with('participante', count($participante));
+    }
+
+    public function downloadPdf(RegistroDePreco $registroDePreco)
+    {   
+        $itens = $registroDePreco->itens()->get();
+        $total = 0;
+        foreach($itens as $item){
+            $quantidade = $item->fornecedores()->first()->pivot->quantidade;
+            $valor      = $item->fornecedores()->first()->pivot->valor;
+            $total +=  floatval($valor) * intval($quantidade);
+        }
+        $participantes = $registroDePreco->itens()->has('participantes')->count();
+
+        $ata = $registroDePreco;
+        view()->share('ata', compact('ata','total', 'participantes'));
+        $pdf = PDF::loadView('pdf.arp', compact('ata','total', 'participantes'));
+        $pdf->setPaper('A4');
+        return $pdf->download($registroDePreco->ordem.'.pdf');
     }
 }

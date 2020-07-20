@@ -63,11 +63,11 @@
 											{{ Form::hidden('razaoSocial[]',$item['razaoSocial'], ['disabled' => '', 'class'=>  'input'])}}
 											{{ Form::hidden('cnpj[]', 		$item['cnpj'], ['disabled' => '', 'class' =>  'input'])}}
 										</td>
-										<td class=" center">{{$item['ordem']}}</td>
-										<td class=" justicado">@php print($item['descricao']) @endphp</td>
-										<td class=" center">{{$item['unidade']}}</td>
-										<td class=" center">{{$item['quantidade']}}</td>
-										<td class=" center">{{$item['valor']}}</td>
+										<td class="center">{{$item['ordem']}}</td>
+										<td class="justificado">@php print($item['descricao']) @endphp</td>
+										<td class="center">{{$item['unidade']}}</td>
+										<td class="center">{{$item['quantidade']}}</td>
+										<td class="center">{{$item['valor']}}</td>
 									</tr>
 									@endforeach
 								</tbody>

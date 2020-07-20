@@ -13,14 +13,20 @@ class Licitacao extends Model
         'numero', 'ano', 'objeto', 'processo', 'publicacao'
     ];
 
-/*   public function itens()
+/*  public function itens()
     {
         return $this->belongsToMany('App\Item', 'item_licitacao', 'licitacao_id', 'item_id')->withPivot('ordem');
-    }*/
+    }
+    */
 
     public function itens()
     {
         return $this->hasMany('App\Item');
+    }
+
+    public function contratacoes()
+    {
+        return $this->hasMany('App\Contratacao');
     }
 
     public function processoOrigem()
@@ -53,6 +59,11 @@ class Licitacao extends Model
         return $this->belongsToMany('App\Item', 'mesclados', 'licitacao_id', 'mesclado_id');
     }
 
+    protected function getOrdemAttribute()
+    {
+        return $this->numero.'/'. $this->ano;
+    }
+
     public function getValorTotalEstimadoAttribute()
     {
         return number_format($this->total, 2, ',', '.');
@@ -65,7 +76,7 @@ class Licitacao extends Model
             $soma += $item->total;
         return $soma;
     }
-
+/*
     public function getValorTotalLicitadoAttribute()
     {
         return number_format('');
@@ -75,7 +86,7 @@ class Licitacao extends Model
     {
         $soma = 0;
         return $soma;
-    }
+    }*/
 
     protected function setPublicacaoAttribute($value)
     {
@@ -85,5 +96,16 @@ class Licitacao extends Model
     protected function getPublicacaoAttribute()
     {
         return date('d/m/Y', strtotime($this->attributes['publicacao']));
+    }
+
+    /**
+     * Get the route key for the model. 
+     * Método para definir a chave usada na injeção de dependêcia dos model através das rotas
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
     }
 }

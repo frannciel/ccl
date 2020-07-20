@@ -121,7 +121,7 @@ class LicitacaoController extends Controller
 
 
 
-            /**
+      /**
      * Get User by scope query.
      */
     public function modalidade(Request $request)
@@ -154,7 +154,7 @@ class LicitacaoController extends Controller
         $licitacao = Licitacao::findByUuid($request->licitacao);
 
         if ($requisicao != null) {
-            $this->atribuirItem($requisicao->itens()->get(), $licitacao);
+            $this->atribuirItem($requisicao->itens->sortBy('numero'), $licitacao);
             $licitacao->requisicoes()->attach($requisicao);
 
         } else if($lista != null){

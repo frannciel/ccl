@@ -6,7 +6,7 @@
 	<div class="panel-heading">
 		<div class="row">
 			<div class="col-md-12">
-				<h1 Class="center">Dados da Requisição</h1>
+				<h1 Class="center">Alterar e Excluir Requisição</h1>
 			</div>
 		</div>
 	</div>
@@ -190,7 +190,7 @@
 				</thead>
 
 				<tbody>
-					@forelse ($requisicao->itens as $item)
+					@forelse ($requisicao->itens->sortBy('numero') as $item)
 					<tr>
 						<td>
 							<div class="input-group">

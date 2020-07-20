@@ -10,6 +10,11 @@ use App\Licitacao;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
+*//*
+http://www.bosontreinamentos.com.br/mysql/opcoes-de-chave-estrangeira-mysql/
+	php artisan route:clear
+	php artisan config:clear
+	composer dump-autoload
 */
 
 Route::get('welcome', function () {
@@ -26,7 +31,20 @@ Route::get('atribuir', function () {
     return view('item.atribuir');
 });
 
+Route::get('contratacao/{licitacao}', 							'ContratacaoController@index')->name('contratacao');
+Route::get('contratacao/novo/{licitacao}', 						'ContratacaoController@create');
+Route::post('contratacao/update', 								'ContratacaoController@update');
+Route::post('contratacao/store', 								'ContratacaoController@store');
+Route::get('contratacao/documento/{contratacao}', 				'ContratacaoController@documento');
+Route::get('contratacao/pdf/{contratacao}', 					'ContratacaoController@downloadPdf');
+Route::delete('contratacao/apagar/{contratacao}', 				'ContratacaoController@destroy');
 
+Route::get('registro/precos/',									'RegistroDePrecoController@index');
+Route::get('registro/precos/novo/{licitacao}', 					'RegistroDePrecoController@create');
+Route::post('registro/precos/store', 							'RegistroDePrecoController@store');
+Route::get('registro/precos/documento/{registroDePreco}', 		'RegistroDePrecoController@documentoCreate');
+Route::get('registro/precos/pdf/{registroDePreco}', 			'RegistroDePrecoController@downloadPdf');
+Route::delete('registro/precos/apagar/{registroDePreco}', 		'RegistroDePrecoController@destroy');
 
 Route::get('pregao/novo', 										'PregaoController@create')->name('pregaoNovo');
 Route::post('pregao/store', 									'PregaoController@store');
@@ -44,8 +62,7 @@ Route::post('licitacao/atribuir/item', 							'LicitacaoController@atribuirItem'
 Route::get('licitacao/item/mesclar/novo/{uuid}',				'LicitacaoController@mesclarCreate')->name('licitacaoMesclar');
 Route::post('licitacao/item/mesclar/store',						'LicitacaoController@mesclarStore');
 Route::get('licitacao/item/editar/{uuid}',						'LicitacaoController@itemEdit');
-Route::get('licitacao/remover/requisicao/{requisicao}/{licitacao}',		'LicitacaoController@removerRequisicao');
-
+Route::get('licitacao/remover/requisicao/{requisicao}/{licitacao}','LicitacaoController@removerRequisicao');
 
 Route::get('item/novo/{requisicao_id}', 						'ItemController@create')->name('itemNovo');
 Route::get('item/editar/{id}',  								'ItemController@edit')->name('itemEditar');
@@ -80,9 +97,6 @@ Route::post('importar/ata/store', 								'FileController@AtaSrpStore');
 
 
 
-Route::get('registro/precos/documento/{uuid}', 					'RegistroDePrecoController@documentoCreate');
-Route::get('registro/precos/novo/{uuid}', 						'RegistroDePrecoController@create');
-Route::post('registro/precos/store', 							'RegistroDePrecoController@store');
 
 
 Route::get('uasg', 												'UasgController@index')->name('uasg');
@@ -92,15 +106,15 @@ Route::get('uasg/exibir/{uuid}', 								'UasgController@show')->name('uasg.exib
 Route::post('uasg/store', 	 									'UasgController@store');
 Route::post('uasg/update', 										'UasgController@update');
 
-Route::get('requisicao/', 				'RequisicaoController@index')->name('requisicao');
-Route::get('requisicao/novo', 			'RequisicaoController@create')->name('requisicaoNova');
-Route::get('requisicao/exibir/{uuid}', 	'RequisicaoController@show')->name('requisicaoExibir');
-Route::get('requisicao/documento/{id}', 'RequisicaoController@documento')->name('documento');
-Route::post('requisicao/store', 	 	'RequisicaoController@store');
-Route::post('requisicao/update', 		'RequisicaoController@update');
-Route::post('requisicao/ajax', 			'RequisicaoController@ajax');
-Route::get('requisicao/consulta/{acao}','RequisicaoController@consultar')->name('requisicaoConsulta');
-Route::get('requisicao/apagar/{uuid}', 	'RequisicaoController@destroy');
+Route::get('requisicao/', 										'RequisicaoController@index')->name('requisicao');
+Route::get('requisicao/novo', 									'RequisicaoController@create')->name('requisicaoNova');
+Route::get('requisicao/exibir/{uuid}', 							'RequisicaoController@show')->name('requisicaoExibir');
+Route::get('requisicao/documento/{uuid}', 						'RequisicaoController@documento')->name('documento');
+Route::post('requisicao/store', 	 							'RequisicaoController@store');
+Route::post('requisicao/update', 								'RequisicaoController@update');
+Route::post('requisicao/ajax', 									'RequisicaoController@ajax');
+Route::get('requisicao/consulta/{acao}',						'RequisicaoController@consultar')->name('requisicaoConsulta');
+Route::get('requisicao/apagar/{uuid}', 							'RequisicaoController@destroy');
 
 Route::get('fornecedor/', 				'FornecedorController@index')->name('fornecedor');
 Route::get('fornecedor/novo/',			'FornecedorController@create')->name('fornecedorNovo');
@@ -110,18 +124,18 @@ Route::post('fornecedor/store', 	 	'FornecedorController@store');
 Route::post('fornecedor/update', 		'FornecedorController@update');
 Route::post('fornecedor/fornecedor', 	'FornecedorController@getFornecedor');
 
-Route::get('participante/{item_id}',	'ParticipanteController@create')->name('participante');
+/*Route::get('participante/{item_id}',	'ParticipanteController@create')->name('participante');
 Route::get('participante/novo/{id}',	'ParticipanteController@create')->name('participanteNovo');
 Route::get('participante/editar/{id}',  'ParticipanteController@edit')->name('participanteEditar');
 Route::post('participante/store', 	 	'ParticipanteController@store');
-Route::post('participante/update', 		'ParticipanteController@update');
+Route::post('participante/update', 		'ParticipanteController@update');*/
 
-Route::get('cotacao/novo/{requisicao_id}', 		'CotacaoController@create')->name('cotacaoNovo');
-Route::get('cotacao/editar/{id}',  		   		'CotacaoController@edit')->name('cotacaoEditar');
-Route::get('cotacao/relatorio/{requisicao_id}', 'CotacaoController@relatorio')->name('cotacaoRelatorio');
-Route::get('cotacao/apagar/{id}',  		   		'CotacaoController@destroy')->name('cotacaoApagar');
-Route::post('cotacao/store', 			   		'CotacaoController@store');
-Route::post('cotacao/update', 			   		'CotacaoController@update');
+Route::get('cotacao/novo/{requisicao}', 'CotacaoController@create')->name('cotacaoNovo');
+Route::get('cotacao/editar/{id}',  		'CotacaoController@edit')->name('cotacaoEditar');
+Route::get('cotacao/relatorio/{requisicao}', 	'CotacaoController@relatorio')->name('cotacaoRelatorio');
+Route::get('cotacao/apagar/{id}',  		'CotacaoController@destroy')->name('cotacaoApagar');
+Route::post('cotacao/store', 			'CotacaoController@store');
+Route::post('cotacao/update', 			'CotacaoController@update');
 
 Route::get('enquadramento', 			'InformacaoController@index')->name('enquadramento');
 Route::get('enquadramento/novo', 		'InformacaoController@create')->name('enquadramentoNovo');
