@@ -14,6 +14,7 @@ $(document).ready(function(){
     $('#cpf_cnpj').mask('00.000.000/0000-00');
     $('.telefone').mask('(00)00000-00000');
     $('.contrato').mask('000/0000');
+
     /*
     * Valida o campo quantidade solicitada e calcula o total para cada item iserido
     */

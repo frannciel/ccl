@@ -1,4 +1,4 @@
-<div class="col-md-{{$largura ?? 12}} {{$errors->has($input) ? ' has-error' : '' }}">
+<div class="col-md-{{$largura ?? 12}} col-md-offset-{{$recuo ?? ''}} {{$errors->has($input) ? ' has-error' : '' }}">
 	<label for="{{$input}}" class="control-label">{{$label ?? ''}}</label>
     <div class="input-group custom-search-form">
 		{!!  Form::text($input, 

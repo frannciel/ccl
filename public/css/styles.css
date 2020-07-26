@@ -48,14 +48,26 @@
 .w-5 { 
     width: 50%;
 }
+.w-6 { 
+    width: 60%;
+}
 .w-10 { 
     width: 100%;
+}
+.mt-1 { 
+    margin-top: 1%;
 }
 .mt-2 { 
     margin-top: 2%;
 }
+.mt-3 { 
+    margin-top: 3%;
+}
 .mt-4 { 
     margin-top: 4%;
+}
+.mt-5 { 
+    margin-top: 5%;
 }
 .mb-2 { 
     margin-bottom: 2%;
@@ -196,4 +208,7 @@
 }
 .rounded-pill{
     border-radius: 50rem!important;
+}
+.text-red{
+    color: #de1010;
 }

@@ -10,7 +10,8 @@ class Requisicao extends Model
     use HasUuid;
     protected $table = 'requisicoes';
     protected $fillable = [
-        'numero', 'ano', 'descricao', 'justificativa', 'requisitante_id',
+        'numero', 'ano', 'descricao', 'tipo', 'prioridade', 
+        'renovacao','pac', 'capacitacao', 'previsao', 'metas', 'justificativa', 'requisitante_id', 
     ];
 
     public function itens()
@@ -40,6 +41,22 @@ class Requisicao extends Model
             $soma += $item->total;
         return $soma;
     }
+
+    protected function getDataAttribute()
+    {
+        return date('d/m/Y', strtotime($this->attributes['created_at']));
+    }
+
+    protected function getOrdemAttribute()
+    {
+        return $this->numero.'/'. $this->ano;
+    }
+
+    public function setDataAttribute($value)
+    {
+        $this->attributes['previsao'] = date_format(date_create(str_replace("/", "-", $value)), 'Y-m-d');
+    }
+
 
         /**
      * Get the route key for the model. 

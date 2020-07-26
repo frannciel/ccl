@@ -16,11 +16,18 @@ class CreateRequisicoesTable extends Migration
         Schema::create('requisicoes', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uuid');
-            $table->smallInteger('numero');
+            $table->mediumInteger('numero');
             $table->smallInteger('ano');
-            $table->string('descricao', 150)->nullable();
-            $table->text('justificativa')->nullable();
-            $table->integer('requisitante_id')->unsigned()->nullable();
+            $table->tinyInteger('tipo');
+            $table->tinyInteger('prioridade');
+            $table->tinyInteger('renovacao');
+            $table->tinyInteger('capacitacao');
+            $table->tinyInteger('pac');
+            $table->date('previsao')->nullable();
+            $table->string('metas', 150)->nullable();
+            $table->string('descricao', 150);
+            $table->text('justificativa');
+            $table->integer('requisitante_id')->unsigned();
             $table->foreign('requisitante_id')->references('id')->on('requisitantes');
             $table->unique(['numero', 'ano']);
             $table->timestamps();

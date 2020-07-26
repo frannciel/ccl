@@ -108,13 +108,13 @@ Route::post('uasg/update', 										'UasgController@update');
 
 Route::get('requisicao/', 										'RequisicaoController@index')->name('requisicao');
 Route::get('requisicao/novo', 									'RequisicaoController@create')->name('requisicaoNova');
-Route::get('requisicao/exibir/{uuid}', 							'RequisicaoController@show')->name('requisicaoExibir');
+Route::get('requisicao/exibir/{requisicao}', 					'RequisicaoController@show')->name('requisicaoExibir');
 Route::get('requisicao/documento/{uuid}', 						'RequisicaoController@documento')->name('documento');
 Route::post('requisicao/store', 	 							'RequisicaoController@store');
 Route::post('requisicao/update', 								'RequisicaoController@update');
 Route::post('requisicao/ajax', 									'RequisicaoController@ajax');
 Route::get('requisicao/consulta/{acao}',						'RequisicaoController@consultar')->name('requisicaoConsulta');
-Route::get('requisicao/apagar/{uuid}', 							'RequisicaoController@destroy');
+Route::delete('requisicao/apagar/{requisicao}', 				'RequisicaoController@destroy');
 
 Route::get('fornecedor/', 				'FornecedorController@index')->name('fornecedor');
 Route::get('fornecedor/novo/',			'FornecedorController@create')->name('fornecedorNovo');

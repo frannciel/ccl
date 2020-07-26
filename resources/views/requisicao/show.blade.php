@@ -3,12 +3,8 @@
 @section('content')
 
 <div class="panel panel-default mb-4">
-	<div class="panel-heading">
-		<div class="row">
-			<div class="col-md-12">
-				<h1 Class="center">Alterar e Excluir Requisição</h1>
-			</div>
-		</div>
+	<div class="panel-heading text-center">
+		<h2>ALTERAR OU EXCLUIR REQUISIÇÃO</h2>
 	</div>
 
 	<div class="panel-body">
@@ -55,8 +51,8 @@
 				'attributes' => ['id' => 'justificativa', 'required' => '',  'rows'=>'5']])
 		    </div>
 
-			<div class="row">
-				<div class="col-md-3  col-md-offset-1 mt-2">
+			<div class="row mt-4">
+				<div class="col-md-3  col-md-offset-1">
 					<a href="{{route('requisicao')}}" class="btn btn-primary btn-block" type="button">Voltar</a>
 				</div>
 
@@ -64,11 +60,61 @@
 				'input' => 'Salvar', 
 				'largura' => 3 ])
 
-				<div class="col-md-3 mt-2">
-					<a href="{{route('requisicao')}}" class="btn btn-warning btn-block" type="button">Excluir</a>
+				<div class="col-md-3">
+					<button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#mediumModalLabel">Excluir</button>
 				</div>
 			</div>
-		{{ Form::close() }} 
+		{{ Form::close() }}
+
+		<form method="POST" action="{{url('requisicao/apagar', $requisicao->uuid)}}" id="form_apagar" >
+            <input type="hidden" name="_method" value="DELETE">
+            {{csrf_field() }}
+            <input type="hidden" name="requisicao" value="{{$requisicao->uuid}}">
+		</form>
+
+	</div>
+</div>
+
+
+<div class="modal fade" id="mediumModalLabel" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="row">
+					<div class="col-md-6">
+						<h4 class="modal-title" id="mediumModalLabel">Apagar Requisição</h4>
+					</div>
+					<div class="col-md-6">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+				</div>	
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-12">
+						<h5>
+							Tem certeza que deseja excluir definitivamente esta Requisição?
+						</h5>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="row">
+					<div class="col-md-3">
+						<button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancelar</button>
+					</div>
+					<div class="col-md-3">
+						<form action="{{url('requisicao/apagar', $requisicao->uuid)}}" method="post">
+							{{csrf_field() }}
+							<input type="hidden" name="_method" value="DELETE">
+							<button type="submit" class="btn btn-danger btn-block">Excluir</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 <!-- div class="row mt-4 p-2">

@@ -2,38 +2,46 @@
 
 @section('content')
 <div class="panel panel-default mb-4">
-	<div class="panel-heading text-center">
-		<h2>ALTERAR OU EXCLUIR PREGÃO</h1>
+	<div class="panel-heading">
+		<h2>Alterar ou Excluir Pregão</h1>
 	</div>
 	
 	<div class="panel-body">
 		{{ Form::open(['url' => 'pregao/update', 'method' => 'post', 'class' => 'form-padrao']) }} <!-- Formulário de update de pregão -->
 		<div class="row">
-			@include('form.text', [
+			@include('form.number', [
 			'input' => 'numero',
 			'label' => 'Número', 
 			'largura' => 2,
-			'value' => old($input ?? '') ?? $licitacao->ordem ?? '',
-			'attributes' => ['id' => 'ordem', 'disabled' => '']])
+			'value' => old($input ?? '') ?? $licitacao->numero ?? '',
+			'attributes' => ['id' => 'numero', 'disabled' => '']])
+
+			@include('form.number', [
+			'input' => 'ano',
+			'label' => 'Ano', 
+			'largura' => 2,
+			'value' => old($input ?? '') ?? $licitacao->ano ?? '',
+			'attributes' => ['id' => 'ano', 'disabled' => '']])
 
 			@include('form.text', [
 			'input' => 'processo',
 			'label' => 'Processo',
 			'value' => old($input ?? '') ?? $licitacao->processo ?? '',
-			'largura' => 3, 
+			'largura' => 4, 
 			'attributes' => ['id' => 'processo']])
 
-			@include('form.select', [
-			'input' => 'tipo', 
-			'label' => 'Tipo', 
-			'selected' => old($input ?? '') ?? '3', 
-			'largura' => 2,
-			'options' => $tipos ?? '', 
-			'attributes' => ['id' => 'tipo', 'readonly' => '']])
+			@include('form.text', [
+			'input' => 'processoOrigem',
+			'label' => 'Processo Original',
+			'value' => old($input ?? '') ?? $licitacao->processoOrigem ?? '',
+			'largura' => 4, 
+			'attributes' => ['id' => 'processoOrigem', 'placeholder' => 'Processo Externo']])
+		</div>
 
+		<div class="row">
 			@include('form.radioButton', [
 			'input' => 'forma', 
-			'label' => 'Forma', 
+			'label' => 'Forma*', 
 			'value' => old($input ?? '') ?? $licitacao->licitacaoable->forma ?? '', 
 			'largura' => 3,
 			'options' => $formas ?? '', 
@@ -41,17 +49,33 @@
 
 			@include('form.radioButton', [
 			'input' => 'srp',
-			'label' => 'SRP ?',
+			'label' => 'Registro de Preços*',
 			'value' => old($input ?? '') ?? $licitacao->licitacaoable->srp ?? '',
-			'largura' => 2,
+			'largura' => 3, 
 			'options' => ['1' => 'SIM', '2' => 'NÃO',], 
-			'attributes' => ['id' => 'srp', 'title' => 'Sistema de Registro de preços']])
+			'attributes' => ['id' => 'srp']])
+
+			@include('form.radioButton', [
+			'input' => 'srp_externo',
+			'label' => 'Adesão/Participação',
+			'value' => old($input ?? ''),
+			'largura' => 3, 
+			'options' => ['1' => 'Carona', '2' => 'Participante',], 
+			'attributes' => ['id' => 'srp_externo']])
+
+			@include('form.select', [
+			'input' => 'tipo', 
+			'label' => 'Tipo*', 
+			'selected' => old($input ?? '') ?? '3', 
+			'largura' => 3,
+			'options' => $tipos ?? '', 
+			'attributes' => ['id' => 'tipo', 'readonly' => '']])
 		</div>
 
 		<div class="row">
 			@include('form.textarea', [
 			'input' => 'objeto',
-			'label' => 'Objeto',
+			'label' => 'Objeto*',
 			'value' => old($input ?? '') ?? $licitacao->objeto ?? '',
 			'largura' => 12, 
 			'attributes' => ['id' => 'objeto', 'required' => '',  'rows'=>'5']])

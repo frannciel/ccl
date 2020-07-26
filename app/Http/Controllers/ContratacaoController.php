@@ -98,18 +98,6 @@ class ContratacaoController extends Controller
   
         }
         return redirect()->action('ContratacaoController@create', $licitacao);
-
-/*
-        $requisicao = Requisicao::findByUuid($request->requisicao);
-        $this->validate($request, [
-            'requisicao' => 'required|string',
-            'quantidade' => 'required|integer',
-            'codigo'     => 'integer|nullable',
-            'objeto'     => 'string|nullable|max:300',
-            'descricao'  => 'required|string',
-            'unidade'    => 'required|integer',
-            'grupo'      => 'integer|nullable'
-        ]);*/
     }
 
     /**

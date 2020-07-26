@@ -1,4 +1,4 @@
-<div class="col-md-{{$largura ?? 12}} {{$errors->has($input) ? ' has-error' : '' }}">
+<div class="col-md-{{$largura ?? 12}} col-md-offset-{{$recuo ?? ''}} {{$errors->has($input) ? ' has-error' : '' }}">
 	<label for="{{$input}}" class="control-label">{{$label ?? ''}}</label>
 	<div class="input-group">
 		<div id="{{'G'.$input}}" class="btn-group">
@@ -13,5 +13,4 @@
 		<strong>{{ $errors->first($input) }}</strong>
 	</span>
 	@endif
-
 </div>

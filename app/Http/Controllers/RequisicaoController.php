@@ -43,19 +43,32 @@ class RequisicaoController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'descricao'         => 'required|string',
-            'justificativa'     => 'required|string',
-            'requisitante'      => 'required|exists:requisitantes,uuid',
+            'tipo'          => 'required|integer',
+            'prioridade'    => 'required|integer',
+            'renovacao'     => 'required|integer',
+            'capacitacao'   => 'required|integer',
+            'pac'           => 'required|integer',
+            'previsao'      => 'required|date_format:d/m/Y',
+            'metas'         => 'nullable|string',
+            'descricao'     => 'required|string',
+            'justificativa' => 'required|string',
+            'requisitante'  => 'required|exists:requisitantes,uuid',
         ]);
 
-        //return Requisitante::find(1)->requisicoes()->save(Requisicao::find(10));
 		$requisicao = Requisicao::create([
             'numero'        => Requisicao::where('ano', date('Y'))->max('numero') + 1,// Retona o número da ultima requisção e acarescenta mais um
             'ano'           => date('Y'),
+            'tipo'          => $request['tipo'],
+            'prioridade'    => $request['prioridade'],
+            'renovacao'     => $request['renovacao'],
+            'capacitacao'   => $request['capacitacao'],
+            'pac'           => $request['pac'],
+            'metas'         => $request['metas'],
             'descricao'     => $request['descricao'],
             'justificativa' => $request['justificativa']
         ]);
-        $requisicao->requisitante()->associate(Requisitante::findByUuid($request->requisitante)); // request->requisitante representa o id do solicitante
+        $requisicao->data = $request->previsao; // formata o campo previsão em formato de data
+        $requisicao->requisitante()->associate(Requisitante::findByUuid($request->requisitante)); // representa o  requisitante
         $requisicao->save();
         return redirect()->route('requisicaoExibir', [ $requisicao->uuid]);
     }
@@ -66,12 +79,12 @@ class RequisicaoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($uuid)
+    public function show(Requisicao $requisicao)
     {
         $requisitante = array();
         foreach (Requisitante::all() as $value)
             $requisitante += [$value->uuid => $value->nome];
-        return view('requisicao.show', compact('requisitante'))->with('requisicao', Requisicao::findByUuid($uuid));
+        return view('requisicao.show', compact('requisitante', 'requisicao'));
     }
 
     /**
@@ -97,16 +110,29 @@ class RequisicaoController extends Controller
      */
     public function update(Request $request)
     {
-       $this->validate($request, [
-            'descricao'         => 'required|string',
-            'justificativa'     => 'required|string',
-            'requisitante'      => 'required|exists:requisitantes,uuid',
-            'requisicao'        => 'required|exists:requisicoes,uuid'
+        $this->validate($request, [
+            'tipo'          => 'required|integer',
+            'prioridade'    => 'required|integer',
+            'renovacao'     => 'required|integer',
+            'capacitacao'   => 'required|integer',
+            'pac'           => 'required|integer',
+            'previsao'      => 'nullable|date_format:d/m/Y',
+            'metas'         => 'nullable|string',
+            'descricao'     => 'required|string',
+            'justificativa' => 'required|string',
+            'requisitante'  => 'required|exists:requisitantes,uuid',
+            'requisicao'    => 'required|exists:requisicoes,uuid'
         ]);
 
         $requisicao = Requisicao::findByUuid($request->requisicao);
         $requisicao->descricao      = $request->descricao;
         $requisicao->justificativa  = $request->justificativa;
+        $requisicao->tipo           = $request->tipo;
+        $requisicao->renovacao      = $request->renovacao;
+        $requisicao->capacitacao    = $request->capacitacao;
+        $requisicao->pac            = $request->pac;
+        $requisicao->data           = $request->previsao;
+        $requisicao->metas          = $request->metas;
         $requisicao->requisitante()->dissociate(); // remove todas as relações
         $requisicao->requisitante()->associate(Requisitante::findByUuid($request->requisitante)); // refaz as relaçoes
         $requisicao->save();
@@ -119,12 +145,10 @@ class RequisicaoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($uuid)
+    public function destroy(Requisicao $requisicao)
     {
-
-        $requisicao = Requisicao::findByUuid($uuid)->delete();
-       //Requisicao::destroy(Requisicao::findByUuid($uuid)->id);
-        return redirect()->route('requisicaoExibir', [$uuid]);
+        $requisicao->delete();
+        return redirect()->route('requisicao');
     }
 	
 	public function ajax(Request $request)

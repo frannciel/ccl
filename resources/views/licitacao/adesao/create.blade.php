@@ -43,15 +43,6 @@
 			'options' => $tipos ?? '', 
 			'attributes' => ['id' => 'tipo', 'readonly' => '']])
 		</div>
-		
-		<select name="handsomest">
-		  <optgroup label="The Brothers Strong">
-		    <option>Strong Sad</option>
-		    <option>Strong Mad</option>
-		    <option>Strong Bad</option>
-		  </optgroup>
-		  <option>The Cheat</option>
-		</select>
 
 		@include('licitacao.forms.objeto_create')
 	{{ Form::close() }} 
