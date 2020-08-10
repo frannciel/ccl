@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use PDF;
+use App\Item;
+use App\Cotacao;
+use App\Requisicao;
 use Illuminate\Http\Request;
 use App\Services\FileService;
-use App\Cotacao;
-use App\Item;
-use App\Requisicao;
 
 class CotacaoController extends Controller
 {
@@ -131,5 +132,13 @@ class CotacaoController extends Controller
 
     public function redirecionar(Request $request){
         return redirect()->route('cotacaoNovo', ['requsicao_id' => $request->requisicao]);
+    }
+
+    public function relatorioPdf(Requisicao $requisicao)
+    {
+        view()->share('requisicao', $requisicao);
+        $pdf = PDF::loadView('pdf.cotacao', compact('requisicao'));
+        $pdf->setPaper('A4');
+        return $pdf->download('Oficializacao_de_demanda_'.$requisicao->ordem.'.pdf');
     }
 }

@@ -57,6 +57,14 @@ class Requisicao extends Model
         $this->attributes['previsao'] = date_format(date_create(str_replace("/", "-", $value)), 'Y-m-d');
     }
 
+    protected function getPrevisaoAttribute()
+    {
+        if ($this->attributes['previsao'] == "0000-00-00") {
+            return '';
+        } else{
+            return date('d/m/Y', strtotime($this->attributes['previsao']));
+        }
+    }
 
         /**
      * Get the route key for the model. 

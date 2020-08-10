@@ -8,6 +8,7 @@
    <title>PDF Demo in Laravel 7</title>
 </head>
 <body>
+   @include('pdf.cabecalho')
    <h2 align="center">Solicitação de Empenho</h2>
    <br/>
    <table  cellspacing=0 cellpadding=2 border=1 width=100% id='home'>

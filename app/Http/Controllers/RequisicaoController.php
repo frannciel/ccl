@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests\RequisicaoRequest;
+use App\Item;
+use App\Fornecedor;
 use App\Requisicao;
 use App\Requisitante;
-use App\Fornecedor;
-use App\Item;
+use PDF;
+use Illuminate\Http\Request;
+use App\Http\Requests\RequisicaoRequest;
 
 class RequisicaoController extends Controller
 {
@@ -127,6 +128,7 @@ class RequisicaoController extends Controller
         $requisicao = Requisicao::findByUuid($request->requisicao);
         $requisicao->descricao      = $request->descricao;
         $requisicao->justificativa  = $request->justificativa;
+        $requisicao->prioridade     = $request->prioridade;
         $requisicao->tipo           = $request->tipo;
         $requisicao->renovacao      = $request->renovacao;
         $requisicao->capacitacao    = $request->capacitacao;
@@ -148,6 +150,20 @@ class RequisicaoController extends Controller
     public function destroy(Requisicao $requisicao)
     {
         $requisicao->delete();
+        return redirect()->route('requisicao');
+    }
+
+    public function removeItens(Request $request)
+    {
+        $itens = $request->itens;
+        foreach ($itens as  $uuid) {
+            $item = Item::findByUuid($uuid);
+            if ($request->requisicao == $item->requisicao->uuid) { // verifica se o item pertence a requisição
+                if (!$item->licitacao) { // verifica se o item não está relacionado a uma licitação
+                    $item->delete();
+                }
+            }
+        }
         return redirect()->route('requisicao');
     }
 	
@@ -204,10 +220,56 @@ class RequisicaoController extends Controller
         return view('requisicao.consultar', compact('acao'));
     }
 
-    public function documento($uuid)
+    public function documento(Requisicao $requisicao)
     {
-       return  view('documentos.requisicao')->with('requisicao', Requisicao::findByUuid($uuid));
+       return  view('requisicao.relacao', compact('requisicao'));
 
       // return  view('documentos.requisicao')->with('requisicao', Requisicao::findByUuid($uuid));
+    }
+
+    public function pesquisa(Requisicao $requisicao)
+    {
+       return  view('documentos.pesquisa', compact('requisicao'));
+    }
+
+    public function pesquisaPdf(Requisicao $requisicao)
+    {
+        view()->share('requisicao', $requisicao);
+        $pdf = PDF::loadView('pdf.pesquisa', compact('requisicao'));
+        $pdf->setPaper('A4');
+        return $pdf->download('Requisicao_'.$requisicao->ordem.'.pdf');
+    }
+
+    public function formalizacao(Requisicao $requisicao)
+    {
+       return  view('documentos.formalizacao', compact('requisicao'));
+    }
+
+    public function formalizacaoPdf(Requisicao $requisicao)
+    {
+        view()->share('requisicao', $requisicao);
+        $pdf = PDF::loadView('pdf.formalizacao', compact('requisicao'));
+        $pdf->setPaper('A4', 'landscape' );
+        return $pdf->download('Oficializacao_de_demanda_'.$requisicao->ordem.'.pdf');
+    }
+
+    public function duplicarItem(Request $request)
+    {
+        $itens = $request->itens;
+        $requisicao = Requisicao::findByUuid($request->requisicao);
+        foreach ($itens as  $uuid) {
+            $item = Item::findByUuid($uuid);
+            if ($request->requisicao == $item->requisicao->uuid) { // verifica se o item pertence a requisição
+               $requisicao->itens()->create([
+                    'numero'        => $requisicao->itens()->max('numero')+1, // este número indicara itens mesclados nas  licitcaoes, eles não pertencem a nenhuma requisicão
+                    'quantidade'    => $item->quantidade,
+                    'codigo'        => $item->codigo,
+                    'objeto'        => $item->objeto,
+                    'descricao'     => $item->descricao,
+                    'unidade_id'    => $item->unidade_id,
+                ]);
+            }
+        }
+        return redirect()->action('RequisicaoController@show', [$requisicao]);
     }
 }

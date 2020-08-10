@@ -6,7 +6,7 @@
 		<div class="panel-heading">
 			<div class="row">
 				<div class="col-md-12">
-					<h1 class="center">Cadastrar Pesquisa de Preços</h1>
+					<h1 class="center">PESQUISA DE PREÇOS</h1>
 				</div>
 			</div><!-- / row -->
 

@@ -8,6 +8,7 @@
    <title>PDF Demo in Laravel 7</title>
 </head>
 <body>
+	   @include('pdf.cabecalho')
 	<h4 align=center>ATA DE REGISTRO DE PREÇOS N.º {{$ata->numero}} / {{$ata->ano}}<br />
 	PREGÃO ELETRÔNICO SRP Nº {{$ata->licitacao->numero }} / {{ $ata->licitacao->ano }}<br />
 	PROCESSO ADMINISTRATIVO Nº {{$ata->licitacao->processo ?? '23291.000000/20XX-00'}}</h4>

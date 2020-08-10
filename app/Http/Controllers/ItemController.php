@@ -155,9 +155,10 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Item $item)
     {
-        Item::destroy($id);
+        $item->delete();
+        return redirect()->route('requisicaoExibir',  [ $item->requisicao->uuid]);
     }
 
     /**

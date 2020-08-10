@@ -122,11 +122,7 @@
 	    	'input' => 'Salvar', 
 	    	'largura' => 3])
 	    </div>
-
-
 	</div>
-
-
 	{{ Form::close() }} 
 @endsection
 

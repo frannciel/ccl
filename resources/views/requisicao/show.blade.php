@@ -10,29 +10,80 @@
 	<div class="panel-body">
 		{{ Form::open(['url' => '/requisicao/update', 'method' => 'post', 'class' => 'form-padrao']) }}
 			{{ Form::hidden('requisicao', $requisicao->uuid)}}
+			
 			<div class="row">
 				@include('form.text', [
-				'input' => 'numero',
+				'input' => 'ordem',
 				'label' => 'Número', 
-				'largura' => 3,
-				'value' => $requisicao->numero ?? '',
-				'attributes' => ['id' => 'numero', 'disabled' => 'error' ]])
-
-				@include('form.text', [
-				'input' => 'ano',
-				'label' => 'Ano', 
-				'largura' => 3,
-				'value' => $requisicao->ano ?? '',
-				'attributes' => ['id' => 'ano', 'disabled' => 'error']])
+				'largura' => 2,
+				'value' => $requisicao->ordem ?? '',
+				'attributes' => ['id' => 'ordem', 'disabled' => '' ]])
 
 				@include('form.select', [
 				'input' => 'requisitante', 
 				'label' => 'Requisitante', 
-				'largura' => 6,
+				'largura' => 5,
 				'selected' => old($input ?? '') ?? $requisicao->requisitante->uuid, 
 				'options' => $requisitante, 
 				'attributes' => ['id' => 'requisitante']])
+				
+				<div class="col-md-5 {{$errors->has('tipo') ? ' has-error' : '' }}">
+					<label for="tipo">Tipo de Contratação *</label>
+					<select name="tipo" class="form-control" selected="{{old('tipo' ?? '')}}" required>
+						<option noSelected></option>
+						<optgroup label="Material">
+							<option value="1">Permanente</option>
+							<option value="2">Consumo</option>
+						</optgroup>
+						<optgroup label="Serviço">
+							<option value="3">Não Continuado</option>
+							<option value="4">Continuado</option>
+							<option value="5">Tempo Indeterminado</option>
+						</optgroup>
+						<option value="6" class="font-weight-bold">Obra</option>
+						<option value="7" class="font-weight-bold">Serviço de Engenharia</option>
+					</select>
+					@if ($errors->has('tipo'))
+					    <span class="help-block">
+					    	<strong>{{ $errors->first('tipo') }}</strong>
+					    </span>
+					@endif	
+				</div>
 			</div>
+
+			<div class="row">
+		   		@include('form.radioButton', [
+				'input' => 'prioridade',
+				'label' => 'Grau de Prioridade*',
+				'value' => old($input ?? '') ?? $requisicao->prioridade,
+				'largura' => 3, 
+				'options' => ['1' => 'Alta', '2' => 'Média', '3' => 'Baixa' ], 
+				'attributes' => ['id' => 'prioridade', 'required' => '']])
+
+		   		@include('form.radioButton', [
+				'input' => 'renovacao',
+				'label' => 'Renovação de Contrato*',
+				'value' => old($input ?? '') ?? $requisicao->renovacao,
+				'largura' => 3, 
+				'options' => ['1' => 'Sim', '2' => 'Não' ], 
+				'attributes' => ['id' => 'renovacao', 'required' => '']])
+
+				@include('form.radioButton', [
+				'input' => 'capacitacao',
+				'label' => 'Necessita Capacitação*',
+				'value' => old($input ?? '') ?? $requisicao->capacitacao,
+				'largura' => 3, 
+				'options' => ['1' => 'Sim', '2' => 'Não' ], 
+				'attributes' => ['id' => 'capacitacao', 'required' => '']])
+
+				@include('form.radioButton', [
+				'input' => 'pac',
+				'label' => 'Registrado no PAC*',
+				'value' => old($input ?? '') ?? $requisicao->pac,
+				'largura' => 3, 
+				'options' => ['1' => 'Sim', '2' => 'Não' ], 
+				'attributes' => ['id' => 'pac', 'required' => '']])
+		   	</div>
 
 			<div class="row">
 				@include('form.text', [
@@ -40,18 +91,33 @@
 				'label' => 'Objeto', 
 				'value' => old($input ?? '') ?? $requisicao->descricao ?? 'error',
 				'attributes' => ['id' => 'descricao', 'required' => '', 'autocomplete' => 'off']])
-			</div>
 
-			<div class="row">
 				@include('form.textarea', [
 				'input' => 'justificativa',
 				'label' => 'Justificativa da Contratação*',
-				'value' => old($input ?? '') ?? $requisicao->justificativa ?? 'error',
+				'value' => old($input ?? '') ?? $requisicao->justificativa,
 				'largura' => 12, 
 				'attributes' => ['id' => 'justificativa', 'required' => '',  'rows'=>'5']])
 		    </div>
 
-			<div class="row mt-4">
+    	    <div class="row">
+    	    	@include('form.text', [
+    	    	'input' => 'previsao',
+    	    	'label' => 'Data da Necessidade',
+    	    	'value' => old($input ?? '') ?? $requisicao->previsao,
+    	    	'largura' => 4, 
+    	    	'attributes' => ['id' => 'data']])
+
+    	    	@include('form.text', [
+    	    	'input' => 'metas',
+    	    	'label' => 'Código da(s) Meta(s) do PMI, separdas por vírgula',
+    	    	'value' => old($input ?? '') ?? $requisicao->metas,
+    	    	'largura' => 8, 
+    	    	'attributes' => ['id' => 'metas']])
+    	    </div>
+
+
+			<div class="row mt-2">
 				<div class="col-md-3  col-md-offset-1">
 					<a href="{{route('requisicao')}}" class="btn btn-primary btn-block" type="button">Voltar</a>
 				</div>
@@ -65,19 +131,11 @@
 				</div>
 			</div>
 		{{ Form::close() }}
-
-		<form method="POST" action="{{url('requisicao/apagar', $requisicao->uuid)}}" id="form_apagar" >
-            <input type="hidden" name="_method" value="DELETE">
-            {{csrf_field() }}
-            <input type="hidden" name="requisicao" value="{{$requisicao->uuid}}">
-		</form>
-
 	</div>
-</div>
-
+</div><!-- /.panel -->
 
 <div class="modal fade" id="mediumModalLabel" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<div class="row">
@@ -90,7 +148,7 @@
 						</button>
 					</div>
 				</div>	
-			</div>
+			</div><!-- /.modal-header -->
 			<div class="modal-body">
 				<div class="row">
 					<div class="col-md-12">
@@ -99,10 +157,10 @@
 						</h5>
 					</div>
 				</div>
-			</div>
+			</div><!-- /.modal-body -->
 			<div class="modal-footer">
 				<div class="row">
-					<div class="col-md-3">
+					<div class="col-md-3 col-md-offset-6">
 						<button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancelar</button>
 					</div>
 					<div class="col-md-3">
@@ -113,153 +171,132 @@
 						</form>
 					</div>
 				</div>
-			</div>
-		</div>
-	</div>
-</div>
-<!-- div class="row mt-4 p-2">
-	<div class="col-md-3 col-6">
-		<a href="{{route('itemNovo', ['id' => $requisicao->uuid])}}" class="btn btn-primary btn-outline btn-block" type="button">
-		   	<i class="fa fa-plus fa-3x"></i><br>Incluir Item
-		</a>
-	</div>
-	<div class="col-md-3 col-6">
-		<a href="{{route('importar', ['id' => $requisicao->id])}}" class="btn btn-primary btn-outline btn-block" type="button">
-		   	<i class="fa fa-upload fa-3x"></i><br>Importar
-		</a>
-	</div>
-	<div class="col-md-3 col-6">
-		<a href="{{route('cotacaoNovo', ['id' => $requisicao->id])}}" class="btn btn-primary btn-outline btn-block" type="button">
-		   	<i class="fa fa-shopping-cart fa-3x"></i><br>Pesquisa de Preços
-		</a>
-	</div>
-	<div class="col-md-3 col-6">
-		<a href="{{route('cotacaoRelatorio', ['id' => $requisicao->id])}}" class="btn btn-primary btn-outline btn-block" type="button">
-		   	<i class="fa fa-list-alt fa-3x"></i><br>Relatório de Pesquisa
-		</a>
-	</div>
-	<div class="col-md-3 col-6 mt-2">
-		<a href="{{route('documento', ['id' => $requisicao->id])}}" class="btn btn-primary btn-outline btn-block" type="button">
-		   	<i class="fa fa-list-alt fa-3x"></i><br>Tabela de Itens
-		</a>
-	</div>
-	<div class="col-md-3 col-6 mt-2">
-		<a href="{{route('cotacaoRelatorio', ['id' => $requisicao->id])}}" class="btn btn-primary btn-outline btn-block" type="button">
-		   	<i class="fa fa-list-alt fa-3x"></i><br>Remover Itens
-		</a>
-	</div>
-	<div class="col-md-3 col-6 mt-2">
-		<a href="{{url('/requisicao/apagar', $requisicao->uuid)}}"  class="btn btn-primary btn-outline btn-block" type="button">
-		   	<i class="fa fa-list-alt fa-3x"></i><br>Excluir 
-		</a>
-	</div>
-</div> -->
+			</div><!-- /.modal-footer -->
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
-<!-- <div class="row">
-	<div class="col-md-12">
-		<h2 Class="page-header">Relação de Itens</h2>
-	</div>
-</div>
+{{ Form::open(['url' => '', 'method' => 'POST', 'class' => 'form-padrao']) }}
+	{{ Form::hidden('requisicao', $requisicao->uuid) }}
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<div class="btn-group btn-group-justified" role="group" aria-label="...">
+				<div class="btn-group" role="group">
+					<a type="button" class="btn btn-success btn-outline" title="Adicionar Novo Item" href="{{route('itemNovo', ['uuid' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-plus"></i></a>
+				</div>
+				<div class="btn-group" role="group">
+					<a type="button"  class="btn btn-success btn-outline" title="Pesquisa de Preços" href="{{route('cotacaoNovo', ['uuid' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-shopping-cart"></i></a>
+				</div>
+				<div class="btn-group" role="group">
+					<a type="button" class="btn btn-success btn-outline" title="Importar Dados" href="{{route('importar', ['uuid' => $requisicao->uuid])}}"><i class="fa fa-upload"></i></a>
+				</div>
+				<div class="btn-group" role="group">
+					<a type="button" class="btn btn-success btn-outline" title="Relação de Itens" href="{{route('documento', ['uuid' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-list"></i></a>
+				</div>
+				<div class="btn-group" role="group">
+					<button type="submit" formaction="{{url('requisicao/duplicar/item')}}" class="btn btn-success btn-outline" title="Duplicar Itens"><i class="glyphicon glyphicon-duplicate"></i></button>
+				</div>
 
-<table class="w-10">
-	<thead>
-		<tr>
-			<th class="w-1 center">Número</th>
-			<th class="w-4 center">Descrição Detalhada</th>
-			<th class="w-2 center">Unidade</th>
-			<th class="w-1 center">Código</th>
-			<th class="w-1 center">Quantidade</th>
-			<th class="w-1 center">Grupo</th>
-		</tr>
-	</thead>
-</table>
-<div class="row t-body table-responsive">
-   <table class="table table-striped table-bordered">
-      <tbody>
-         @forelse ($requisicao->itens as $item)
-         <tr onclick="location.href ='{{route('itemEditar', $item->uuid)}}'; target='_blank';" style="cursor: hand;">
-            <td class="w-1 center">{{$item->numero}}</td>
-            <td class="w-4 justicado">@php print($item->descricaoCompleta) @endphp</td>
-            <td class="w-2 center">{{$item->unidade->nome}}</td>
-            <td class="w-1 center">{{$item->codigo =='0'?'': $item->codigo}}</td>
-            <td class="w-1 center">{{$item->quantidade}}</td>
-            <td class="w-1 center"></td>
-            <td>isset($item->grupo->numero) ? $item->grupo->numero : ''</td>
-         </tr>
-         @empty
-         <tr><td><center><i> Nenhum item encontrado </i></center></td></tr>
-         @endforelse
-      </tbody>
-   </table>
-</div>
- -->
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<div class="btn-group btn-group-justified" role="group" aria-label="...">
-			<div class="btn-group" role="group">
-				<a type="button" class="btn btn-success btn-outline btn-lg" title="Adicionar Novo Item" href="{{route('itemNovo', ['uuid' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-plus"></i></a>
+				<div class="btn-group" role="group">
+					<button type="button" id="removeAll" class="btn btn-danger btn-outline" data-toggle="modal" data-target="#removeItemModal"><i class="glyphicon glyphicon-trash"></i></button>
+				</div>
 			</div>
-			<div class="btn-group" role="group">
-				<a type="button"  class="btn btn-success btn-outline btn-lg" title="Pesquisa de Preços" href="{{route('cotacaoNovo', ['uuid' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-shopping-cart"></i></a>
-			</div>
-			<div class="btn-group" role="group">
-				<a type="button" class="btn btn-success btn-outline btn-lg" title="Importar Dados" href="{{route('importar', ['uuid' => $requisicao->uuid])}}"><i class="fa fa-upload"></i></a>
-			</div>
-			<div class="btn-group" role="group">
-				<button type="submit" class="btn btn-success btn-outline  btn-lg" title="Duplicar Itens"><i class="glyphicon glyphicon-duplicate"></i></button>
-			</div>
-			<div class="btn-group" role="group">
-				<a type="button" class="btn btn-info btn-outline btn-lg" title="Oficialização da Demanda" href="{{route('documento', ['uuid' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-list"></i></a>
-			</div>
-			<div class="btn-group" role="group">
-				<a type="button" class="btn btn-info btn-outline btn-lg" title="Relatório de Pesquisa de Preços" href="{{route('cotacaoRelatorio', ['uuid' => $requisicao->uuid])}}"><i class="fa fa-list-alt"></i></a>
-			</div>
-			<div class="btn-group" role="group">
-				<button type="submit" formaction="/action_page2.php" class="btn btn-danger btn-outline btn-lg" title="Excluir Itens"><i class="glyphicon glyphicon-trash"></i></button>
-			</div>
-		</div>
-	</div><!-- panel-heading -->
 
-	<div class="panel-body">
-		<div class="table-responsive">
-			<table class="table table-striped table-bordered" id="dataTables-example">
-				<thead>
-					<tr>
-						<th class=" center"><input type="checkbox" id="ckAll" name="example1"></th>
-					    <th class=" center">Número</th>
-					    <th class=" center">Descrição Detalhada</th>
-					    <th class=" center">Unidade</th>
-					    <th class=" center">Código</th>
-					    <th class=" center">Quantidade</th>
-					    <th class=" center">Grupo</th>
-					</tr>
-				</thead>
+			<div class="row text-center">
+				<div class="col-md-12 mt-2 mb-2">
+					<a type="button" href="{{route('cotacaoRelatorio', ['uuid' => $requisicao->uuid])}}" class="btn btn-outline btn-primary rounded-pill">
+						Relatório de Pesquisa de Preços
+					</a>
 
-				<tbody>
-					@forelse ($requisicao->itens->sortBy('numero') as $item)
-					<tr>
-						<td>
-							<div class="input-group">
-								<span class="input-group-addon">
-									<input type="checkbox" id="defaultCheck"  class="chk" name="itens[]" value="{{$item->uuid}}" >
-								</span>
-								<a class="btn btn-default" href="{{route('itemEditar', $item->uuid)}}" role="button">Detalhar</a>
-							</div>
-						</td>
-						<td class=" center">{{$item->numero}}</td>
-						<td class=" justicado">@php print($item->descricaoCompleta) @endphp</td>
-						<td class=" center">{{$item->unidade->nome}}</td>
-						<td class=" center">{{$item->codigo =='0'?'': $item->codigo}}</td>
-						<td class=" center">{{$item->quantidadeTotal}}</td>
-						<td class=" center"></td>
-						<!--<td>isset($item->grupo->numero) ? $item->grupo->numero : ''</td>-->
-					</tr>
-					@empty
-					<tr><td colspan=7><center><i> Nenhum item encontrado </i></center></td></tr>
-					@endforelse
-				</tbody>
-			</table>
-		</div><!-- table-responsive -->
-	</div><!-- panel-body -->
-</div>
+					<a type="button" href="{{url('requisicao/pesquisa',['requisicao' => $requisicao->uuid])}}"  class="btn btn-outline btn-primary rounded-pill">
+						Solicitação de Pesquisa de Preços
+					</a>
+
+					<a type="button" href="{{url('requisicao/formalizar', ['requisicao' => $requisicao->uuid])}}" class="btn btn-outline btn-primary rounded-pill">
+						Formalização de Demanda
+					</a>
+				</div>
+			</div>
+		</div><!-- panel-heading -->
+
+		<div class="panel-body">
+			<div class="table-responsive">
+				<table class="table table-striped table-bordered" id="dataTables-example">
+					<thead>
+						<tr>
+							<th class=" center"><input type="checkbox" id="ckAll" name="example1"></th>
+						    <th class=" center">Número</th>
+						    <th class=" center">Descrição Detalhada</th>
+						    <th class=" center">Código</th>
+						    <th class=" center">Unidade</th>
+						    <th class=" center">Quantidade</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						@forelse ($requisicao->itens->sortBy('numero') as $item)
+						<tr>
+							<td>
+								<div class="input-group">
+									<span class="input-group-addon">
+										<input type="checkbox" class="chk" name="itens[]" value="{{$item->uuid}}" data-object="{{$item->numero}} - {{$item->objeto}}">
+									</span>
+									<a class="btn btn-default" href="{{route('itemEditar', $item->uuid)}}" role="button">Detalhar</a>
+								</div>
+							</td>
+							<td class="center">{{$item->numero}}</td>
+							<td class="justicado">@php print($item->descricaoCompleta) @endphp</td>
+							<td class="center">{{$item->codigo =='0'?'': $item->codigo}}</td>
+							<td class="center">{{$item->unidade->nome}}</td>
+							<td class="center">{{$item->quantidadeTotal}}</td>
+						</tr>
+						@empty
+						<tr><td colspan=7><center><i> Nenhum item encontrado </i></center></td></tr>
+						@endforelse
+					</tbody>
+				</table>
+			</div><!-- table-responsive -->
+		</div><!-- panel-body -->
+	</div><!-- /.panel -->
+
+	<div class="modal fade" id="removeItemModal" tabindex="-1" role="dialog" aria-labelledby="removeItemModal" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="row">
+						<div class="col-md-6">
+							<h4 class="modal-title" id="removeItemModal">Apagar Itens da Requisição</h4>
+						</div>
+						<div class="col-md-6">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+					</div>	
+				</div><!-- /.modal-header -->
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-12 mb-2">
+							<b>
+								<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+								<span id="msgRemoveItem"></span>
+							</b>
+						</div>
+					</div>
+					<div id="divItens"></div>
+				</div><!-- /.modal-body -->
+				<div class="modal-footer">
+					<div class="row">
+						<div class="col-md-3 col-md-offset-6">
+							<button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancelar</button>
+						</div>
+						<div class="col-md-3">
+							<button id="btnRemoveItem" type="submit" formaction="{{url('requisicao/remove/item')}}" class="btn btn-danger btn-block">Excluir</button>
+						</div>
+					</div>
+				</div><!-- /.modal-footer -->
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal --> 
+{{ Form::close() }}
 @endsection

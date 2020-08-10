@@ -27,6 +27,7 @@ Route::get('/', function () {
 })->name('principal');
 
 
+
 Route::get('atribuir', function () {
     return view('item.atribuir');
 });
@@ -73,8 +74,7 @@ Route::post('item/update', 										'ItemController@update');
 Route::post('item/ajax', 										'ItemController@ajax');
 Route::post('item/fornecedor/store', 							'ItemController@fornecedorStore');
 Route::get('item/fornecedor/update', 							'ItemController@fornecedorUpdate')->name('itemFornecUpdate');
-
-
+Route::delete('item/apagar/{item}', 							'ItemController@destroy');
 
 Route::post('licitacao/modalidade', 							'LicitacaoController@modalidade')->name('modalidade');
 Route::get('cotacao/novo', 										'CotacaoController@redirecionar');
@@ -96,9 +96,6 @@ Route::post('importar/store', 									'FileController@store')->name('importeSal
 Route::post('importar/ata/store', 								'FileController@AtaSrpStore');
 
 
-
-
-
 Route::get('uasg', 												'UasgController@index')->name('uasg');
 Route::get('uasg/novo', 										'UasgController@create')->name('uasg.nova');
 Route::get('uasg/editar/{uuid}',  								'UasgController@edit')->name('uasg.editar');
@@ -106,10 +103,16 @@ Route::get('uasg/exibir/{uuid}', 								'UasgController@show')->name('uasg.exib
 Route::post('uasg/store', 	 									'UasgController@store');
 Route::post('uasg/update', 										'UasgController@update');
 
+Route::post('requisicao/duplicar/item', 						'RequisicaoController@duplicarItem');
+Route::post('requisicao/remove/item', 							'RequisicaoController@removeItens');
+Route::get('requisicao/formalizar/{requisicao}', 				'RequisicaoController@formalizacao');
+Route::get('requisicao/formalizar/pdf/{requisicao}', 			'RequisicaoController@formalizacaoPdf');
+Route::get('requisicao/pesquisa/{requisicao}', 					'RequisicaoController@pesquisa');
+Route::get('requisicao/pesquisa/pdf/{requisicao}', 				'RequisicaoController@pesquisaPdf');
 Route::get('requisicao/', 										'RequisicaoController@index')->name('requisicao');
 Route::get('requisicao/novo', 									'RequisicaoController@create')->name('requisicaoNova');
 Route::get('requisicao/exibir/{requisicao}', 					'RequisicaoController@show')->name('requisicaoExibir');
-Route::get('requisicao/documento/{uuid}', 						'RequisicaoController@documento')->name('documento');
+Route::get('requisicao/documento/{requisicao}', 				'RequisicaoController@documento')->name('documento');
 Route::post('requisicao/store', 	 							'RequisicaoController@store');
 Route::post('requisicao/update', 								'RequisicaoController@update');
 Route::post('requisicao/ajax', 									'RequisicaoController@ajax');
@@ -130,12 +133,13 @@ Route::get('participante/editar/{id}',  'ParticipanteController@edit')->name('pa
 Route::post('participante/store', 	 	'ParticipanteController@store');
 Route::post('participante/update', 		'ParticipanteController@update');*/
 
-Route::get('cotacao/novo/{requisicao}', 'CotacaoController@create')->name('cotacaoNovo');
-Route::get('cotacao/editar/{id}',  		'CotacaoController@edit')->name('cotacaoEditar');
-Route::get('cotacao/relatorio/{requisicao}', 	'CotacaoController@relatorio')->name('cotacaoRelatorio');
-Route::get('cotacao/apagar/{id}',  		'CotacaoController@destroy')->name('cotacaoApagar');
-Route::post('cotacao/store', 			'CotacaoController@store');
-Route::post('cotacao/update', 			'CotacaoController@update');
+Route::get('cotacao/novo/{requisicao}', 						'CotacaoController@create')->name('cotacaoNovo');
+Route::get('cotacao/editar/{id}',  								'CotacaoController@edit')->name('cotacaoEditar');
+Route::get('cotacao/relatorio/{requisicao}', 					'CotacaoController@relatorio')->name('cotacaoRelatorio');
+Route::get('cotacao/relatorio/pdf/{requisicao}', 				'CotacaoController@relatorioPdf')->name('relatorioPdf');
+Route::get('cotacao/apagar/{id}',  								'CotacaoController@destroy')->name('cotacaoApagar');
+Route::post('cotacao/store', 									'CotacaoController@store');
+Route::post('cotacao/update', 									'CotacaoController@update');
 
 Route::get('enquadramento', 			'InformacaoController@index')->name('enquadramento');
 Route::get('enquadramento/novo', 		'InformacaoController@create')->name('enquadramentoNovo');

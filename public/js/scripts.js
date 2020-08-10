@@ -16,7 +16,7 @@ $(document).ready(function(){
     $('.contrato').mask('000/0000');
 
     /*
-    * Valida o campo quantidade solicitada e calcula o total para cada item iserido
+    * Valida o campo quantidade solicitada e calcula o total para cada item iserido na solicitação de empenho
     */
     $('input[name^="campos"]').focusout(function() {
         var quantidade = $(this).val();
@@ -119,4 +119,25 @@ $(document).ready(function(){
         $('#form').append("<input  id='quant"+numero+"' name='quantidades[]' type='hidden' value='"+quantidade+"'>");
         $('#form').append("<input  id='item"+numero+"' name='itens[]' type='hidden' value='"+numero+"'>");
     }
+
+    /*
+     * Método que formata o Modal para realizar a esclusão de multiplos itens da view show requisição
+    */
+    $("#removeAll").click(function(){
+        $('#divItens').empty();// limpa os itens listados no modal
+        if ($('input[name^="itens"]:checked').length == 0) {
+            $("#btnRemoveItem").attr("type", "button"); // altera a propriedade do botão excluir
+            $("#msgRemoveItem").html('Nenhum item foi selecionado para exclusão!'); // altera o texto de exclusão do modal
+        } else{
+            $("#msgRemoveItem").html('Tem certeza que deseja excluir definitivamente os item selecionados?');// altera o texto de exclusão do modal
+            $("#btnRemoveItem").attr("type", "submit");// altera a propriedade do botão excluir
+                $('input[name^="itens"]').each(function() {
+                if ($(this).is(':checked')) {
+                    $('#divItens').append("<div class='row'><div class='col-md-12'>"+$(this).attr("data-object")+"</div></div>");
+                }
+            });
+        }
+
+    });
+
 });
