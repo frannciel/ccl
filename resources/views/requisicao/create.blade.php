@@ -20,11 +20,11 @@
 
 			<div class="col-md-6 {{$errors->has('tipo') ? ' has-error' : '' }}">
 				<label for="tipo">Tipo de Contratação *</label>
-				<select name="tipo" class="form-control" selected="{{old('tipo' ?? '')}}" required>
+				<select name="tipo" class="form-control" required="">
 					<option noSelected></option>
 					<optgroup label="Material">
 						<option value="1">Permanente</option>
-						<option value="2">Consumo</option>
+						<option value="2" >Consumo</option>
 					</optgroup>
 					<optgroup label="Serviço">
 						<option value="3">Não Continuado</option>

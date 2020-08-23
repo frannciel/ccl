@@ -260,6 +260,22 @@
             </div>
         </div><!-- /#page-wrapper -->
     </div><!-- /#wrapper -->
+    @isset($comunica)
+        @if($comunica['cod'] == 500)
+            <div class="alert alert-danger fixed-bottom w-5" id="success-alert">
+                 <strong>Erro Encontrado!</strong>
+                <button type="button" class="close" data-dismiss="alert">x</button>
+                {{$comunica['msg'] ?? ''}}
+            </div>
+        @endif
+        @if($comunica['cod'] == 200)
+            <div class="alert alert-success fixed-bottom w-5" id="success-alert">
+                <strong>Success!</strong>
+                <button type="button" class="close" data-dismiss="alert">x</button>
+                {{$comunica['msg'] ?? ''}}
+            </div>
+        @endif
+    @endisset
     <!-- jQuery  -->
     <script src="{{asset('vendor/jquery/jquery.min.js')}}"></script>
     <!-- Bootstrap Core JavaScript -->

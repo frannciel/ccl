@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use PDF;
 use App\Item;
+use Session;
 use App\Cotacao;
 use App\Requisicao;
 use Illuminate\Http\Request;
@@ -27,14 +28,14 @@ class CotacaoController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create(Requisicao $requisicao)
-    {        
-        //$requisicao = Requisicao::findByUuid($uuid);
+    {
         $itens = $requisicao->itens()->orderBy('numero', 'asc')->get();
         $array = array();
-
         foreach ($itens as $item)
-            $array += [$item->id => $item->numero];
-        return view('pesquisa.create',  compact('itens', 'array', 'requisicao'));
+            $array += [$item->uuid => $item->numero." - ".$item->objeto];
+        $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
+        Session::forget(['mensagem','codigo']); 
+        return view('cotacao.create',  compact('itens', 'array', 'requisicao', 'comunica'));
     }
 
     /**
@@ -45,47 +46,45 @@ class CotacaoController extends Controller
      */
     public function store(Request $request)
     {
-        // valida os dados antes da salvar
         $this->validate($request, [
-            'fonte'  => 'required|string|max:60',
+            'fonte'  => 'required|string|max:100',
             'valor'  => 'required|string',
             'data'   => 'required|date_format:d/m/Y',
             'hora'   => 'nullable|date_format:H:i',
-            'item'   => 'required|integer'
+            'item'   => 'required|string'
         ]);
-        $item = Item::find($request->item);
+        $item = Item::findByUuid($request->item);
         $cotacao = $item->cotacoes()->create([
             'fonte' => $request['fonte'],
             'valor' => $request['valor'],
             'data'  => $request['data'].$request['hora'],
         ]);
-        return redirect()->route('cotacaoNovo', ['requsicao' => $request->requisicao, 'cotacao' => $cotacao, 'item' => $item->id]);
-    }
+        return redirect()->route('cotacaoCreate', $request->requisicao)
+            ->with(['codigo' => 200,'mensagem' => 'Cotacão de preços cadastrada com sucesso.']);
+   }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $uuid
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Cotacao $cotacao)
     {
-        $cotacao = Cotacao::find($id);
         return response()->json(['Cotacao' => $cotacao]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  String  $uuid
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Cotacao $cotacao)
     {
-        $cotacao = Cotacao::find($id);
         $item = $cotacao->item;
         $requisicao =  $item->requisicao;
-        return view('pesquisa.edit',  compact("cotacao", "item", "requisicao"));
+        return view('cotacao.edit',  compact("cotacao", "item", "requisicao"));
     }
 
     /**
@@ -111,7 +110,7 @@ class CotacaoController extends Controller
         $cotacao->valor     = $request->valor;
         $cotacao->data      = $request->data.$request->hora;
         $cotacao->save();
-        return view('pesquisa.edit', compact("cotacao", "item", "requisicao"));
+        return view('cotacao.edit', compact("cotacao", "item", "requisicao"));
     }
 
     /**
@@ -120,9 +119,12 @@ class CotacaoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Cotacao $cotacao)
     {
-        Cotacao::destroy($id);
+        $requisicao = $cotacao->item->requisicao->uuid;
+        $cotacao->delete();
+        return redirect()->route('cotacaoCreate', $requisicao)
+            ->with(['codigo' => 200,'mensagem' => 'Cotação de preços excluída com sucesso.']);
     }
 
     public function relatorio(Requisicao $requisicao)
@@ -139,6 +141,6 @@ class CotacaoController extends Controller
         view()->share('requisicao', $requisicao);
         $pdf = PDF::loadView('pdf.cotacao', compact('requisicao'));
         $pdf->setPaper('A4');
-        return $pdf->download('Oficializacao_de_demanda_'.$requisicao->ordem.'.pdf');
+        return $pdf->download('Pesquisa_preços__'.$requisicao->ordem.'.pdf');
     }
 }

@@ -121,7 +121,7 @@ $(document).ready(function(){
     }
 
     /*
-     * Método que formata o Modal para realizar a esclusão de multiplos itens da view show requisição
+     * Método que formata o Modal para realizar a exclusão de multiplos itens da view show requisição
     */
     $("#removeAll").click(function(){
         $('#divItens').empty();// limpa os itens listados no modal
@@ -137,7 +137,23 @@ $(document).ready(function(){
                 }
             });
         }
+    });
 
+    /*
+     * Function necessária para apagar uma cotãção de preços 
+     */
+    $('.apagarCotacao').click(function(){
+        $('#formApagarCotacao').removeAttr("action");
+        $('#formApagarCotacao').prop("action", $(this).attr("data-route"));
+    });
+    /*
+     * Oculta a mensagem interessão com o usuário após transcorrido o tempo
+     */
+    /*$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+        $("#success-alert").slideUp(500);
+    });*/
+    $(".alert").delay(5000).slideUp(200, function() {
+        $(this).alert('close');
     });
 
 });

@@ -1,14 +1,12 @@
 @extends('layouts.index')
 
 @section('content')
-<div style="padding: 20px;">
-	
-	<div class="row">
-		<div class="col-md-12">
-			<h1 Class="page-header">Importação de Dados</h1>
-		</div>
+<div class="panel panel-default mb-4">
+	<div class="panel-heading text-center">
+		<h2>IMPORTAR DADOS</h2>
 	</div>
 
+	<div class="panel-body">
 	{{ Form::open(['url' => '/importar/store', 'method' => 'post', 'class' => 'form-padrao']) }}
 		{{ Form::hidden('uuid', $uuid)}}
 		<div class="row">
@@ -16,7 +14,6 @@
 			'input' => 'tipo', 
 			'label' => 'Tipo de Importação', 
 			'selected' => '{{ old($input) }}', 
-			'largura' => '3',
 			'options' => $opcoes ?? '', 
 			'attributes' => ['id' => 'tipo', 'required' => '', 'class' => 'form-control form-control-sm']])
 		</div>
@@ -30,9 +27,9 @@
 			])
 		</div>
 		
-		<div class="row">
+		<div class="row mt-2">
 			@include('form.button', [
-			'value' => 'Cancelar',
+			'value' => 'Voltar',
 			'largura' 	=> 3,
 			'class'		=> 'btn btn-primary btn-block',
 			'url' 		=> 	route('principal'),
@@ -52,10 +49,11 @@
 			</span>
 			@endif 
 		</div>
-
+</div>
+</div>
 	<div class="panel panel-warning" style="margin-top:20px;">
 		<div class="panel-heading">
-			<h3 class="panel-title">Instruções para Importação  </h3>
+			<h3 class="panel-title text-center">Instruções para Importação  </h3>
 		</div>
 		<div class="panel-body">
 			<p>
@@ -73,7 +71,7 @@
 				PASSO A PASSO PARA IMPORTAÇÃO:
 			</p>
 			<p>
-				1° Passo: Elabora no Word planilha conforme tabela 1.
+				1° Passo: Elabora no Word planilha conforme <b>tabela 1</b>.
 				É necessário  que todas as celulas da ultima coluna mais à direita estejam vazias.
 				Lembra-se também de remover a linha de cabeçalho antes do passo 2. Caso algum dado opcional não exita mantenha a celula vaiza.
 			</p>
@@ -93,7 +91,7 @@
 
 			<table class="table" border=1 cellspacing=0 cellpadding=2>
 				<tr><th>Item</th><th>Descrição</th><th>Código</th><th>Unidade</th><th>Quantidade</th><th>Vazia</th></tr>
-				<small>Tabela 2. Item</small>
+				<small>Tabela 1. Item</small>
 			</table>
 
 			<table class="table" border=1 cellspacing=0 cellpadding=2>

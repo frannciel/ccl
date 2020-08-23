@@ -65,7 +65,7 @@
 		   
 			<div class="row mt-2">
 				@include('form.button', [
-				'value' => 'Cancelar',
+				'value' => 'Voltar',
 				'largura' 	=> 3,
 				'class'		=> 'btn btn-primary btn-block',
 				'url' 		=> 	route('requisicaoExibir', [$requisicao->uuid]),

@@ -134,7 +134,6 @@ class ItemController extends Controller
             'objeto'     => 'string|nullable|max:100',
             'descricao'  => 'required|string',
             'unidade'    => 'required|integer',
-            'grupo'      => 'integer|nullable'
         ]);
 
         $item = Item::findByUuid($request->item);

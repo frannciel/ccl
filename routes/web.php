@@ -14,6 +14,7 @@ use App\Licitacao;
 http://www.bosontreinamentos.com.br/mysql/opcoes-de-chave-estrangeira-mysql/
 	php artisan route:clear
 	php artisan config:clear
+	php artisan view:clear
 	composer dump-autoload
 */
 
@@ -82,19 +83,10 @@ Route::post('item/primeiro', 	 								'ItemController@primeiro');
 Route::get('item/segundo', 	 									'ItemController@segundo');
 Route::post('cep', 												'FornecedorController@buscarCEP');
 
-//Route::get('importar/novo', 									'FileController@redirecionar');
-//Route::post('importar/ata/store', 								'FileController@AtaSrpStore');
-//Route::get('importar/ata/show', 								'FileController@AtaSrpShow');
-Route::get('requisicao/ata/{id}', 								'RequisicaoController@ataShow')->name('ataShow');
-Route::post('requisicao/ata/create', 							'RequisicaoController@ataCreate')->name('ataCreate');
-
-
-
 Route::get('importar', 											'FileController@create');
 Route::get('importar/{uuid}', 									'FileController@create')->name('importar');
 Route::post('importar/store', 									'FileController@store')->name('importeSalvar');
 Route::post('importar/ata/store', 								'FileController@AtaSrpStore');
-
 
 Route::get('uasg', 												'UasgController@index')->name('uasg');
 Route::get('uasg/novo', 										'UasgController@create')->name('uasg.nova');
@@ -103,46 +95,51 @@ Route::get('uasg/exibir/{uuid}', 								'UasgController@show')->name('uasg.exib
 Route::post('uasg/store', 	 									'UasgController@store');
 Route::post('uasg/update', 										'UasgController@update');
 
-Route::post('requisicao/duplicar/item', 						'RequisicaoController@duplicarItem');
-Route::post('requisicao/remove/item', 							'RequisicaoController@removeItens');
-Route::get('requisicao/formalizar/{requisicao}', 				'RequisicaoController@formalizacao');
-Route::get('requisicao/formalizar/pdf/{requisicao}', 			'RequisicaoController@formalizacaoPdf');
-Route::get('requisicao/pesquisa/{requisicao}', 					'RequisicaoController@pesquisa');
-Route::get('requisicao/pesquisa/pdf/{requisicao}', 				'RequisicaoController@pesquisaPdf');
 Route::get('requisicao/', 										'RequisicaoController@index')->name('requisicao');
 Route::get('requisicao/novo', 									'RequisicaoController@create')->name('requisicaoNova');
-Route::get('requisicao/exibir/{requisicao}', 					'RequisicaoController@show')->name('requisicaoExibir');
+Route::get('requisicao/exibir/{requisicao}', 					'RequisicaoController@show')->name('requisicaoShow');
+Route::get('requisicao/formalizar/{requisicao}', 				'RequisicaoController@formalizacao')->name('requisicaoFormalizacao');
+Route::get('requisicao/formalizar/pdf/{requisicao}', 			'RequisicaoController@formalizacaoPdf');
+Route::get('requisicao/pesquisa/{requisicao}', 					'RequisicaoController@pesquisa')->name('requisicaoPesquisa');
+Route::get('requisicao/pesquisa/pdf/{requisicao}', 				'RequisicaoController@pesquisaPdf');
 Route::get('requisicao/documento/{requisicao}', 				'RequisicaoController@documento')->name('documento');
+Route::get('requisicao/consulta/{acao}',						'RequisicaoController@consultar')->name('requisicaoConsulta');
+Route::get('requisicao/ata/{id}', 								'RequisicaoController@ataShow')->name('ataShow');
 Route::post('requisicao/store', 	 							'RequisicaoController@store');
 Route::post('requisicao/update', 								'RequisicaoController@update');
 Route::post('requisicao/ajax', 									'RequisicaoController@ajax');
-Route::get('requisicao/consulta/{acao}',						'RequisicaoController@consultar')->name('requisicaoConsulta');
-Route::delete('requisicao/apagar/{requisicao}', 				'RequisicaoController@destroy');
+Route::post('requisicao/ata/create', 							'RequisicaoController@ataCreate')->name('ataCreate');
+Route::post('requisicao/duplicar/item', 						'RequisicaoController@duplicarItem')->name('requisicaoDuplicarItem');
+Route::post('requisicao/remove/item', 							'RequisicaoController@removeItens')->name('requisicaoRemoveItens');
+Route::delete('requisicao/apagar/{requisicao}', 				'RequisicaoController@destroy')->name('requisicaoDestroy');
 
-Route::get('fornecedor/', 				'FornecedorController@index')->name('fornecedor');
-Route::get('fornecedor/novo/',			'FornecedorController@create')->name('fornecedorNovo');
-Route::get('fornecedor/editar/{uuid}',  'FornecedorController@edit')->name('fornecedorEditar');
-Route::get('fornecedor/deleta/{uuid}',  'FornecedorController@delete')->name('fornecedorApagar');
-Route::post('fornecedor/store', 	 	'FornecedorController@store');
-Route::post('fornecedor/update', 		'FornecedorController@update');
-Route::post('fornecedor/fornecedor', 	'FornecedorController@getFornecedor');
+Route::get('fornecedor/', 										'FornecedorController@index')->name('fornecedor');
+Route::get('fornecedor/novo/',									'FornecedorController@create')->name('fornecedorNovo');
+Route::get('fornecedor/editar/{uuid}',  						'FornecedorController@edit')->name('fornecedorEditar');
+Route::get('fornecedor/deleta/{uuid}',  						'FornecedorController@delete')->name('fornecedorApagar');
+Route::post('fornecedor/store', 	 							'FornecedorController@store');
+Route::post('fornecedor/update', 								'FornecedorController@update');
+Route::post('fornecedor/fornecedor', 							'FornecedorController@getFornecedor');
 
-/*Route::get('participante/{item_id}',	'ParticipanteController@create')->name('participante');
-Route::get('participante/novo/{id}',	'ParticipanteController@create')->name('participanteNovo');
-Route::get('participante/editar/{id}',  'ParticipanteController@edit')->name('participanteEditar');
-Route::post('participante/store', 	 	'ParticipanteController@store');
-Route::post('participante/update', 		'ParticipanteController@update');*/
-
-Route::get('cotacao/novo/{requisicao}', 						'CotacaoController@create')->name('cotacaoNovo');
-Route::get('cotacao/editar/{id}',  								'CotacaoController@edit')->name('cotacaoEditar');
+Route::get('cotacao/novo/{requisicao}', 						'CotacaoController@create')->name('cotacaoCreate');
+Route::get('cotacao/editar/{cotacao}',  						'CotacaoController@edit')->name('cotacaoEdit');
 Route::get('cotacao/relatorio/{requisicao}', 					'CotacaoController@relatorio')->name('cotacaoRelatorio');
-Route::get('cotacao/relatorio/pdf/{requisicao}', 				'CotacaoController@relatorioPdf')->name('relatorioPdf');
-Route::get('cotacao/apagar/{id}',  								'CotacaoController@destroy')->name('cotacaoApagar');
-Route::post('cotacao/store', 									'CotacaoController@store');
-Route::post('cotacao/update', 									'CotacaoController@update');
+Route::get('cotacao/relatorio/pdf/{requisicao}', 				'CotacaoController@relatorioPdf')->name('cotacaoRelatorioPdf');
+Route::delete('cotacao/apagar/{cotacao}',  						'CotacaoController@destroy')->name('cotacaoDestroy');
+Route::post('cotacao/store', 									'CotacaoController@store')->name('cotacaoStore');
+Route::post('cotacao/update', 									'CotacaoController@update')->name('cotacaoUpdate');
 
 Route::get('enquadramento', 			'InformacaoController@index')->name('enquadramento');
 Route::get('enquadramento/novo', 		'InformacaoController@create')->name('enquadramentoNovo');
 Route::post('enquadramento/dados', 		'InformacaoController@informacao');
 Route::post('enquadramento/store', 		'InformacaoController@store');
 Route::post('informacao/ajax', 			'InformacaoController@ajax');
+
+/*Route::get('participante/{item_id}',	'ParticipanteController@create')->name('participante');
+Route::get('participante/novo/{id}',	'ParticipanteController@create')->name('participanteNovo');
+Route::get('participante/editar/{id}',  'ParticipanteController@edit')->name('participanteEditar');
+Route::post('participante/store', 	 	'ParticipanteController@store');
+Route::post('participante/update', 		'ParticipanteController@update');*/
+//Route::get('importar/novo', 									'FileController@redirecionar');
+//Route::post('importar/ata/store', 								'FileController@AtaSrpStore');
+//Route::get('importar/ata/show', 								'FileController@AtaSrpShow');

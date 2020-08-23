@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use PDF;
 use App\Item;
+use Session;
 use App\Fornecedor;
 use App\Requisicao;
 use App\Requisitante;
-use PDF;
 use Illuminate\Http\Request;
 use App\Http\Requests\RequisicaoRequest;
+
 
 class RequisicaoController extends Controller
 {
@@ -19,7 +21,10 @@ class RequisicaoController extends Controller
      */
     public function index()
     {
-        return view('requisicao.index')->with('requisicoes', Requisicao::orderBy('updated_at', 'desc')->get());
+        $requisicoes =  Requisicao::orderBy('updated_at', 'desc')->get();
+        $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
+        Session::forget(['mensagem','codigo']); 
+        return view('requisicao.index', compact( 'requisicoes', 'comunica'));
     }
 
     /**
@@ -71,7 +76,8 @@ class RequisicaoController extends Controller
         $requisicao->data = $request->previsao; // formata o campo previsão em formato de data
         $requisicao->requisitante()->associate(Requisitante::findByUuid($request->requisitante)); // representa o  requisitante
         $requisicao->save();
-        return redirect()->route('requisicaoExibir', [ $requisicao->uuid]);
+        return redirect()->route('requisicaoShow', $requisicao->uuid)
+            ->with(['codigo' => "200",'mensagem' => 'Nova requisição criada com sucesso.']);
     }
 
     /**
@@ -85,7 +91,9 @@ class RequisicaoController extends Controller
         $requisitante = array();
         foreach (Requisitante::all() as $value)
             $requisitante += [$value->uuid => $value->nome];
-        return view('requisicao.show', compact('requisitante', 'requisicao'));
+        $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
+        Session::forget(['mensagem','codigo']);
+        return view('requisicao.show', compact('requisitante', 'requisicao', 'comunica'));                          
     }
 
     /**
@@ -138,7 +146,8 @@ class RequisicaoController extends Controller
         $requisicao->requisitante()->dissociate(); // remove todas as relações
         $requisicao->requisitante()->associate(Requisitante::findByUuid($request->requisitante)); // refaz as relaçoes
         $requisicao->save();
-        return redirect()->route('requisicao');
+        return redirect()->route('requisicaoShow', $requisicao->uuid)
+            ->with(['codigo' => "200",'mensagem' => 'Requisição '.$requisicao->ordem.' alterada com sucesso.']);
     }
 
     /**
@@ -150,21 +159,8 @@ class RequisicaoController extends Controller
     public function destroy(Requisicao $requisicao)
     {
         $requisicao->delete();
-        return redirect()->route('requisicao');
-    }
-
-    public function removeItens(Request $request)
-    {
-        $itens = $request->itens;
-        foreach ($itens as  $uuid) {
-            $item = Item::findByUuid($uuid);
-            if ($request->requisicao == $item->requisicao->uuid) { // verifica se o item pertence a requisição
-                if (!$item->licitacao) { // verifica se o item não está relacionado a uma licitação
-                    $item->delete();
-                }
-            }
-        }
-        return redirect()->route('requisicao');
+        return redirect()->route('requisicao')
+            ->with(['codigo' => 200,'mensagem' => 'Requisição '.$requisicao->ordem.' excluída com sucesso.']);
     }
 	
 	public function ajax(Request $request)
@@ -182,11 +178,9 @@ class RequisicaoController extends Controller
 		$opcoes = array();
 		foreach($itens as $item)
 			$forncedores = $item->fornecedores()->get()->merge($forncedores);
-	
 		//$forncedores = $forncedores->unique('cpf_cnpj');
 		foreach ($forncedores as $fornecedor)
             $opcoes += [$fornecedor->id => $fornecedor->razao_social];
-		
 		return view('requisicao.geradorAta', compact('requisicao', 'opcoes'));
     }	
 	
@@ -223,8 +217,6 @@ class RequisicaoController extends Controller
     public function documento(Requisicao $requisicao)
     {
        return  view('requisicao.relacao', compact('requisicao'));
-
-      // return  view('documentos.requisicao')->with('requisicao', Requisicao::findByUuid($uuid));
     }
 
     public function pesquisa(Requisicao $requisicao)
@@ -256,20 +248,56 @@ class RequisicaoController extends Controller
     public function duplicarItem(Request $request)
     {
         $itens = $request->itens;
-        $requisicao = Requisicao::findByUuid($request->requisicao);
+        if (empty($itens)) {
+            //return redirect()->action('RequisicaoController@show', [$requisicao]);
+            return redirect()->route('requisicaoShow', $request->requisicao)
+                            ->with([
+                                'codigo' => 500,
+                                'mensagem' => 'Nenhum item duplicado, selecione um ou mais itens e tente novamente.'
+                            ]);
+        }else{
+            $requisicao = Requisicao::findByUuid($request->requisicao);
+            foreach ($itens as  $uuid) {
+                $item = Item::findByUuid($uuid);
+                if ($request->requisicao == $item->requisicao->uuid) { // verifica se o item pertence a requisição
+                   $requisicao->itens()->create([
+                        'numero'        => $requisicao->itens()->max('numero')+1, // este número indicara itens mesclados nas  licitcaoes, eles não pertencem a nenhuma requisicão
+                        'quantidade'    => $item->quantidade,
+                        'codigo'        => $item->codigo,
+                        'objeto'        => $item->objeto,
+                        'descricao'     => $item->descricao,
+                        'unidade_id'    => $item->unidade_id,
+                    ]);
+                }
+            }   
+            return redirect()->route('requisicaoShow', $requisicao)
+                ->with(['codigo' => "200",'mensagem' => 'Item duplicado com sucesso.']);
+        }
+    }
+
+    public function removeItens(Request $request)
+    {
+        $itens = $request->itens;
         foreach ($itens as  $uuid) {
             $item = Item::findByUuid($uuid);
             if ($request->requisicao == $item->requisicao->uuid) { // verifica se o item pertence a requisição
-               $requisicao->itens()->create([
-                    'numero'        => $requisicao->itens()->max('numero')+1, // este número indicara itens mesclados nas  licitcaoes, eles não pertencem a nenhuma requisicão
-                    'quantidade'    => $item->quantidade,
-                    'codigo'        => $item->codigo,
-                    'objeto'        => $item->objeto,
-                    'descricao'     => $item->descricao,
-                    'unidade_id'    => $item->unidade_id,
-                ]);
+                if (!$item->licitacao) { // verifica se o item não está relacionado a uma licitação
+                    $item->delete();
+                }
             }
         }
-        return redirect()->action('RequisicaoController@show', [$requisicao]);
+        $this->ordenarItens(Requisicao::findByUuid($request->requisicao));
+        return redirect()->route('requisicaoShow', $request->requisicao)
+            ->with([ 'codigo' => 200, 'mensagem' => 'Item(ns) Excluido(s) com sucesso.']);
+    }
+
+    public function ordenarItens(Requisicao $requisicao){
+        $itens = $requisicao->itens()->orderBy('numero', 'asc')->get();
+        $numero = 1;
+        foreach ($itens as $item) {
+            $item->numero = $numero;
+            $item->save();
+            $numero += 1;
+        }
     }
 }

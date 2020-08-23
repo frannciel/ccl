@@ -22,7 +22,7 @@
 
 	<div class="panel-body">
 	{{Form::open(['url' => '/item/update', 'method' => 'post', 'class' => 'form-padrao'])}}
-		{{ Form::hidden('requisicao', old($input ?? '') ?? $item->uuid)}}
+		{{ Form::hidden('item', old($input ?? '') ?? $item->uuid)}}
 
 		<div class="row">
 			@include('form.number', [
@@ -62,7 +62,7 @@
 			'value' => old($input ?? '') ?? $item->objeto,
 			'attributes' => ['id' => 'objeto', 'autocomplete' => 'off' ]])
 		</div>
-
+		
 		<div class="row">
 			@include('form.textarea', [
 			'input' => 'descricao', 
@@ -73,7 +73,7 @@
 
 		<div class="row mt-2">
 			@include('form.button', [
-			'value' => 'Cancelar',
+			'value' => 'Voltar',
 			'largura' 	=> 3,
 			'class'		=> 'btn btn-primary btn-block',
 			'url' 		=> 	route('requisicaoExibir',[$item->requisicao->uuid]),

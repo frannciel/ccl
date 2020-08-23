@@ -1,7 +1,6 @@
 @extends('layouts.index')
 
 @section('content')
-
 <div class="panel panel-default mb-4">
 	<div class="panel-heading text-center">
 		<h2>ALTERAR OU EXCLUIR REQUISIÇÃO</h2>
@@ -32,16 +31,16 @@
 					<select name="tipo" class="form-control" selected="{{old('tipo' ?? '')}}" required>
 						<option noSelected></option>
 						<optgroup label="Material">
-							<option value="1">Permanente</option>
-							<option value="2">Consumo</option>
+							<option value="1" {{$requisicao->tipo == 1 ? "selected":""}}>Permanente</option>
+							<option value="2" {{$requisicao->tipo == 2 ? "selected":""}}>Consumo</option>
 						</optgroup>
 						<optgroup label="Serviço">
-							<option value="3">Não Continuado</option>
-							<option value="4">Continuado</option>
-							<option value="5">Tempo Indeterminado</option>
+							<option value="3" {{$requisicao->tipo == 3 ? "selected":""}}>Não Continuado</option>
+							<option value="4" {{$requisicao->tipo == 4 ? "selected":""}}>Continuado</option>
+							<option value="5" {{$requisicao->tipo == 5 ? "selected":""}}>Tempo Indeterminado</option>
 						</optgroup>
-						<option value="6" class="font-weight-bold">Obra</option>
-						<option value="7" class="font-weight-bold">Serviço de Engenharia</option>
+						<option value="6" {{$requisicao->tipo == 6 ? "selected":""}} class="font-weight-bold">Obra</option>
+						<option value="7" {{$requisicao->tipo == 7? "selected":""}} class="font-weight-bold">Serviço de Engenharia</option>
 					</select>
 					@if ($errors->has('tipo'))
 					    <span class="help-block">
@@ -153,7 +152,8 @@
 				<div class="row">
 					<div class="col-md-12">
 						<h5>
-							Tem certeza que deseja excluir definitivamente esta Requisição?
+							<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+							Tem certeza que deseja excluir definitivamente esta Requisição? Isso também apaga todos os dados dos itens relacionados a ela.
 						</h5>
 					</div>
 				</div>
@@ -185,7 +185,7 @@
 					<a type="button" class="btn btn-success btn-outline" title="Adicionar Novo Item" href="{{route('itemNovo', ['uuid' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-plus"></i></a>
 				</div>
 				<div class="btn-group" role="group">
-					<a type="button"  class="btn btn-success btn-outline" title="Pesquisa de Preços" href="{{route('cotacaoNovo', ['uuid' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-shopping-cart"></i></a>
+					<a type="button"  class="btn btn-success btn-outline" title="Pesquisa de Preços" href="{{route('cotacaoCreate', ['requisicao' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-shopping-cart"></i></a>
 				</div>
 				<div class="btn-group" role="group">
 					<a type="button" class="btn btn-success btn-outline" title="Importar Dados" href="{{route('importar', ['uuid' => $requisicao->uuid])}}"><i class="fa fa-upload"></i></a>
@@ -245,7 +245,7 @@
 								</div>
 							</td>
 							<td class="center">{{$item->numero}}</td>
-							<td class="justicado">@php print($item->descricaoCompleta) @endphp</td>
+							<td class="justificado">@php print($item->descricaoCompleta) @endphp</td>
 							<td class="center">{{$item->codigo =='0'?'': $item->codigo}}</td>
 							<td class="center">{{$item->unidade->nome}}</td>
 							<td class="center">{{$item->quantidadeTotal}}</td>
