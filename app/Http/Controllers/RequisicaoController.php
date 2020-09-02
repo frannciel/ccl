@@ -167,6 +167,7 @@ class RequisicaoController extends Controller
 	{
 		$ano = substr($request->numeroAno, -4);	
 		$numero = substr($request->numeroAno, 0, -4);
+
         return response()->json(['requisicao' => Requisicao::where([['ano', '=', $ano], ['numero', '=', $numero ]])->first()]);
     }
 	
@@ -249,12 +250,8 @@ class RequisicaoController extends Controller
     {
         $itens = $request->itens;
         if (empty($itens)) {
-            //return redirect()->action('RequisicaoController@show', [$requisicao]);
             return redirect()->route('requisicaoShow', $request->requisicao)
-                            ->with([
-                                'codigo' => 500,
-                                'mensagem' => 'Nenhum item duplicado, selecione um ou mais itens e tente novamente.'
-                            ]);
+                ->with(['codigo' => 500, 'mensagem' => 'Nenhum item duplicado, selecione um ou mais itens e tente novamente.']);
         }else{
             $requisicao = Requisicao::findByUuid($request->requisicao);
             foreach ($itens as  $uuid) {
@@ -271,7 +268,7 @@ class RequisicaoController extends Controller
                 }
             }   
             return redirect()->route('requisicaoShow', $requisicao)
-                ->with(['codigo' => "200",'mensagem' => 'Item duplicado com sucesso.']);
+                ->with(['codigo' => 200,'mensagem' => 'Item duplicado com sucesso.']);
         }
     }
 

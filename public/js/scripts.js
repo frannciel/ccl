@@ -14,6 +14,7 @@ $(document).ready(function(){
     $('#cpf_cnpj').mask('00.000.000/0000-00');
     $('.telefone').mask('(00)00000-00000');
     $('.contrato').mask('000/0000');
+    $('#ordem').mask('000/0000')
 
     /*
     * Valida o campo quantidade solicitada e calcula o total para cada item iserido na solicitação de empenho
@@ -156,4 +157,18 @@ $(document).ready(function(){
         $(this).alert('close');
     });
 
+    $('#buscar').click(function(){
+        $.ajax({
+            method:'POST',
+            url: '/requisicao/ajax',
+            data: {
+                numeroAno: $("#seachKey").val(),
+                "_token": $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(data) {
+                $('#descricao').val(data.requisicao.descricao);
+                $('#buscarItem').attr("href",  $("#buscarItem").attr("data-route")+"/item/atribuir/"+$("#buscarItem").attr("data-licitacao")+"/"+data.requisicao.uuid);
+            }
+        });
+    });
 });

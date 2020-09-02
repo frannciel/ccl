@@ -212,6 +212,12 @@
 .text-red{
     color: #de1010;
 }
+.color-orange{
+    color: #f0ad4e;
+}
+.color-green{
+    color: #5cb85c;
+}
 .fixed-bottom {
   position: fixed;
   right: 0;

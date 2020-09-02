@@ -10,11 +10,11 @@
 		{{ Form::open(['url' => 'pregao/update', 'method' => 'post', 'class' => 'form-padrao']) }} <!-- Formulário de update de pregão -->
 		<div class="row">
 			@include('form.text', [
-			'input' => 'numero',
+			'input' => 'ordem',
 			'label' => 'Número', 
 			'largura' => 2,
 			'value' => old($input ?? '') ?? $licitacao->ordem ?? '',
-			'attributes' => ['id' => 'ordem', 'disabled' => '']])
+			'attributes' => ['id' => 'ordem', 'disabled' => '', 'placeholder' => 'NNN/AAAA']])
 
 			@include('form.text', [
 			'input' => 'processo',
@@ -67,13 +67,66 @@
 			'largura' => 3])
 
 			<div class="col-md-3 mt-2">
-				<a href="{{route('licitacao')}}" class="btn btn-warning btn-block" type="button">Excluir</a>
+				<button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#excluirLicitacaoModal">Excluir</button>
 			</div>
 		</div>
 		{{ Form::close() }} <!-- /Formulário de update de pregão -->
 	</div>
 </div>
 
+<div class="modal fade" id="excluirLicitacaoModal" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="row">
+					<div class="col-md-6">
+						<h4 class="modal-title" id="excluirLicitacaoModal">Excluir Licitação</h4>
+					</div>
+					<div class="col-md-6">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+				</div>	
+			</div><!-- /.modal-header -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-12">
+						<h5>
+							<p class="font-weight-bold">
+								<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+								&nbsp;Tem certeza que deseja excluir definitivamente esta licitação?
+							</p>
+							<p>Esta ação também excluirá:</p>
+							<ul>
+								<li>Itens mesclados e duplicados;</li>
+								<li>Item criado a partir desta licitação e não relacionado a requisição;</li>
+								<li>Fornecedores dos itens desta licitação;</li>
+								<li>Atas de Registros de Preços desta licitação;</li>
+								<li>Todas as contratações relacionadas a esta licitação; e</li>
+								<li>Participantes desta licitação.</li>
+							</ul>
+						</h5>
+					</div>
+				</div>
+			</div><!-- /.modal-body -->
+			<div class="modal-footer">
+				<div class="row">
+					<div class="col-md-3 col-md-offset-6">
+						<button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancelar</button>
+					</div>
+					<div class="col-md-3">
+						<form action="{{url('licitacao/apagar', $licitacao->uuid)}}" method="post">
+							{{csrf_field() }}
+							<input type="hidden" name="_method" value="DELETE">
+							<button type="submit" class="btn btn-danger btn-block">Excluir</button>
+						</form>
+					</div>
+				</div>
+			</div><!-- /.modal-footer -->
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 {{ Form::open(['url' => 'licitacao/item/duplicar', 'method' => 'POST', 'class' => 'form-padrao']) }}
 	{{ Form::hidden('licitacao', $licitacao->uuid,  ['id' => 'licitacao']) }} <!-- o segundo parametro é o id do input hidden licitacao-->
@@ -96,6 +149,9 @@
 						</div>
 						<div class="btn-group" role="group">
 							<button type="submit" class="btn btn-success btn-outline" title="Duplicar Itens"><i class="glyphicon glyphicon-duplicate"></i></button>
+						</div>
+						<div class="btn-group" role="group">
+							<a type="button" href="{{url('licitacao/atribuir',['licitacao' => $licitacao->uuid])}}" class="btn btn-success btn-outline" title="Atribuir ou Remover Itens"><i class="fa fa-plus-square" aria-hidden="true"></i></a>
 						</div>
 						<div class="btn-group" role="group">
 							<button type="submit" formaction="/action_page2.php" class="btn btn-danger btn-outline" title="Remover Itens"><i class="glyphicon glyphicon-trash"></i></button>
@@ -167,7 +223,7 @@
 											<td class=" center">{{$item->unidade->nome}}</td>
 											<td class=" center">{{$item->codigo =='0'?'': $item->codigo}}</td>
 											<td class=" center">{{$item->quantidadeTotal}}</td>
-											<td class=" center">""</td>
+											<td class=" center"></td>
 
 
 											<!--<td>isset($item->grupo->numero) ? $item->grupo->numero : ''</td>-->
@@ -299,5 +355,4 @@
 			</div><!-- /.panel -->
 		</div><!-- /.col-lg-12 -->
 	</div>
-
 @endsection

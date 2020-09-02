@@ -75,7 +75,7 @@
 			
 			<div class="row mb-2">
 				<div class="col-md-3 col-6 col-md-offset-3 mt-2">
-					<a href="{{route('licitacaoExibir', [$licitacao->uuid])}}" class="btn btn-primary btn-block" type="button">Voltar</a>
+					<a href="{{route('licitacaoShow', [$licitacao->uuid])}}" class="btn btn-primary btn-block" type="button">Voltar</a>
 				</div>
 
 				@include('form.submit', [

@@ -13,7 +13,7 @@
 			<div class="col-md-12">
 				<h3>
 					<span class="glyphicon glyphicon-link" aria-hidden="true"></span>
-					<a href="{{route('requisicaoExibir', [$requisicao->uuid])}}">Requisição n° {{$requisicao->ordem ?? '' }}</a>
+					<a href="{{route('requisicaoShow', [$requisicao->uuid])}}">Requisição n° {{$requisicao->ordem ?? '' }}</a>
 				</h3>
 				<p><label> Objeto:</label> {{$requisicao->descricao ?? ''}}</p>
 			</div>
@@ -68,7 +68,7 @@
 				'value' => 'Voltar',
 				'largura' 	=> 3,
 				'class'		=> 'btn btn-primary btn-block',
-				'url' 		=> 	route('requisicaoExibir', [$requisicao->uuid]),
+				'url' 		=> 	route('requisicaoShow', [$requisicao->uuid]),
 				'recuo' 	=> 3 ])
 
 				@include('form.submit', [

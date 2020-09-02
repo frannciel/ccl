@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Pregao;
 use App\Item;
+use App\Licitacao;
 use App\Participante;
 use App\Informacao;
 use App\Fornecedor;
@@ -47,18 +48,28 @@ class PregaoController extends Controller
      */
     public function store(Request $request)
     {
+        $numero; $ano;
+        if (empty($request->ordem)) {
+            $numero = Licitacao::where('licitacaoable_type', '=', 'Pregão Eletrônico')
+                ->where('ano', '=', date('Y'))->max('numero') +1;
+            $ano = date('Y');
+        } else{
+            $ordem = explode("/", $request->ordem);
+            $numero = $ordem[0];
+            $ano = $ordem[1];
+        }
         $pregao = Pregao::create([
-            'srp'              => $request['srp'],
-            'tipo'          => $request['tipo'],
-            'forma'         => $request['forma'],
+            'srp'           => $request->srp,
+            'tipo'          => $request->tipo,
+            'forma'         => $request->forma,
         ]);
         $pregao->licitacao()->create([
-            'numero'        => $request['numero'],
-            'ano'           => $request['ano'],
-            'processo'      => $request['processo'],
-            'objeto'        => nl2br($request['objeto']),
+            'numero'        => $numero,
+            'ano'           => $ano,
+            'processo'      => $request->processo,
+            'objeto'        => nl2br($request->objeto),
         ]);
-        return redirect()->action('PregaoController@show', ['uuid' => $pregao->uuid]);
+        return redirect()->route('pregaoShow', $pregao->uuid);
     }
 
     /**
