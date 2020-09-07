@@ -18,10 +18,9 @@ class CreateMescladosTable extends Migration
             $table->integer('mesclado_id')->unsigned();
             $table->integer('item_id')->unsigned();
             $table->integer('licitacao_id')->unsigned();
-            $table->foreign('mesclado_id')->references('id')->on('itens');
+            $table->foreign('mesclado_id')->references('id')->on('itens')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('itens');
-            $table->foreign('licitacao_id')->references('id')->on('licitacoes');
-            $table->timestamps();
+            $table->foreign('licitacao_id')->references('id')->on('licitacoes')->onDelete('cascade');
         });
     }
 

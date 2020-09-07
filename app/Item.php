@@ -18,9 +18,15 @@ class Item extends Model
      *
      * @return     <Collect>  App\Item
      */
+    public function mesclados()
+    {
+        return $this->belongsToMany('App\Item', 'mesclados', 'mesclado_id', 'item_id')
+        ->withPivot('licitacao_id');
+    }
     public function itens()
     {
-        return $this->belongsToMany('App\Item', 'mesclados', 'item_id', 'mesclado_id')->withPivot('licitacao_id')->withTimestamps();
+        return $this->belongsToMany('App\Item', 'mesclados', 'item_id', 'mesclado_id')
+        ->withPivot('licitacao_id');
     }
 
     public function requisicao()
@@ -32,7 +38,6 @@ class Item extends Model
     {
         return $this->belongsTo('App\Licitacao', 'licitacao_id');
     }
-
 
     /*public function licitacao()
     {

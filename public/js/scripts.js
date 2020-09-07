@@ -147,6 +147,20 @@ $(document).ready(function(){
         $('#formApagarCotacao').removeAttr("action");
         $('#formApagarCotacao').prop("action", $(this).attr("data-route"));
     });
+
+    /*
+     * Function necessária para apagar uma cotãção de preços 
+     */
+    $('.removeRequisicao').click(function(){
+        $('#formRemoveRequisicao').removeAttr("action");
+        $('#formRemoveRequisicao').prop("action", $(this).attr("data-route"));
+    });
+
+    $('.desmesclar').click(function(){
+        $('#formDesmesclar').removeAttr("action");
+        $('#formDesmesclar').prop("action", $(this).attr("data-route"));
+    });
+
     /*
      * Oculta a mensagem interessão com o usuário após transcorrido o tempo
      */

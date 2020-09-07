@@ -105,7 +105,7 @@
                'value' => 'Voltar',
                'largura'   => 3,
                'class'     => 'btn btn-primary btn-block',
-               'url'       =>  route('licitacaoExibir', [$licitacao->uuid]),
+               'url'       =>  route('licitacaoShow', [$licitacao->uuid]),
                'recuo'  => 3 ])
 
                @include('form.submit', [

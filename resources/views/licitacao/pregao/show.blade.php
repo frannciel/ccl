@@ -145,7 +145,7 @@
 							<button type="button" class="btn btn-success btn-outline " title="Adicionar Novo Item"><i class="glyphicon glyphicon-plus"></i></button>
 						</div>
 						<div class="btn-group" role="group">
-							<a type="button" class="btn btn-success btn-outline" title="Mesclar Itens" href="{{route('licitacaoMesclar', ['uuid' => $licitacao->uuid])}}"><i class="glyphicon glyphicon-resize-small"></i></a>
+							<a type="button" class="btn btn-success btn-outline" title="Mesclar Itens" href="{{route('licitacaoMesclarCreate', ['uuid' => $licitacao->uuid])}}"><i class="glyphicon glyphicon-resize-small"></i></a>
 						</div>
 						<div class="btn-group" role="group">
 							<button type="submit" class="btn btn-success btn-outline" title="Duplicar Itens"><i class="glyphicon glyphicon-duplicate"></i></button>
@@ -243,67 +243,28 @@
 							<table class="table table-hover tablesorter">
 								<thead>
 									<tr>
-										<th>Requisição</th>
-										<th>Descrição</th>
-										<th>Solicitante</th>
-										<th>Remover</th>
+										<th class="center">Requisição</th>
+										<th class="center">Descrição</th>
+										<th class="center">Solicitante</th>
 									</tr>
 								</thead>
 								<tbody>
 									@forelse ($licitacao->requisicoes as $requisicao)
-									<tr onclick="location.href ='{{route('itemEditar', [$licitacao->uuid])}}'; target='_blank';" style="cursor: hand;">
-										<td>{{$requisicao->numero}}/{{$requisicao->ano}}</td>
+									<tr onclick="location.href ='{{route('licitacaoAtribuirItemShow', [$licitacao->uuid, $requisicao->uuid])}}'; target='_blank';" style="cursor: hand;">
+										<td class="center">{{$requisicao->numero}}/{{$requisicao->ano}}</td>
 										<td>{{$requisicao->descricao}}</td>
-										<td>{{$requisicao->requisitante->first()['sigla']}}</td>
-										<td>
-											<a type="button"  href="{{url('licitacao/remover/requisicao', ['requisicao' => $requisicao->uuid, 'licitacao' => $licitacao->uuid])}}" class="btn btn-danger btn-circle btn-sm"><i class="glyphicon glyphicon-trash"></i></a>
-										</td>
+										<td class="center">{{$requisicao->requisitante->first()['sigla']}}</td>
 									</tr>
 									@empty
 									<tr><td colspan=4><center><i> Nenhuma Requisição Encontrada </i></center></td></tr>
 									@endforelse
 								</tbody>
 							</table>
-
-							<div class="row mt-2">								
-								<div class="col-md-3">
-									<div class="input-group custom-search-form">
-										<input type="text" name="requisicao"  id="requisicao" class="form-control form-control-sm" placeholder="Ex. 012019">
-										<span class="input-group-btn">
-											<button class="btn btn-success" type="button" onclick="getDescricao('#requisicao', '#local')" title="Buscar Requisição">
-												<i class="fa fa-search"></i>
-											</button>
-										</span>
-									</div>
-								</div>
-
-								{{ Form::open(['url' => 'licitacao/atribuir/requisicao', 'method' => 'post', 'class' => 'form-padrao']) }}
-
-									<div class="col-md-3">
-										<button type="submit" class="btn btn-success btn-block">Adicionar</button>
-									</div>
-
-									<div class="col-md-3">
-										<button type="button" class="btn btn-warning btn-block">Limpar</button>
-									</div>
-
-									@include('form.textarea', [
-									'input' => 'descricao',
-									'label' => 'Descricão',
-									'value' => old($input ?? ''),
-									'largura' => 12, 
-									'attributes' => ['id' => 'descricao', 'required' => '',  'rows'=>'3', 'id' => 'descricao', 'disabled' => '']])
-
-									<div id='local'></div>
-
-									{{ Form::hidden('licitacao', $licitacao->uuid,  array('id' => 'licitacao')) }}
-								{{ Form::close() }} 
-							</div>
 						</div><!-- / tab requisição -->
 
 						<div id="guiaFornecedor" class="tab-pane fade">
 							<table class="table table-hover tablesorter">
-								<thead>
+								<thead> 
 									<tr>
 										<th>CNPJ</th>
 										<th>Razão Social</th>
@@ -316,7 +277,7 @@
 										<td>{{$value[1]}}</td>
 										<td>{{$value[2]}}</td>
 										<td>
-											<button type="button" class="btn btn-danger btn-circle btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
+											<button type="button" class="btn btn-danger btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
 										</td>
 									</tr>
 									@empty
@@ -330,18 +291,18 @@
 							<table class="table table-hover tablesorter">
 								<thead>
 									<tr>
-										<th>Código Uasg</th>
+										<th class="center">Código Uasg</th>
 										<th>Órgão ou Entidade Participante</th>
-										<th>Remover</th>
+										<th class="center">Remover</th>
 									</tr>
 								</thead>
 								<tbody>
 									@forelse ($uasgs as $uasg)
 									<tr onclick="location.href ='{{route('itemEditar', $uasg['codigo'])}}'; target='_blank';" style="cursor: hand;">
-										<td>{{$uasg['codigo']}}</td>
+										<td class="center">{{$uasg['codigo']}}</td>
 										<td>{{$uasg['nome']}}</td>
-										<td>
-											<button type="button" class="btn btn-danger btn-circle btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
+										<td class="center">
+											<button type="button" class="btn btn-danger btn-sm"><i class="glyphicon glyphicon-trash"></i></button>
 										</td>
 									</tr>
 									@empty

@@ -57,18 +57,16 @@ Route::get('pregao/item/editar/{uuid}',							'PregaoController@itemEdit');
 Route::get('licitacao/atribuir/{licitacao}', 					'LicitacaoController@atribuirShow')->name('licitacaoAtribuirShow');
 Route::get('licitacao/item/atribuir/{licitacao}/{requisicao}',  'LicitacaoController@atribuirItemShow')->name('licitacaoAtribuirItemShow');
 Route::post('licitacao/item/store/{licitacao}', 				'LicitacaoController@itemStore')->name('licitacaoaItemStore');
-
 //Route::post('licitacao/atribuir/requisicao', 					'LicitacaoController@removerItem')->name('licitacaoRemoverItem');
-//Route::post('licitacao/item/remover/{licitacao}', 				'LicitacaoController@removerItem')->name('licitacaoRemoverItem');
-//Route::get('licitacao/remover/requisicao/{requisicao}/{licitacao}','LicitacaoController@removerRequisicao');
-
-
+//Route::post('licitacao/item/remover/{licitacao}', 			'LicitacaoController@removerItem')->name('licitacaoRemoverItem');
+Route::post('licitacao/requisicao/remover/{licitacao}/{requisicao}','LicitacaoController@removerRequisicao');
+Route::post('licitacao/desmesclar/{item}',						'LicitacaoController@desmesclar')->name('licitacaoDesmesclar');
 
 Route::get('licitacao/', 										'LicitacaoController@index')->name('licitacao');
 Route::get('licitacao/novo', 									'LicitacaoController@create')->name('licitacaoNovo');
 Route::get('licitacao/exibir/{uuid}',							'LicitacaoController@show')->name('licitacaoShow');
 Route::get('licitacao/item/editar/{uuid}',						'LicitacaoController@itemEdit');
-Route::get('licitacao/item/mesclar/novo/{uuid}',				'LicitacaoController@mesclarCreate')->name('licitacaoMesclar');
+Route::get('licitacao/item/mesclar/novo/{licitacao}',			'LicitacaoController@mesclarCreate')->name('licitacaoMesclarCreate');
 Route::post('licitacao/item/duplicar',							'LicitacaoController@itemDuplicar');
 Route::post('licitacao/store', 									'LicitacaoController@store');
 Route::post('licitacao/item/mesclar/store',						'LicitacaoController@mesclarStore');

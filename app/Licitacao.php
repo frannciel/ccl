@@ -50,13 +50,14 @@ class Licitacao extends Model
     }
 
     /**
-     * Relação do Objeto Licitação com os seus itens mesclados 
+     * Metodo que retorna a collection de itens mesclados da licitação
      *
-     * @return     <Item>  (relação de itens mesclados)
+     * @return     <Collect>  App\Item
      */
     public function mesclados()
     {
-        return $this->belongsToMany('App\Item', 'mesclados', 'licitacao_id', 'mesclado_id');
+        return $this->belongsToMany('App\Item', 'mesclados', 'licitacao_id', 'mesclado_id')
+            ->withPivot('item_id');
     }
 
     protected function getOrdemAttribute()

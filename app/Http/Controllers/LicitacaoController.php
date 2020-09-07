@@ -1,15 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Informacao;
-use App\Licitacao;
+use DB;
+use Session;
 use App\Item;
+use App\Unidade;
+use App\Licitacao;
+use App\Informacao;
 use App\Requisicao;
 use App\Participante;
-use App\Http\Controllers\Redirect;
 use Illuminate\Http\Request;
-use App\Unidade;
-use Session;
+use App\Http\Controllers\Redirect;
 
 class LicitacaoController extends Controller
 {
@@ -107,21 +108,26 @@ class LicitacaoController extends Controller
             ->with(['codigo' => 200,'mensagem' => 'Licitaçao '.$licitacao->ordem.' excluída com sucesso.']);
     }
 
-    public function removerRequisicao($requisicao, $licitacao)
+    public function removerRequisicao(Licitacao $licitacao, Requisicao $requisicao)
     {
-        $licitacao = Licitacao::findByUuid($licitacao);
-        $requisicao = Requisicao::findByUuid($requisiccao);
+/*        foreach ($licitacao->mesclados as $value) {
+           if(Item::find($value->pivot->item_id)->requisicao->id == $requisicao->id){
 
-        $id = $requisicao->licitacoes()->where('licitacao_id',  $licitacao->id)->first()->id;
-        if ($licitacao->id === $id) {
-            foreach ($requisicao->itens as $key => $item) {
-                if ($item->licitacao->id === $id ) {
-                    $item->licitacao()->dissociate(); 
-                    $item->save();
-                }
+           }
+        }*/
+       
+      if ($requisicao->licitacoes()->where('licitacao_id',  $licitacao->id)->first()) {
+           foreach (Item::where('licitacao_id','=', $licitacao->id)->where('requisicao_id','=',$requisicao->id)->get() as $item) {
+                $item->licitacao()->dissociate();
+                $item->ordem = null;
+                $item->save();
             }
             $licitacao->requisicoes()->detach($requisicao);
+            return redirect()->route('licitacaoAtribuirShow', $licitacao->uuid)
+                ->with(['codigo' => 200,'mensagem' => 'Todos os itens da requisição '.$requisicao->ordem.' foram removidos desta licitação com sucesso']);
         }
+        return redirect()->route('licitacaoAtribuirItemShow', [$licitacao->uuid, $requisicao->uuid])
+                ->with(['codigo' => 500, 'mensagem' => 'Nenhum item da requisição '.$requisicao->ordem.' está atribuido a esta licitação']);
     }
 
     /**
@@ -141,14 +147,13 @@ class LicitacaoController extends Controller
     }
 
     public function itemEdit($uuid){
-
-      $licitacao = Item::findByUuid($uuid)->licitacao;
-      switch ($licitacao->licitacaoable_type) {
-         case 'Pregão Eletrônico':
-            return redirect()->action('PregaoController@itemEdit', [$uuid]);
-         case 'App\Dispensa':
-            return redirect()->action('PregaoController@itemEdit', [$uuid]);
-      }
+        $licitacao = Item::findByUuid($uuid)->licitacao;
+        switch ($licitacao->licitacaoable_type) {
+           case 'Pregão Eletrônico':
+           return redirect()->action('PregaoController@itemEdit', [$uuid]);
+           case 'App\Dispensa':
+           return redirect()->action('PregaoController@itemEdit', [$uuid]);
+        }
     }
 
     public function atribuirShow(Licitacao $licitacao){
@@ -247,6 +252,19 @@ class LicitacaoController extends Controller
         return redirect()->action('PregaoController@show', [ $licitacao->licitacaoable->uuid]);
     }*/
 
+    public function desmesclar(Item $item)
+    {
+        $licitacao = $item->licitacao;
+        foreach ($item->mesclados as $value) {
+            $value->ordem = $licitacao->itens()->max('ordem')+1;
+            $value->licitacao()->associate($licitacao);
+            $value->save();
+        }
+        $item->delete();
+        return redirect()->route('licitacaoMesclarCreate', $licitacao->uuid)
+            ->with(['codigo' => 200,'mensagem' => 'A mescla do item foi desfeita com sucesso']);
+    }
+
     /**
      * Método que recebe um ou mais itens e os mescla criando um novo item na licitação e desassocia os itens mescladdos
      *
@@ -264,54 +282,67 @@ class LicitacaoController extends Controller
             'itens.min' => 'É necessários no mínimos dois itens de requisicoes diferentes para realizar a mescla.'
         ]);
 
-        $itens  = $request->itens; // uuid dos itens a serem mesclados nesta licitacao
+        $uuids = $request->itens; // uuid dos itens a serem mesclados nesta licitacao
         $index = $request->principal; // indice do array itens para o item que doara as características para o item mesclado, não pode ser nulo
         
         # Verifica se o item principal foi enviado junto aos demais utens a serem mesclados
-        if ($itens[$index] == null)
+        if ($uuids[$index] == null)
             return back()->withErrors(['principal' => ['O item que terá as características mantidas, deve ser um dos itens selecionados!']])->withInput();
 
-        $principal = Item::findByUuid($itens[$index]); // retorna o objeto item, principal para a mescla
+        $principal = Item::findByUuid($uuids[$index]); // retorna o objeto item, principal para a mescla
         $licitacao = $principal->licitacao;
         $quantidade = 0; // soma as quantidade dos itens a serem mesclados
-        $itens_id = array();  //relacao de ids dos itens mesclados para desassociação da licitação
-
-        foreach ($itens as $value) { // calcula a quantidade
-            if ( $value != null) {
-                $item = Item::findByUuid($value);
-                $quantidade += $item->quantidade;
-                $itens_id[] = $item->id;
-            }
+       // $itens_id = array();  //relacao de ids dos itens mesclados para desassociação da licitação
+        $itens = collect();
+        foreach ($uuids as $uuid) { // calcula a quantidade
+            $item = Item::findByUuid($uuid);
+            $quantidade += $item->quantidade;
+            $itens->push($item);
         }
-        $licitacao->itens()->whereID($itens_id); // remove os registro dos itens mesclado da tabela 'item_licitacao'
 
         $mesclado = $licitacao->itens()->create([
             'numero'        => 10000, // este número indicara itens mesclados nas  licitcaoes, eles não pertencem a nenhuma requisicão
             'quantidade'    => $quantidade,
             'codigo'        => $principal->codigo,
             'objeto'        => $principal->objeto,
-            'descricao'     => nl2br($principal->descricao),
+            'descricao'     => $principal->descricao,//nl2br(
             'unidade_id'    => $principal->unidade_id,
-        ], ['ordem' => $licitacao->itens()->max('ordem')+1]);
+            'ordem' => $licitacao->itens()->max('ordem')+1
+        ]);
 
-        $array_attach = array(); // prepara o array para registro dos itens na tabela mesclado
+        foreach ($itens as $item) {
+            $item->ordem = null;
+            $item->licitacao()->dissociate();
+            $item->save();
+        }
+        //$licitacao->itens()->whereID($itens_id); // remove os registro dos itens mesclado da tabela 'item_licitacao'
+
+        $itensMesclar = array();
+        foreach ($itens as $key => $item) {
+            $itensMesclar += [$item->id => ['licitacao_id' => $licitacao->id]];
+        }
+        $mesclado->mesclados()->attach($itensMesclar);
+
+
+        /*$array_attach = array(); // prepara o array para registro dos itens na tabela mesclado
         foreach ($itens_id as  $value)
             $array_attach += [$value => ['licitacao_id' => $licitacao->id]];
         $mesclado->itens()->attach($array_attach); // insere os registros do itens que foram mescados na tebela 'mesclado'
+        */
+        return redirect()->route('licitacaoMesclarCreate', $licitacao->uuid)
+            ->with(['codigo' => 200,'mensagem' => 'A mescla do itens selecionados foi realizada com sucesso, vide item '.$mesclado->ordem]);
 
-        return redirect()->action('LicitacaoController@mesclarCreate', [ $licitacao->uuid]);
     }
 
-    public function mesclarCreate($uuid)
+    public function mesclarCreate(Licitacao $licitacao)
     {
-        $objetos = array();
-        $licitacao = Licitacao::findByUuid($uuid); // busca a licitacao pelo uuid
-        $itens =  $licitacao->itens()->get();  // reorna todos os itens associado a esta licitação
-        $requisicoes = $licitacao->requisicoes()->get(); // retorna todas as requisições associaddas a esta aquisicao
-        $itens_array = array(); # array de arrays contendo itens com atributos uuid e numero concatenado com objetos item
-        $mesclados = $licitacao->mesclados()->distinct()->get();
+        //$requisicoes = array();
+        //$licitacao = Licitacao::findByUuid($uuid); // busca a licitacao pelo uuid
+        //$itens =  $licitacao->itens->sortBy('requisicao_id');  // reorna todos os itens associado a esta licitação
+        //$requisicoes = $licitacao->requisicoes; // retorna todas as requisições associaddas a esta aquisicao
+
         # separa os itens por requisicao e insere no array de tens
-        foreach ($requisicoes as  $requisicao) { 
+        /*foreach ($requisicoes as  $requisicao) { 
             $lista = array();
             foreach ($itens as $item) {
                 if ($item->requisicao_id == $requisicao->id) {
@@ -323,7 +354,35 @@ class LicitacaoController extends Controller
                 $objetos[] = $requisicao->numero.'/'.$requisicao->ano.' - '.$requisicao->descricao; // concatena o item como objeto da requisicao
                 $itens_array[] = $lista;  // insere mais um array na lista de arrays
             }
+        }*/
+        //var_dump(count($item->itens->toArray()));
+
+        $requisicoes = array();
+        $mesclados = $licitacao->mesclados()->get()->unique();//()->get()->unique();
+        # Array de arrays, contendo itens com atributos uuid e numero concatenado com objetos item #
+        $selectItens = array(); 
+        # retorna todos os itens da licitação agrupados por pela requisição #
+        $gruposItem = Item::where('licitacao_id', $licitacao->id)->get()->groupBy('requisicao_id');
+        foreach ($gruposItem as $key =>  $grupo) { 
+            $lista = array();
+            foreach ($grupo as $item) {
+                if(!$item->itens()->exists()){// verifica se o item não está associado a uma licitação
+                    $concatenado = $item->numero.' - '.$item->objeto; // Conacate numero do item com objeto do item
+                    $lista += [$item->uuid => substr_replace($concatenado, (strlen($concatenado) > 40 ? '...' : ''), 40)]; 
+                }
+            }
+            $selectItens[] = $lista;  // insere mais um array na lista de arrays
+            if ($key != null) {
+                $requisicao = Requisicao::find($key);
+                $concatenado = $requisicao->ordem.' - '.$requisicao->descricao; // Conacate numero do item com objeto do item
+                $requisicoes[] = substr_replace($concatenado, (strlen($concatenado) > 100 ? '...' : ''), 100);//$requisicao->ordem.' - '.$requisicao->descricao; // concatena o item como objeto da requisicao
+            }
+           
         }
+        //Svar_dump($mesclados->toArray());
+        
+        //var_dump(Item::where('licitacao_id', $licitacao->id)->get()->groupBy('requisicao_id')->toArray());
+        //var_dump($itens->gruopBy('item.requisicao_id')->toArray());
         /*
         foreach ($licitacao->requisicoes()->get() as $requisicao){
             $lista = array();
@@ -334,8 +393,9 @@ class LicitacaoController extends Controller
             $objetos[] = $requisicao->numero.'/'.$requisicao->ano.' - '.$requisicao->descricao;
             $itens[] = $lista;
         }*/
-
-        return view('licitacao.mesclarCreate', compact('itens_array', 'objetos', 'mesclados', 'licitacao'));
+        $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
+        Session::forget(['mensagem','codigo']); 
+        return view('licitacao.mesclarCreate', compact('selectItens', 'requisicoes', 'mesclados', 'licitacao', 'comunica'));
     }
 
     public function itemDuplicar(Request $request)

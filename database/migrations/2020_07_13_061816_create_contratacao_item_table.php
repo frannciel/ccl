@@ -19,7 +19,7 @@ class CreateContratacaoItemTable extends Migration
             $table->integer('item_id')->unsigned();
             $table->integer('contratacao_id')->unsigned();
             $table->foreign('item_id')->references('id')->on('itens');
-            $table->foreign('contratacao_id')->references('id')->on('contratacoes')->onDelete('cascade');;
+            $table->foreign('contratacao_id')->references('id')->on('contratacoes')->onDelete('cascade');
         });
     }
 

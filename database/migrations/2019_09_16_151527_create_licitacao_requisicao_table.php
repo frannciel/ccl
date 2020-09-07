@@ -17,7 +17,7 @@ class CreateLicitacaoRequisicaoTable extends Migration
             $table->increments('id');
             $table->integer('licitacao_id')->unsigned();
             $table->integer('requisicao_id')->unsigned();
-            $table->foreign('licitacao_id')->references('id')->on('licitacoes');
+            $table->foreign('licitacao_id')->references('id')->on('licitacoes')->onDelete('cascade');
             $table->foreign('requisicao_id')->references('id')->on('requisicoes');
             $table->timestamps();
         });

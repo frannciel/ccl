@@ -16,7 +16,8 @@ class AddItemForeignKey extends Migration
         Schema::table('itens', function (Blueprint $table) {
             $table->integer('licitacao_id')->unsigned()->nullable();
             $table->integer('ordem')->nullable();
-            $table->foreign('licitacao_id')->references('id')->on('licitacoes');
+            $table->foreign('licitacao_id')->references('id')->on('licitacoes')
+            onDelete('set null');
         });
     }
 
