@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use DB;
+use PDF;
 use Session;
 use App\Item;
 use App\Unidade;
@@ -110,12 +111,6 @@ class LicitacaoController extends Controller
 
     public function removerRequisicao(Licitacao $licitacao, Requisicao $requisicao)
     {
-/*        foreach ($licitacao->mesclados as $value) {
-           if(Item::find($value->pivot->item_id)->requisicao->id == $requisicao->id){
-
-           }
-        }*/
-       
       if ($requisicao->licitacoes()->where('licitacao_id',  $licitacao->id)->first()) {
            foreach (Item::where('licitacao_id','=', $licitacao->id)->where('requisicao_id','=',$requisicao->id)->get() as $item) {
                 $item->licitacao()->dissociate();
@@ -123,6 +118,7 @@ class LicitacaoController extends Controller
                 $item->save();
             }
             $licitacao->requisicoes()->detach($requisicao);
+            $this->ordenador($licitacao);
             return redirect()->route('licitacaoAtribuirShow', $licitacao->uuid)
                 ->with(['codigo' => 200,'mensagem' => 'Todos os itens da requisição '.$requisicao->ordem.' foram removidos desta licitação com sucesso']);
         }
@@ -261,6 +257,7 @@ class LicitacaoController extends Controller
             $value->save();
         }
         $item->delete();
+        $this->ordenador($licitacao);
         return redirect()->route('licitacaoMesclarCreate', $licitacao->uuid)
             ->with(['codigo' => 200,'mensagem' => 'A mescla do item foi desfeita com sucesso']);
     }
@@ -281,23 +278,26 @@ class LicitacaoController extends Controller
             'principal.required' => 'Clique no item que terá as características mantidas!',
             'itens.min' => 'É necessários no mínimos dois itens de requisicoes diferentes para realizar a mescla.'
         ]);
-
-        $uuids = $request->itens; // uuid dos itens a serem mesclados nesta licitacao
-        $index = $request->principal; // indice do array itens para o item que doara as características para o item mesclado, não pode ser nulo
-        
-        # Verifica se o item principal foi enviado junto aos demais utens a serem mesclados
+        # uuid dos itens a serem mesclados nesta licitacao #
+        $uuids = $request->itens; 
+        # indice do array itens para o item que doara as características para o item mesclado, não pode ser nulo #
+        $index = $request->principal; 
+        # Verifica se o item principal foi enviado junto aos demais utens a serem mesclados #
         if ($uuids[$index] == null)
             return back()->withErrors(['principal' => ['O item que terá as características mantidas, deve ser um dos itens selecionados!']])->withInput();
-
-        $principal = Item::findByUuid($uuids[$index]); // retorna o objeto item, principal para a mescla
+        # retorna o objeto item, principal para a mescla
+        $principal = Item::findByUuid($uuids[$index]);
         $licitacao = $principal->licitacao;
-        $quantidade = 0; // soma as quantidade dos itens a serem mesclados
-       // $itens_id = array();  //relacao de ids dos itens mesclados para desassociação da licitação
+        # soma as quantidade dos itens a serem mesclados
+        $quantidade = 0;
+        # relacao de ids dos itens mesclados para desassociação da licitação #
         $itens = collect();
         foreach ($uuids as $uuid) { // calcula a quantidade
-            $item = Item::findByUuid($uuid);
-            $quantidade += $item->quantidade;
-            $itens->push($item);
+            if($uuid != null){
+                $item = Item::findByUuid($uuid);
+                $quantidade += $item->quantidade;
+                $itens->push($item);
+            }
         }
 
         $mesclado = $licitacao->itens()->create([
@@ -307,22 +307,30 @@ class LicitacaoController extends Controller
             'objeto'        => $principal->objeto,
             'descricao'     => $principal->descricao,//nl2br(
             'unidade_id'    => $principal->unidade_id,
-            'ordem' => $licitacao->itens()->max('ordem')+1
+            'ordem'         => $licitacao->itens()->max('ordem')+1
         ]);
-
+        # copia as cotações do principal para o item mescado #
+        foreach ($principal->cotacoes as $cotacao) {
+            $mesclado->cotacoes()->create([
+                'fonte' => $cotacao->fonte,
+                'valor' => $cotacao->valor,
+                'data'  => $cotacao->data
+            ]);
+         }
+        # remove os registro dos itens mesclado da tabela 'item_licitacao' #
         foreach ($itens as $item) {
             $item->ordem = null;
             $item->licitacao()->dissociate();
             $item->save();
         }
-        //$licitacao->itens()->whereID($itens_id); // remove os registro dos itens mesclado da tabela 'item_licitacao'
 
         $itensMesclar = array();
-        foreach ($itens as $key => $item) {
+        foreach ($itens as $item) {
             $itensMesclar += [$item->id => ['licitacao_id' => $licitacao->id]];
         }
-        $mesclado->mesclados()->attach($itensMesclar);
-
+        $mesclado->mesclados($licitacao)->attach($itensMesclar);
+        # reordena a numeração dos item da licitacão licitacão#
+        $this->ordenador($licitacao);
 
         /*$array_attach = array(); // prepara o array para registro dos itens na tabela mesclado
         foreach ($itens_id as  $value)
@@ -330,7 +338,7 @@ class LicitacaoController extends Controller
         $mesclado->itens()->attach($array_attach); // insere os registros do itens que foram mescados na tebela 'mesclado'
         */
         return redirect()->route('licitacaoMesclarCreate', $licitacao->uuid)
-            ->with(['codigo' => 200,'mensagem' => 'A mescla do itens selecionados foi realizada com sucesso, vide item '.$mesclado->ordem]);
+           ->with(['codigo' => 200,'mensagem' => 'A mescla do itens selecionados foi realizada com sucesso, vide item '.$mesclado->ordem]);
 
     }
 
@@ -398,9 +406,19 @@ class LicitacaoController extends Controller
         return view('licitacao.mesclarCreate', compact('selectItens', 'requisicoes', 'mesclados', 'licitacao', 'comunica'));
     }
 
+    public function ordenador(Licitacao $licitacao)
+    {
+        $ordem = 1;
+        foreach ($licitacao->itens->sortBy('ordem') as  $item){
+            $item->ordem = $ordem;
+            $item->save();
+            $ordem += 1;
+        }
+    }
+
     public function itemDuplicar(Request $request)
     {
-            // $array_itens = $request->itens; // array contendo os uuid dos itens a serem duplicados// 
+        # $array_itens = $request->itens; // array contendo os uuid dos itens a serem duplicados #
         $licitacao = Licitacao::findByUuid($request->licitacao);
             //$licitacao = Item::findByUuid($array_itens[0])->licitacao();
 
@@ -419,5 +437,38 @@ class LicitacaoController extends Controller
            }
         }
        return redirect()->action('PregaoController@show', [ $licitacao->licitacaoable->uuid]);
+    }
+
+    public function relacaoDeItem (Licitacao $licitacao)
+    {
+       /*foreach ($licitacao->itens as  $item) {
+        var_dump($item->participantes()->exists());
+           foreach ($item->participantes as $participante) {
+                var_dump($participante->pivot->cidade->nome);
+                var_dump($participante->pivot->quantidade);
+                 {{$item->participantes()->where('uasg_id', $uasg->id)->first()->pivot->quantidade}}
+            }
+        }*/
+        foreach ($licitacao->itens as $item) {
+            if ($item->participantes()->exists()) {
+                return  view('documentos.relacao_de_itens', compact('licitacao'))->with('participante', true);
+            }
+        }
+        return  view('documentos.relacao_de_itens', compact('licitacao'))->with('participante', false);
+    }
+
+    public function relacaoDeItemPdf(Licitacao $licitacao)
+    {
+        $participante = false;
+        foreach ($licitacao->itens as $item) {
+            if ($item->participantes()->exists()){
+                $participante = true;
+                break;
+            }
+        }
+        view()->share('licitacao', compact('licitacao', 'participante'));
+        $pdf = PDF::loadView('pdf.relacao_de_itens', compact('licitacao', 'participante'));
+        $pdf->setPaper('A4');
+        return $pdf->download('RelacaoItens'.$licitacao->ordem.'.pdf');
     }
 }

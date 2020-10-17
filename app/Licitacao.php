@@ -67,10 +67,10 @@ class Licitacao extends Model
 
     public function getValorTotalEstimadoAttribute()
     {
-        return number_format($this->total, 2, ',', '.');
+        return number_format($this->totalEstimado, 2, ',', '.');
     }
 
-    public function getTotalEstimadolAttribute()
+    public function getTotalEstimadoAttribute()
     {
         $soma = 0;
         foreach ( $this->itens as  $item) 

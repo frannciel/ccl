@@ -61,6 +61,9 @@ Route::post('licitacao/item/store/{licitacao}', 				'LicitacaoController@itemSto
 //Route::post('licitacao/item/remover/{licitacao}', 			'LicitacaoController@removerItem')->name('licitacaoRemoverItem');
 Route::post('licitacao/requisicao/remover/{licitacao}/{requisicao}','LicitacaoController@removerRequisicao');
 Route::post('licitacao/desmesclar/{item}',						'LicitacaoController@desmesclar')->name('licitacaoDesmesclar');
+Route::get('licitacao/relacaodeitem/{licitacao}', 				'LicitacaoController@relacaoDeItem')->name('licitacaorelacaoDeItem');
+Route::get('licitacao/relacaodeitem/pdf/{licitacao}', 			'LicitacaoController@relacaoDeItemPdf')->name('licitacaorelacaoDeItemPdf');
+
 
 Route::get('licitacao/', 										'LicitacaoController@index')->name('licitacao');
 Route::get('licitacao/novo', 									'LicitacaoController@create')->name('licitacaoNovo');

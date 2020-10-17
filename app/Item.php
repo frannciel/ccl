@@ -117,10 +117,10 @@ class Item extends Model
     }
 
     /**
-     * Método que retorna o valor tatoal do item em formato de moeda 0.000,00
+     * Método que retorna o valor total do item em formato de moeda 0.000,00
      * Este método utiliza o metodo total desta classe
      *
-     * @return     <type>  The valor total attribute.
+     * @return     <String>  valorTotal
      */
     public function getValorTotalAttribute()
     {
@@ -131,17 +131,17 @@ class Item extends Model
      * Método que retorno o valor total estimado da item em formato numérico
      * Este valor é calculado multiplicando o valor médio das cotações pela quantidade do item
      *
-     * @return     <Float>  total.
+     * @return <Float>  total.
      */
     public function getTotalAttribute()
     {
-        return $this->media * $this->quantidade;
+        return number_format($this->media, 2, '.', '') * $this->quantidade;
     }
 
      /** 
      *   @Descrition Metodo que retorna o valor médio das cotações formatado na forma de moeda R$ 0.000 0,00
      *
-     *   @return <Float> valor médio
+     *   @return <String> valorMédio
      */
     public function getValorMedioAttribute()
     {
@@ -151,7 +151,7 @@ class Item extends Model
     /** 
      *   @Descrition Metodo que retorna o valor médio das cotações de preços coletados em formato númerico
      *
-     *   @return <Float> valor médio
+     *   @return <Float> valorMedio
      */
     public function getMediaAttribute()
     {

@@ -55,7 +55,7 @@ class FileController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		$celulas = explode("&", substr($request->dados,  0, -1)); // remove o ultimo caracter e quebra a texto em ceelulas
+		$celulas = explode("&", substr($request->dados,  0, -1)); // remove o ultimo caracter e quebra a texto em celulas
 		switch ($request->tipo) {
 			case '1': 
 				return $this->setItem(array_chunk($celulas,5), $request->uuid); 
@@ -170,7 +170,7 @@ class FileController extends Controller
 			}
 
 		}
-		return redirect()->route('requisicaoExibir', ['id' => $requisicao->uuid]);
+		return redirect()->route('requisicaoShow', $requisicao->uuid);
 	}
 
 	/**
@@ -193,7 +193,7 @@ class FileController extends Controller
 				]);
 			}
 		}
-		return redirect()->route('requisicaoExibir', ['uuid' => $uuid]);
+		return redirect()->route('requisicaoShow', $uuid);
 	}
 
 	/**
@@ -238,7 +238,7 @@ class FileController extends Controller
 				//$item->locais()->attach($local->id,[ 'quantidade' => $valor[2]]);
 			}*/
 		}
-		return redirect()->route('licitacaoExibir', ['uuid' => $requisicao->uuid]);
+		return redirect()->route('licitacaoShow',  $requisicao->uuid);
 	}
 	
 	protected function setFornecedor($dados)
@@ -495,7 +495,7 @@ class FileController extends Controller
 	                ]);
 	            }               
             }*/
-        return redirect()->route('pregaoExibir', ['uuid' => $licitacao->licitacaoable->uuid]);
+        return redirect()->route('pregaoShow',$licitacao->licitacaoable->uuid);
     }
 	
 	/** 

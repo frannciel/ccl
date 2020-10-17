@@ -65,7 +65,7 @@ class ItemController extends Controller
             'descricao'     => nl2br($request['descricao']),
             'unidade_id'    => $request['unidade'],
         ]);
-        return redirect()->route('requisicaoExibir', ['uuid' => $requisicao->uuid]);
+        return redirect()->route('requisicaoShow', $requisicao->uuid);
         /*
         $item = Item::create([
             'numero' 		=> Item::where('requisicao_id', $request->requisicao)->max('numero') + 1,
@@ -145,7 +145,7 @@ class ItemController extends Controller
         //$item->grupo_id 	= $request->grupo;
         $item->save();
 
-        return redirect()->route('requisicaoExibir', ['uuid' => $item->requisicao->uuid]);
+        return redirect()->route('requisicaoShow', $item->requisicao->uuid);
     }
 
     /**

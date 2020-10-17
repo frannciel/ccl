@@ -21,7 +21,7 @@
 	</div><!-- / panel-heading -->
 
 	<div class="panel-body">
-		{{ Form::open(['url' => 'licitacao/item/mesclar/store/', 'method' => 'post', 'class' => 'form-padrao']) }}
+		{{ Form::open(['url' => 'licitacao/item/mesclar/store', 'method' => 'post', 'class' => 'form-padrao']) }}
 			<div class="row">
 				<div class="col-md-12">
 					<table id="tabela" class="table table-hover tablesorter">
@@ -32,7 +32,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							@php $rows = 0; @endphp <!-- variável que indica qua linha/requisição foi definida como principal -->
+							@php $row = 0; @endphp <!-- variável que indica qua linha/requisição foi definida como principal -->
 							@forelse ($requisicoes as $key => $requisicao)
 							<tr>
 								<td>{{$requisicao}}</td>
@@ -41,10 +41,10 @@
 										<div class="col-lg-8">
 											<div class="input-group">
 												<span class="input-group-addon" title ="Selecione as características a serem mantidas">
-													{{ Form::radio('principal', $rows,  '', array('id' => 'principal')) }} 
-													@php $rows += 1; @endphp <!-- Incrementa o numero da linha -->
+													{{ Form::radio('principal', $row) }} 
+													@php $row += 1; @endphp <!-- Incrementa o numero da linha -->
 												</span>
-												{{ Form::select('itens[]',  [null => ''] + $selectItens[$key], '', array('class' => 'form-control form-control-sm', 'id' => 'itens'))}}
+												{{ Form::select('itens[]',  [null => ''] + $selectItens[$key], '', array('class' => 'form-control form-control-sm'))}}
 											</div><!-- /input-group -->
 										</div><!-- /.col-lg-6 -->
 									</div>

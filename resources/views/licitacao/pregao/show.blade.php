@@ -160,9 +160,9 @@
 
 					<div class="row text-center">
 						<div class="col-md-12 mt-2 mb-2">
-							<button type="submit" formaction="{{url('item/primeiro')}}" class="btn  btn-outline btn-success rounded-pill">
+							<a type="submit" href="{{url('licitacao/relacaodeitem', $licitacao->uuid)}}" class="btn  btn-outline btn-success rounded-pill">
 							 Relação de Itens
-							</button>
+							</a>
 	
 							<button type="submit" formaction="{{url('item/primeiro')}}" class="btn btn-outline btn-success rounded-pill">
 								Itens por Fornecedor

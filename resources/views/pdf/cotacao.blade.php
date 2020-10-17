@@ -33,7 +33,7 @@
          <br/>
 
          @foreach ($requisicao->itens as $item)
-            <table width='95%' align="center" align="center" style="border: 1px solid black">
+            <table width='95%' align="center" style="border: 1px solid black">
                <tr bgcolor="#f0f0f5">
                   <td width='50%'> Item: {{$item->numero}} - {{$item->objeto}} </td>
                   <td width='13%'> Quantidade: {{$item->quantidade}}</td>

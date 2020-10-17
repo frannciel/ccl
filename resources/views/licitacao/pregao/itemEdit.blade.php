@@ -106,7 +106,7 @@
 					<button type="button" class="btn btn-success btn-outline btn-lg" title="Relação de Itens"><i class="glyphicon glyphicon-list"></i></button>
 				</div>
 				<div class="btn-group" role="group">
-					<a type="button" class="btn btn-success btn-outline btn-lg" title="Mesclar Itens" href="{{route('licitacaoMesclar', ['uuid' => $licitacao->uuid])}}"><i class="glyphicon glyphicon-resize-small"></i></a>
+					<a type="button" class="btn btn-success btn-outline btn-lg" title="Mesclar Itens" href="{{route('licitacaoMesclarCreate', $licitacao->uuid)}}"><i class="glyphicon glyphicon-resize-small"></i></a>
 				</div>
 				<div class="btn-group" role="group">
 					<button type="submit" formaction="/action_page2.php" class="btn btn-success btn-outline btn-lg" title="Remover Itens"><i class="glyphicon glyphicon-trash"></i></button>
