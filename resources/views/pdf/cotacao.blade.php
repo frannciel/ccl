@@ -1,17 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-   <meta charset="utf-8">
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-   <title>CCL - PDF</title>
-</head>
-<body>
-   @include('pdf.cabecalho')
-   <h2 align="center">Relatório de Pesquisa de Preços</h2>
-   <br/>
-   @if (count($requisicao->itens) > 0)
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> <meta
+http-equiv="X-UA-Compatible" content="ie=edge"> <title>CCL - PDF</title>
+</head> <body> @include('pdf.cabecalho') <h2 align="center">Relatório de
+Pesquisa de Preços</h2> <br/> @if (count($requisicao->itens) > 0)
 
       <div id="pesquisa">
          <table align="center" style="border: 1px solid black;width:95%;background:#f0f0f5;">
@@ -27,7 +18,7 @@
          <br/>
          <table align="center" style="border: 1px solid black;width:80%;background:#f0f0f5;text-align: justify;">
             <tr><td><font size="2">
-                  Pesquisa de preços em conformidade com a Instrução Normativa Nº 5 de 27 de Junho de 2014 alterada pela Instrução Normativa nº 3, de 20 de abril de 2017. Os preços constantes no presente relatório atendem aos seguntes incisos Art. 2º: Inciso I - Painel de Preços - (http://paineldeprecos.planejamento.gov.br), Inciso III - pesquisa publicada em mídia especializada, sítios eletrônicos especializados ou de domínio amplo (...) e Inciso IV - pesquisa com os fornecedores. O resultado da pesquisa será a média dos preços obtidos conforme Art. 2º Paragrafo §2º.
+                  Pesquisa de preços em conformidade com a Instrução Normativa Nº 73, de 05 de Agosto de 2020. Os preços constantes no presente relatório atendem aos seguntes incisos Art. 5º: Inciso I - Painel de Preços - (http://paineldeprecos.planejamento.gov.br), Inciso III - pesquisa publicada em mídia especializada, sítios eletrônicos especializados ou de domínio amplo (...) e Inciso IV - pesquisa com os fornecedores. O valor de referêcnia será obtido calculando a MÉDIA ARITMÉTICA dos preços obtidos conforme Art. 6º, excluídos preços claraemente excessívos ou inexequíveis.
             </font></td></tr>
          </table>
          <br/>

@@ -20,8 +20,7 @@
 	</div><!-- / panel-heading -->
 
 	<div class="panel-body">
-		{{Form::open(['url' => 'cotacao/store', 'method' => 'post', 'class' => 'form-padrao'])}}
-			{{ Form::hidden('requisicao', $requisicao->uuid)}}
+		{{Form::open(['route' => ['cotacao.create', $requisicao->uuid], 'method' => 'post', 'class' => 'form-padrao'])}}
 			<div class="row">
 				@include('form.select', [
 				'input' => 'item', 
@@ -119,17 +118,15 @@
 									<th></th>
 								</tr>
 								@foreach ($item->cotacoes as $key => $cotacao)
-								<!--<tr onclick="location.href ='{{route('cotacaoEdit', [$cotacao->uuid])}}'; target='_blank';" style="cursor: pointer">-->
-
-								<tr >
-									<td class="col-md-1 center">{{$key + 1}}</td>
-									<td class="col-md-7">{{$cotacao->fonte ?? '' }}</td>
-									<td class="col-md-2 center">{{$cotacao->contabil ?? '' }}</td>
-									<td class="col-md-2 center">{{$cotacao->data  ?? ''}}</td>
-									<td>
-										<i  class="glyphicon glyphicon-trash text-red apagarCotacao"  data-route="{{url('cotacao/apagar', $cotacao->uuid)}}" data-toggle="modal" data-target="#apagarCotacaoModal">
-									</td>	
-								</tr>
+									<tr >
+										<td class="col-md-1 center">{{$key + 1}}</td>
+										<td class="col-md-7">{{$cotacao->fonte ?? '' }}</td>
+										<td class="col-md-2 center">{{$cotacao->contabil ?? '' }}</td>
+										<td class="col-md-2 center">{{$cotacao->data  ?? ''}}</td>
+										<td>
+											<i class="glyphicon glyphicon-trash text-red apagar-cotacao" title="Apagar cotação" data-route="{{route('cotacao.destroy', $cotacao->uuid)}}">
+										</td>	
+									</tr>
 								@endforeach
 							</table>  
 						</div>

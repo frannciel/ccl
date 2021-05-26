@@ -96,7 +96,7 @@
 				'label' => 'Justificativa da Contratação*',
 				'value' => old($input ?? '') ?? $requisicao->justificativa,
 				'largura' => 12, 
-				'attributes' => ['id' => 'justificativa', 'required' => '',  'rows'=>'5']])
+				'attributes' => ['id' => 'justificativa',  'rows'=>'5']])
 		    </div>
 
     	    <div class="row">
@@ -185,10 +185,10 @@
 					<a type="button" class="btn btn-success btn-outline" title="Adicionar Novo Item" href="{{route('itemNovo', ['uuid' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-plus"></i></a>
 				</div>
 				<div class="btn-group" role="group">
-					<a type="button"  class="btn btn-success btn-outline" title="Pesquisa de Preços" href="{{route('cotacaoCreate', ['requisicao' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-shopping-cart"></i></a>
+					<a type="button"  class="btn btn-success btn-outline" title="Pesquisa de Preços" href="{{route('cotacao.create', ['requisicao' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-shopping-cart"></i></a>
 				</div>
 				<div class="btn-group" role="group">
-					<a type="button" class="btn btn-success btn-outline" title="Importar Dados" href="{{route('importar', ['uuid' => $requisicao->uuid])}}"><i class="fa fa-upload"></i></a>
+					<a type="button" class="btn btn-success btn-outline" title="Importar Dados" href="{{route('requisicao.importar', $requisicao->uuid)}}"><i class="fa fa-upload"></i></a>
 				</div>
 				<div class="btn-group" role="group">
 					<a type="button" class="btn btn-success btn-outline" title="Relação de Itens" href="{{route('documento', ['uuid' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-list"></i></a>
@@ -204,7 +204,7 @@
 
 			<div class="row text-center">
 				<div class="col-md-12 mt-2 mb-2">
-					<a type="button" href="{{route('cotacaoRelatorio', ['uuid' => $requisicao->uuid])}}" class="btn btn-outline btn-primary rounded-pill">
+					<a type="button" href="{{route('cotacao.relatorio', ['uuid' => $requisicao->uuid])}}" class="btn btn-outline btn-primary rounded-pill">
 						Relatório de Pesquisa de Preços
 					</a>
 

@@ -77,4 +77,25 @@ class Cotacao extends Model
         }
     }
 
+    /**
+     * Get the route key for the model. 
+     * Método para definir a chave usada na injeção de dependêcia dos model através das rotas
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    public function equals(Cotacao $outro)
+    {
+        return $outro instanceof $this && $outro->hashCode == $this->hashCode;
+    }
+
+    public function getHashCodeAttribute()
+    {
+        return hash('md5',$this->item_id.$this->fonte.$this->valor.$this->data);
+    }
+
 }
