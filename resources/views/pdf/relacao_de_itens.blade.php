@@ -54,7 +54,7 @@
    <p>{{$licitacao->objeto ?? ''}}</p>
 
    @if ($licitacao->itens()->exists()) <!-- Verifica se a licitação já contpem itens -->
-      @if($participante) <!-- Verifica se a licitação tem participantes-->
+      @if($participantes->count() > 0) <!-- Verifica se a licitação tem participantes-->
          <div class="titulo-1">2. Itens da Licitação</div>   
          @foreach ($licitacao->itens->sortBy('ordem') as $item)
             <table cellspacing="0" cellpadding="1">
@@ -73,7 +73,7 @@
                </tr>
                <tr>
                   <td><b>Valor Unitário:</b>&nbsp;&nbsp;&nbsp;&nbsp;{{$item->valorMedio}}</td>
-                  <td><b>Valor Total:</b>&nbsp;&nbsp;&nbsp;&nbsp;{{$item->valorTotal}}</td>
+                  <td><b>Valor Total:</b>&nbsp;&nbsp;&nbsp;&nbsp;{{number_format(number_format($item->media, 2, '.', "") * $item->quantidadeTotal, 2, ',', '.')}}</td>
                </tr>
             </table>
             <table>
@@ -110,11 +110,27 @@
          </table>
          <div class="titulo-1">4. Entidades Participantes</div>
          <table cellspacing="0" cellpadding="1">
-            <tr class="borda">
-               <th align="center">Uasg</th>
-               <th align="center">Nome</th>
-               <th align="center">Local de Entrega</th>
-            </tr>
+            @php $titulo = ""; @endphp
+            @foreach($participantes as $participante)
+               @if($titulo != $participante->codigo)
+                  <tr class="borda">
+                     <th align="center" colspan="4">{{$participante->codigo}} - {{$participante->nome}}</th>
+                  </tr>
+                   <tr class="borda">
+                     <th align="center">Item</th>
+                     <th align="center">Objeto</th>
+                     <th align="center">Quantidade</th>
+                     <th align="center">Local de Entrega<</th>
+                  </tr>
+                  @php $titulo = $participante->codigo @endphp
+                @endif
+               <tr>
+                  <td align="center">{{$participante->pivot->item->ordem}}</td>
+                  <td align="left">{{$participante->pivot->item->objeto}}</td>
+                  <td align="center">{{$participante->pivot->quantidade}}</td>
+                  <td align="center">{{$participante->pivot->cidade->nome}}/{{$participante->pivot->cidade->estado->sigla}}</td>
+               </tr>
+            @endforeach
          </table>
       @else
          <div class="titulo-1">2. Itens da Licitação</div>   

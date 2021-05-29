@@ -22,13 +22,13 @@
 
 	<div class="panel-body">
 
-		{{ Form::open(['route' => ['importeText.item', $requisicao->uuid], 'method' => 'post', 'class' => 'form-padrao'])}}
+		{{ Form::open(['route' => ['item.importarTexto', $requisicao->uuid], 'method' => 'post', 'class' => 'form-padrao'])}}
 			<div class="row">
 				@include('form.textarea', [
-				'input' => 'dados', 
+				'input' => 'texto', 
 				'label' => 'ITEM - Inserir a planilha em formato texto com colunas separadas por "&".', 
 				'largura' => '8',
-				'attributes' => ['id' => 'dados', 'value' => '{{ old($input) }}', 'rows' => 3]])
+				'attributes' => ['id' => 'texto', 'value' => '{{ old($input) }}', 'rows' => 3]])
 			</div>
 			<div class="row">
 				@include('form.submit',	[
@@ -93,29 +93,33 @@
 	</div>
 	<div class="panel-body">
 		<p>
-			O procedimento abaixo é idêntico para importar dados da pesquisa de preços e itens da requisição. Só é possivel importar dados de pesquisa de preços de itens já cadastrado. É realizada um tipo de importação cada vez.
-		</p>
-		<p>
-			<strong>Etapa 01.</strong>  Elabora no Word planilha conforme <b>tabela 1</b>.
+			<strong>Etapa 01.</strong>  Elabora no Word uma planilha conforme as <b>Tabela 1</b> ou <b>Tabela 2</b>, abaixo.
 			É necessário  que todas as celulas da ultima coluna mais à direita estejam vazias.
-			Caso algum dado opcional não exista mantenha a celula vazia.
-			Remover a linha de cabeçalho da tabela antes do etapa 02. 
+			Caso algum dado opcional (*), não exista mantenha a celula vazia.
+			É obrigatório manter a linha de cabeçalho da tabela.
 		</p>
 		<p>
-			<strong>Etapa 02.</strong> Selecione toda a tabela, no menu "Ferramenta de Tabela" em seguida "Converter em Texto", na caixa de diálogo
+			<strong>Etapa 02.</strong> Ainda no Word Selecione toda a tabela, localize o menu "Ferramenta de Tabela" em seguida "Converter em Texto". Na caixa de diálogo
 			marcar a opção "Outro", adicionar o caracter "&" e clicar em  "OK".
 		</p>
 		<p>
-			<strong>Etapa 03.</strong> Copiar o texto resultante da etapa 02, colar na campo de texto click em "Enviar".
+			<strong>Etapa 03.</strong> Copiar o texto resultante da <b>Etapa 02</b>, colar na campo de texto correspondente neste formulário e clicar em "Enviar".
+		</p>
+		<p>
+			<b>Observações:</b><br>		
+			 - O procedimento acima é idêntico para importar pesquisa de preços e itens da requisição.<br>
+			 - Só é possivel importar pesquisa de preços para itens já cadastrado. <br>
+			 - Pode ser realizada sucessivas importações uma de cada vez.<br>
+			 - Dados repetidos enviados são ignorados pelo sistema.
 		</p>
 
 		<table class="table" border=1 cellspacing=0 cellpadding=2>
-			<tr><th>Item</th><th>Descrição</th><th>Código</th><th>Unidade</th><th>Quantidade</th><th>Vazia</th></tr>
+			<tr><th>Item</th><th>Descrição</th><th>Código *</th><th>Unidade</th><th>Quantidade</th><th>Vazia</th></tr>
 			<small>Tabela 1. Item</small>
 		</table>
 
 		<table class="table" border=1 cellspacing=0 cellpadding=2>
-			<tr><th>Item</th><th>Fonte (Forncedor, Site, Painel) </th><th>Valor Unitário</th><th>Data</th><th>Hora</th><th>Vazia</th></tr>
+			<tr><th>Item</th><th>Fonte (Forncedor, Site, Painel) </th><th>Valor Unitário</th><th>Data</th><th>Hora * 	</th><th>Vazia</th></tr>
 			<small>Tabela 2. Pesquisa de Preço</small>
 		</table>
 	</div>
@@ -127,20 +131,19 @@
 	</div>
 	<div class="panel-body">
 		<p>
-			<strong>Etapa 01.</strong>  Elabora planilha no excel conforme <b>tabela 1</b>. Os cabelhas deverão ser 
-			Caso algum dado opcional não exista mantenha a celula vazia. 
-			Utilizar apenas uma planilha da pasta de trabalho de Excel.
+			<strong>Etapa 01.</strong>  Elabora planilha no excel conforme <b>Tabela 1</b> abaixo. A linha de cabeçalho deverá ser identica a tabela modelo. 
+			Caso algum dado opcional (*), não exista mantenha a celula vazia.
+			Utilizar apenas a primeira planilha da pasta de trabalho de Excel.
 		</p>
 		<p>
-			<strong>Etapa 02.</strong> Selecione toda a tabela, no menu "Ferramenta de Tabela" em seguida "Converter em Texto", na caixa de diálogo
-			marcar a opção "Outro", adicionar o caracter "&" e clicar em  "OK".
+			<strong>Etapa 02.</strong> Salve a planilha em um local acessível
 		</p>
 		<p>
-			<strong>Etapa 03.</strong> Copiar o texto resultante da etapa 02, colar na campo de texto click em "Enviar".
+			<strong>Etapa 03.</strong> clicar no botão "Escolher arquivo" localizar a planilha da Etapa 1 e clicar em "Enviar".
 		</p>
 
 		<table class="table" border=1 cellspacing=0 cellpadding=2>
-			<tr><th>Item</th><th>Fonte </th><th>Valor Unitário</th><th>Data</th><th>Hora</th></tr>
+			<tr><th>Item</th><th>Fonte </th><th>Valor Unitário</th><th>Data</th><th>Hora *</th></tr>
 			<small>Tabela 1. Pesquisa de Preço</small>
 		</table>
 	</div>

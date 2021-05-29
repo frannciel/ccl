@@ -459,16 +459,17 @@ class LicitacaoController extends Controller
 
     public function relacaoDeItemPdf(Licitacao $licitacao)
     {
-        $participante = false;
+        //$participante = false;
+        $participantes = collect();
         foreach ($licitacao->itens as $item) {
             if ($item->participantes()->exists()){
-                $participante = true;
-                break;
+                $participantes = $participantes->merge($item->participantes);
             }
         }
-        view()->share('licitacao', compact('licitacao', 'participante'));
-        $pdf = PDF::loadView('pdf.relacao_de_itens', compact('licitacao', 'participante'));
+        $participantes = $participantes->sortBy('codigo');
+        view()->share('licitacao', compact('licitacao', 'participantes'));
+        $pdf = PDF::loadView('pdf.relacao_de_itens', compact('licitacao', 'participantes'));
         $pdf->setPaper('A4');
-        return $pdf->download('RelacaoItens'.$licitacao->ordem.'.pdf');
+        return $pdf->download('Relacao_de_itens_pregão_'.$licitacao->ordem.'.pdf');
     }
 }

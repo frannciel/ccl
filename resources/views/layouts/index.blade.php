@@ -27,6 +27,7 @@
     <link href="{{asset('vendor/datatables/css/dataTables.bootstrap.css') }}" rel="stylesheet">
     <!-- folha de estilização própria CSS -->
     <link href="{{asset('css/styles.css') }}" rel="stylesheet" media="all">
+    <meta name="csrf-token" content="{{csrf_token()}}" />
 </head>
 <body>
     <div id="wrapper">

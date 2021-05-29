@@ -68,7 +68,6 @@ Route::get('licitacao/relacaodeitem/pdf/{licitacao}', 			'LicitacaoController@re
 Route::get('licitacao/', 										'LicitacaoController@index')->name('licitacao');
 Route::get('licitacao/novo', 									'LicitacaoController@create')->name('licitacaoNovo');
 Route::get('licitacao/exibir/{uuid}',							'LicitacaoController@show')->name('licitacaoShow');
-Route::get('licitacao/item/editar/{uuid}',						'LicitacaoController@itemEdit');
 Route::get('licitacao/item/mesclar/novo/{licitacao}',			'LicitacaoController@mesclarCreate')->name('licitacaoMesclarCreate');
 Route::post('licitacao/item/duplicar',							'LicitacaoController@itemDuplicar');
 Route::post('licitacao/store', 									'LicitacaoController@store');
@@ -77,14 +76,18 @@ Route::delete('licitacao/apagar/{licitacao}',					'LicitacaoController@destroy')
 
 Route::get('item/novo/{requisicao_id}', 						'ItemController@create')->name('itemNovo');
 Route::get('item/editar/{id}',  								'ItemController@edit')->name('itemEditar');
+Route::get('item/licitacao/editar/{item}',						'ItemController@editItemLicitacao')->name('itemEditItemLicitacao');
 Route::get('item/fornecedor/novo',								'ItemController@fornecedorCreate')->name('itemFornecNovo');
 Route::get('item/fornecedor/exibir/{fornecedor_id}/{item_id}', 	'ItemController@fornecedorShow')->name('itemFornecShow');
 Route::post('item/store', 	 									'ItemController@store');
-Route::post('item/update', 										'ItemController@update');
+Route::post('item/update', 										'ItemController@update')->name('itemUpdate');
+Route::put('item/licitacao/update/{item}',						'ItemController@updateItemLicitacao')->name('itemUpdateItemLicitacao');
 Route::post('item/ajax', 										'ItemController@ajax');
 Route::post('item/fornecedor/store', 							'ItemController@fornecedorStore');
 Route::get('item/fornecedor/update', 							'ItemController@fornecedorUpdate')->name('itemFornecUpdate');
 Route::delete('item/apagar/{item}', 							'ItemController@destroy');
+Route::post('item/importar/texto/{requisicao}', 				'ItemController@importarTexto')->name('item.importarTexto');
+
 
 Route::post('licitacao/modalidade', 							'LicitacaoController@modalidade')->name('modalidade');
 Route::get('cotacao/novo', 										'CotacaoController@redirecionar');
@@ -92,10 +95,23 @@ Route::post('item/primeiro', 	 								'ItemController@primeiro');
 Route::get('item/segundo', 	 									'ItemController@segundo');
 Route::post('cep', 												'FornecedorController@buscarCEP');
 
-Route::get('importar', 											'FileController@create');
-Route::get('importar/{uuid}', 									'FileController@create')->name('importar');
-Route::post('importar/store', 									'FileController@store')->name('importeSalvar');
-Route::post('importar/ata/store', 								'FileController@AtaSrpStore');
+//Route::get('importar', 											'ImporteTextoController@create');
+//Route::get('importar/{uuid}', 									'ImporteTextoController@create')->name('importar');
+//Route::post('importar/store', 									'ImporteTextoController@store')->name('importeSalvar');
+//Route::post('importar/ata/store', 								'ImporteTextoController@AtaSrpStore');
+//Route::post('importar/arquivo/{licitacao}', 					'ImporteTextoController@importarIrp')->name('fileImportarIrp');
+
+Route::get('fornecedor/importar/', 								'ImporteTextoController@fornecedorCreate')->name('importeText.fornecedorCreate');
+Route::get('licitacao/importar/{licitacao}', 					'ImporteTextoController@licitacaoCreate')->name('importeText.licitacaoCreate');
+Route::post('fornecedor/importar/texto', 						'ImporteTextoController@fornecedor')->name('importeText.fornecedor');
+Route::post('participante/importar/texto/{licitacao}', 			'ImporteTextoController@licitacao')->name('importeText.participante');
+Route::post('registroDePreco/importar/texto/{licitacao}', 		'ImporteTextoController@licitacao')->name('importeText.registroDePreco');
+Route::post('fornecedor/importar/excel', 						'ImporteExcelController@fornecedor')->name('importExcel.fornecedor');
+Route::post('participante/importar/excel/{licitacao}', 			'ImporteExcelController@participante')->name('importExcel.participante');
+Route::get('fornecedor/importar/excel', 						'ImporteExcelController@fornecedorCreate')->name('importExcel.fornecedor');
+Route::get('participante/importar/excel/{licitacao}', 			'ImporteExcelController@licitacaoCreate')->name('importExcel.participante');
+
+
 
 Route::get('uasg', 												'UasgController@index')->name('uasg');
 Route::get('uasg/novo', 										'UasgController@create')->name('uasg.nova');
@@ -114,8 +130,9 @@ Route::get('requisicao/pesquisa/pdf/{requisicao}', 				'RequisicaoController@pes
 Route::get('requisicao/documento/{requisicao}', 				'RequisicaoController@documento')->name('documento');
 Route::get('requisicao/consulta/{acao}',						'RequisicaoController@consultar')->name('requisicaoConsulta');
 Route::get('requisicao/ata/{id}', 								'RequisicaoController@ataShow')->name('ataShow');
+Route::get('requisicao/importar/{requisicao}', 					'RequisicaoController@importar')->name('requisicao.importar');
 Route::post('requisicao/store', 	 							'RequisicaoController@store');
-Route::post('requisicao/update', 								'RequisicaoController@update');
+Route::post('requisicao/update/{requisicao}', 					'RequisicaoController@update')->name('requisicao.update');;
 Route::post('requisicao/ajax', 									'RequisicaoController@ajax');
 Route::post('requisicao/ata/create', 							'RequisicaoController@ataCreate')->name('ataCreate');
 Route::post('requisicao/duplicar/item', 						'RequisicaoController@duplicarItem')->name('requisicaoDuplicarItem');
@@ -130,13 +147,13 @@ Route::post('fornecedor/store', 	 							'FornecedorController@store');
 Route::post('fornecedor/update', 								'FornecedorController@update');
 Route::post('fornecedor/fornecedor', 							'FornecedorController@getFornecedor');
 
-Route::get('cotacao/novo/{requisicao}', 						'CotacaoController@create')->name('cotacaoCreate');
-Route::get('cotacao/editar/{cotacao}',  						'CotacaoController@edit')->name('cotacaoEdit');
-Route::get('cotacao/relatorio/{requisicao}', 					'CotacaoController@relatorio')->name('cotacaoRelatorio');
-Route::get('cotacao/relatorio/pdf/{requisicao}', 				'CotacaoController@relatorioPdf')->name('cotacaoRelatorioPdf');
-Route::delete('cotacao/apagar/{cotacao}',  						'CotacaoController@destroy')->name('cotacaoDestroy');
-Route::post('cotacao/store', 									'CotacaoController@store')->name('cotacaoStore');
-Route::post('cotacao/update', 									'CotacaoController@update')->name('cotacaoUpdate');
+Route::get('cotacao/novo/{requisicao}', 						'CotacaoController@create')->name('cotacao.create');
+Route::post('cotacao/novo/{requisicao}', 						'CotacaoController@store')->name('cotacao.store');
+Route::get('cotacao/relatorio/{requisicao}', 					'CotacaoController@relatorio')->name('cotacao.relatorio');
+Route::get('cotacao/relatorio/pdf/{requisicao}', 				'CotacaoController@relatorioPdf')->name('cotacao.relatorioPdf');
+Route::post('cotacao/importar/excel/{requisicao}', 				'CotacaoController@importarExcel')->name('cotacao.importarExcel');
+Route::post('Cotacao/importar/texto/{requisicao}', 				'CotacaoController@importarTexto')->name('cotacao.importarTexto');
+Route::delete('cotacao/apagar/{cotacao}',  						'CotacaoController@destroy')->name('cotacao.destroy');
 
 Route::get('enquadramento', 			'InformacaoController@index')->name('enquadramento');
 Route::get('enquadramento/novo', 		'InformacaoController@create')->name('enquadramentoNovo');

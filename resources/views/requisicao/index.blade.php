@@ -30,7 +30,7 @@
 	</div>
 
 	<div class="panel-footer">
-			<div class="row">
+		<div class="row">
 			<div class="col-md-12">
 				<table id="tabela" class="table table-hover tablesorter">
 					<thead>
@@ -54,6 +54,12 @@
 						@endforelse
 					</tbody>
 				</table> 
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-6" style="float: none; margin: 0 auto;">
+				{{ $requisicoes->links() }}
 			</div>
 		</div>
 	</div>

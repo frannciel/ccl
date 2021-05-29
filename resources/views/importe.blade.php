@@ -40,15 +40,40 @@
 			'largura' => '3',
 			'attributes' => ['class' => 'btn btn-success btn-block']])
 		</div>	
-		{{ Form::close() }} 
+	{{ Form::close() }}
 
-		<div class="{{$errors->has('principal') ? ' has-error' : '' }} col-lg-12">
-			@if ($errors->has('principal'))
-			<span class="help-block">
-				<strong>Falha Encontrada: {{ $errors->first('principal') }}</strong>
-			</span>
-			@endif 
+	<form class="form" method="post" action="{{route('badega')}}" enctype="multipart/form-data">
+		@csrf
+
+		<input type="hidden" name="requisicao" value="{{$uuid}}">
+
+		<div class="row mt-4">
+			@include('form.select', [
+			'input' => 'tipo', 
+			'label' => 'Tipo de Importação', 
+			'selected' => '{{ old($input) }}',
+			'largura' => '4' ,
+			'options' => [ '1' => 'Pesquisa de Preços', '2' => 'Participante'], 
+			'attributes' => ['id' => 'tipo', 'required' => '', 'class' => 'form-control form-control-sm']])
+
+			<div class="col-md-4">
+				<input type="file" name="arquivo" class="custom-file-input" id="customFile">
+				<label class="custom-file-label" for="customFile">Selecione arquivo</label>
+			</div>
+
+			<div class="col-md-4">
+				<button type="submit" class="btn btn-primary btn-block">Enviar</button>
+			</div>
 		</div>
+	</form> 
+
+	<div class="{{$errors->has('principal') ? ' has-error' : '' }} col-lg-12">
+		@if ($errors->has('principal'))
+		<span class="help-block">
+			<strong>Falha Encontrada: {{ $errors->first('principal') }}</strong>
+		</span>
+		@endif 
+	</div>
 </div>
 </div>
 	<div class="panel panel-warning" style="margin-top:20px;">

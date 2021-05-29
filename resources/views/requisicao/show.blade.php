@@ -7,8 +7,8 @@
 	</div>
 
 	<div class="panel-body">
-		{{ Form::open(['url' => '/requisicao/update', 'method' => 'post', 'class' => 'form-padrao']) }}
-			{{ Form::hidden('requisicao', $requisicao->uuid)}}
+		{{ Form::open(['route' => ['requisicao.update', $requisicao->uuid], 'method' => 'post', 'class' => 'form-padrao']) }}
+			{{ Form::hidden('requisicao', )}}
 			
 			<div class="row">
 				@include('form.text', [

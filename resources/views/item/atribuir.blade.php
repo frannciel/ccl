@@ -15,7 +15,7 @@
 			<div class="alert alert-default" role="alert">
 				<h3>
 					<span class="glyphicon glyphicon-link" aria-hidden="true"></span>
-					<a href="{{route('licitacaoExibir', [$licitacao->uuid])}}">Pregão Eletrônico n° {{$licitacao->numero ?? '' }} / {{$licitacao->ano ?? ''}}</a>
+					<a href="{{route('licitacaoShow', [$licitacao->uuid])}}">Pregão Eletrônico n° {{$licitacao->numero ?? '' }} / {{$licitacao->ano ?? ''}}</a>
 				</h3>
 				<p><label> Objeto da Licitação:</label>{{$licitacao->objeto ?? ''}}</p>
 			</div> 
@@ -134,7 +134,7 @@
 
 			<div class="row mt-4">
 				<div class="col-md-3 col-6 col-md-offset-1">
-					<a href="{{route('licitacaoExibir', [$licitacao->uuid])}}" class="btn btn-primary btn-block" type="button">Voltar</a>
+					<a href="{{route('licitacaoShow', [$licitacao->uuid])}}" class="btn btn-primary btn-block" type="button">Voltar</a>
 				</div>
 
 				<div class="col-md-3 ">

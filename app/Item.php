@@ -130,6 +130,7 @@ class Item extends Model
     /**
      * Método que retorno o valor total estimado da item em formato numérico
      * Este valor é calculado multiplicando o valor médio das cotações pela quantidade do item
+     * Valor total do item em formato Float 0.00
      *
      * @return <Float>  total.
      */
@@ -149,8 +150,8 @@ class Item extends Model
     }
 
     /** 
-     *   @Descrition Metodo que retorna o valor médio das cotações de preços coletados em formato númerico
-     *
+     *  @Descrition Metodo que retorna o valor médio das cotações de preços coletados em formato númerico
+     *  Float 0.00
      *   @return <Float> valorMedio
      */
     public function getMediaAttribute()
@@ -194,6 +195,10 @@ class Item extends Model
         foreach ($this->participantes as $participante)
              $soma += $participante->pivot->quantidade;
         return $soma + $this->quantidade;
+    }
+
+    public function getTotalGeralAttribute(){
+        return number_format($this->media, 2, '.', '') * $this->quantidadeTotal;
     }
 }
 	

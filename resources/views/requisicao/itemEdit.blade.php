@@ -67,7 +67,7 @@
 			@include('form.textarea', [
 			'input' => 'descricao', 
 			'label' => 'Descrição Detalhada', 
-			'value' => old($input ?? '') ??  $item->descricao,
+			'value' => old($input ?? '') ?? strip_tags($item->descricao),
 			'attributes' => ['id' => 'descricao', 'required' => '' ]])
 		</div>
 

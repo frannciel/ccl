@@ -2,19 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests\ItemRequest;
+use DB;
 use App\Item;
 use App\Unidade;
-Use App\Estado;
-use App\Requisicao;
-use App\Fornecedor;
 use App\Licitacao;
-use DB;
+use App\Fornecedor;
+use App\Requisicao;
+use Illuminate\Http\Request;
+use App\Services\ItemService;
+use App\Http\Requests\ItemRequest;
 
 
 class ItemController extends Controller
 {
+    protected $service;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct(ItemService $service)
+    {
+        $this->service = $service;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -115,7 +126,22 @@ class ItemController extends Controller
 
         //$item->with('cidades', 'participantes')->where('id', '=', $item->id)->first();
         return view('requisicao.itemEdit', compact('unidades', 'item'));
-    
+    }
+
+    /**
+     * Mostra o formulário para editar um item específico relacionada a uma licitacão
+     *
+     * @param  Item  $item
+     * @return \Illuminate\Http\Response
+     */
+    public function editItemLicitacao(Item $item){
+        $licitacao = $item->licitacao;
+        $fornecedores = $item->fornecedores;
+        $uasgs = $item->participantes;
+        $unidades = array();
+        foreach (Unidade::all() as $value)
+            $unidades += [$value->id => $value->nome];
+        return view('licitacao.pregao.itemEdit',  compact('item', 'licitacao', 'fornecedores', 'uasgs', 'unidades'));
     }
 
     /**
@@ -140,12 +166,37 @@ class ItemController extends Controller
         $item->quantidade 	= $request->quantidade;
         $item->codigo 		= $request->codigo;
         $item->objeto       = $request->objeto;
-        $item->descricao 	= $request->descricao;
+        $item->descricao 	= nl2br($request->descricao);
         $item->unidade_id 	= $request->unidade;
-        //$item->grupo_id 	= $request->grupo;
         $item->save();
-
         return redirect()->route('requisicaoShow', $item->requisicao->uuid);
+    }
+
+    /**
+     * Atualiza um ite específico relacionado a uma licitação
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateItemLicitacao(Request $request, Item $item)
+    {
+        $this->validate($request, [
+            'item'       => 'required|string',
+            'quantidade' => 'required|integer',
+            'codigo'     => 'integer|nullable',
+            'objeto'     => 'string|nullable|max:100',
+            'descricao'  => 'required|string',
+            'unidade'    => 'required|integer',
+        ]);
+        $item->quantidade   = $request->quantidade;
+        $item->codigo       = $request->codigo;
+        $item->objeto       = $request->objeto;
+        $item->descricao    = nl2br($request->descricao);
+        $item->unidade_id   = $request->unidade;
+        //$item->grupo_id   = $request->grupo;
+        $item->save();
+        return redirect()->route('licitacaoShow', $item->licitacao->uuid);
     }
 
     /**
@@ -365,4 +416,22 @@ class ItemController extends Controller
 	    	return floatval($string); 
 	  	}
 	}
+
+    /**
+     * Importar cotação de preços  a partir de tabela em formato de texto
+     *
+     * @param Request  $request
+     * @param Requisicao  $requisicao
+     */
+    protected function importarTexto(Request $request,  Requisicao $requisicao)
+    {
+        $return = $this->service->importar($request->all(), $requisicao);
+        if ($return['status']){
+            return redirect()->route('requisicaoShow', $requisicao->uuid)
+                ->with(['codigo' => 200,'mensagem' => 'Itens importados com sucessos!']);
+        } else {
+            return redirect()->route('requisicaoShow', $requisicao->uuid)
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error durante a importação, tente novamente ou contate o administrador']); 
+        }
+    }
 }

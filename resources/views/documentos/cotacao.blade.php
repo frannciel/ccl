@@ -71,7 +71,7 @@
             <button class='btn btn-block btn-success' data-clipboard-action='copy' data-clipboard-target='#pesquisa'>Copiar </button>
          </div>
          <div class="col-md-3">
-            <a class="btn btn-default btn-block" type="button" href="{{url('cotacao/relatorio/pdf', $requisicao->uuid)}}" role="button" target="_black">
+            <a class="btn btn-default btn-block" type="button" href="{{route('cotacao.relatorioPdf', $requisicao->uuid)}}" role="button" target="_black">
                Exportar PDF
             </a> 
          </div>

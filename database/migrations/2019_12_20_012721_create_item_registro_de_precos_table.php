@@ -18,7 +18,7 @@ class CreateItemRegistroDePrecosTable extends Migration
             $table->integer('item_id')->unsigned();
             $table->integer('registro_precos_id')->unsigned();
             $table->foreign('item_id')->references('id')->on('itens');
-            $table->foreign('registro_precos_id')->references('id')->on('registro_precos');
+            $table->foreign('registro_precos_id')->references('id')->on('registro_precos')->onDelete('cascade');
             $table->timestamps();
         });
     }

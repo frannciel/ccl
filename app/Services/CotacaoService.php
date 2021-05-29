@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
+use Excel;
 use App\Item;
-use Validator;
 use App\Cotacao;
 use App\Requisicao;
 use Illuminate\Http\Request;
-use Excel;
 use App\Services\ConversorService;
 
 class CotacaoService

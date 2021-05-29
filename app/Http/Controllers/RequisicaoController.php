@@ -3,17 +3,30 @@
 namespace App\Http\Controllers;
 
 use PDF;
-use App\Item;
 use Session;
+use App\Item;
 use App\Fornecedor;
 use App\Requisicao;
 use App\Requisitante;
 use Illuminate\Http\Request;
+use App\Services\RequisicaoService;
 use App\Http\Requests\RequisicaoRequest;
 
 
 class RequisicaoController extends Controller
 {
+    protected $service;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct(RequisicaoService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +34,7 @@ class RequisicaoController extends Controller
      */
     public function index()
     {
-        $requisicoes =  Requisicao::orderBy('updated_at', 'desc')->get();
+        $requisicoes = Requisicao::orderBy('updated_at', 'desc')->paginate(20);
         $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
         Session::forget(['mensagem','codigo']); 
         return view('requisicao.index', compact( 'requisicoes', 'comunica'));
@@ -35,7 +48,7 @@ class RequisicaoController extends Controller
     public function create()
     {
         $requisitantes = array();
-        foreach (Requisitante::all() as $key => $value)
+        foreach (Requisitante::orderBy('nome', 'asc')->get() as $value)
             $requisitantes += [$value->uuid => $value->nome];
         return view('requisicao.create')->with('requisitantes', $requisitantes);
     }
@@ -57,27 +70,18 @@ class RequisicaoController extends Controller
             'previsao'      => 'required|date_format:d/m/Y',
             'metas'         => 'nullable|string',
             'descricao'     => 'required|string',
-            'justificativa' => 'required|string',
+            'justificativa' => 'nullable|string',
             'requisitante'  => 'required|exists:requisitantes,uuid',
         ]);
 
-		$requisicao = Requisicao::create([
-            'numero'        => Requisicao::where('ano', date('Y'))->max('numero') + 1,// Retona o número da ultima requisção e acarescenta mais um
-            'ano'           => date('Y'),
-            'tipo'          => $request['tipo'],
-            'prioridade'    => $request['prioridade'],
-            'renovacao'     => $request['renovacao'],
-            'capacitacao'   => $request['capacitacao'],
-            'pac'           => $request['pac'],
-            'metas'         => $request['metas'],
-            'descricao'     => $request['descricao'],
-            'justificativa' => $request['justificativa']
-        ]);
-        $requisicao->data = $request->previsao; // formata o campo previsão em formato de data
-        $requisicao->requisitante()->associate(Requisitante::findByUuid($request->requisitante)); // representa o  requisitante
-        $requisicao->save();
-        return redirect()->route('requisicaoShow', $requisicao->uuid)
-            ->with(['codigo' => "200",'mensagem' => 'Nova requisição criada com sucesso.']);
+        $return = $this->service->store($request->all());
+        if ($return['status']){
+            return redirect()->route('requisicaoShow', $return['data']->uuid)
+                ->with(['codigo' => 200,'mensagem' => 'Requisicão cadsatrada com sucesso!']);
+        } else {
+            return redirect()->route('requisicao')
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao cadastrar a requisição, tente novamente ou contate o administrador']); 
+        }
     }
 
     /**
@@ -117,7 +121,7 @@ class RequisicaoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, Requisicao $requisicao)
     {
         $this->validate($request, [
             'tipo'          => 'required|integer',
@@ -128,26 +132,18 @@ class RequisicaoController extends Controller
             'previsao'      => 'nullable|date_format:d/m/Y',
             'metas'         => 'nullable|string',
             'descricao'     => 'required|string',
-            'justificativa' => 'required|string',
+            'justificativa' => 'nullable|string',
             'requisitante'  => 'required|exists:requisitantes,uuid',
-            'requisicao'    => 'required|exists:requisicoes,uuid'
         ]);
 
-        $requisicao = Requisicao::findByUuid($request->requisicao);
-        $requisicao->descricao      = $request->descricao;
-        $requisicao->justificativa  = $request->justificativa;
-        $requisicao->prioridade     = $request->prioridade;
-        $requisicao->tipo           = $request->tipo;
-        $requisicao->renovacao      = $request->renovacao;
-        $requisicao->capacitacao    = $request->capacitacao;
-        $requisicao->pac            = $request->pac;
-        $requisicao->data           = $request->previsao;
-        $requisicao->metas          = $request->metas;
-        $requisicao->requisitante()->dissociate(); // remove todas as relações
-        $requisicao->requisitante()->associate(Requisitante::findByUuid($request->requisitante)); // refaz as relaçoes
-        $requisicao->save();
-        return redirect()->route('requisicaoShow', $requisicao->uuid)
-            ->with(['codigo' => "200",'mensagem' => 'Requisição '.$requisicao->ordem.' alterada com sucesso.']);
+        $return = $this->service->update($request->all(), $requisicao);
+        if ($return['status']){
+            return redirect()->route('requisicaoShow', $return['data']->uuid)
+                ->with(['codigo' => 200,'mensagem' => 'Requisicão alterada com sucesso!']);
+        } else {
+            return redirect()->route('requisicaoShow', $requisicao->uuid)
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao editar a requisição, tente novamente ou contate o administrador']); 
+        }
     }
 
     /**
@@ -296,5 +292,12 @@ class RequisicaoController extends Controller
             $item->save();
             $numero += 1;
         }
+    }
+
+    public function importar(Requisicao $requisicao)
+    {
+        $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
+        Session::forget(['mensagem','codigo']); 
+        return view('requisicao.import',  compact('requisicao', 'comunica'));
     }
 }

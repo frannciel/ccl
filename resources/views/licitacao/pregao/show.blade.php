@@ -215,7 +215,7 @@
 													<span class="input-group-addon">
 														<input type="checkbox" id="defaultCheck"  class="chk" name="itens[]" value="{{$item->uuid}}" >
 													</span>
-													<a class="btn btn-default" href="{{url('licitacao/item/editar', $item->uuid)}}" role="button">Detalhar</a>
+													<a class="btn btn-default" href="{{url('item/licitacao/editar', $item->uuid)}}" role="button">Detalhar</a>
 												</div>
 											</td>
 											<td class=" center">{{$item->ordem}}</td>

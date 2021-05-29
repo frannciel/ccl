@@ -93,7 +93,9 @@ class RegistroDePrecoController extends Controller
         foreach ($itens  as $item)
             $ata->itens()->attach($item);
         //return redirect()->action('PregaoController@show', [ $licitacao->licitacaoable->uuid]);
-        return redirect()->action('RegistroDePrecoController@documentoCreate', [$ata->uuid]);
+        //return redirect()->action('RegistroDePrecoController@documentoCreate', [$ata->uuid]);
+        return redirect()->action('RegistroDePrecoController@create', [$licitacao->uuid]);
+
 
     }
 
@@ -191,6 +193,6 @@ class RegistroDePrecoController extends Controller
         view()->share('ata', compact('ata','total', 'participantes'));
         $pdf = PDF::loadView('pdf.arp', compact('ata','total', 'participantes'));
         $pdf->setPaper('A4');
-        return $pdf->download($registroDePreco->ordem.'.pdf');
+        return $pdf->download($registroDePreco->ordem.'_'.$registroDePreco->fornecedor->fornecedorable->razao_social.'.pdf');
     }
 }

@@ -180,6 +180,10 @@ return [
          *DomPDF Service Providers
          */
         Barryvdh\DomPDF\ServiceProvider::class,
+         /*
+         * Maatwebsite Excel Service Providers...
+         */
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
     ],
 
@@ -209,13 +213,17 @@ return [
         'DB' => Illuminate\Support\Facades\DB::class,
         'Eloquent' => Illuminate\Database\Eloquent\Model::class,
         'Event' => Illuminate\Support\Facades\Event::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'File' => Illuminate\Support\Facades\File::class,
+        'Form' => Collective\Html\FormFacade::class,
         'Gate' => Illuminate\Support\Facades\Gate::class,
         'Hash' => Illuminate\Support\Facades\Hash::class,
+        'Html' => Collective\Html\HtmlFacade::class,
         'Lang' => Illuminate\Support\Facades\Lang::class,
         'Log' => Illuminate\Support\Facades\Log::class,
         'Mail' => Illuminate\Support\Facades\Mail::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
         'Password' => Illuminate\Support\Facades\Password::class,
         'Queue' => Illuminate\Support\Facades\Queue::class,
         'Redirect' => Illuminate\Support\Facades\Redirect::class,
@@ -229,9 +237,6 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Html' => Collective\Html\HtmlFacade::class,
-        'Form' => Collective\Html\FormFacade::class,
-        'PDF' => Barryvdh\DomPDF\Facade::class,
     ],
 
 ];

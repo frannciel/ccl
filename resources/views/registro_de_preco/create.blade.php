@@ -82,14 +82,20 @@
 	 
 			<div class="row mt-2">
 				@include('form.button', [
-				'value' => 'Cancelar',
+				'value' => 'Voltar',
 				'largura' 	=> 3,
 				'class'		=> 'btn btn-primary btn-block',
-				'url' 		=> 	route('pregaoShow', [$licitacao->licitacaoable->uuid]),
-				'recuo' 	=> 3 ])
+				'url' 		=> 	route('pregaoShow', [$licitacao->licitacaoable->uuid])])
+
+				@include('form.button', [
+				'value' => 'Voltar',
+				'largura' 	=> 3,
+				'class'		=> 'btn btn-primary btn-block',
+				'url' 		=> 	route('requisicaoShow', [$licitacao->uuid]) ])
+
 
 				@include('form.submit', [
-				'input' => 'Visualizar Registro de Preços',
+				'input' => 'Gerar Ata SRP',
 				'largura' => 3 ])
 			</div>	
 		{{Form::close()}} 

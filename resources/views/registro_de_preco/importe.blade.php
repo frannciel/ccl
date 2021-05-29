@@ -12,7 +12,7 @@
 		<div class="alert alert-default" role="alert">
 			<h3>
 				<span class="glyphicon glyphicon-link" aria-hidden="true"></span>
-				<a href="{{route('licitacaoExibir', [$licitacao->uuid])}}">Pregão Eletrônico SRP n° {{$licitacao->numero ?? '' }} / {{$licitacao->ano ?? ''}}</a>
+				<a href="{{route('licitacaoShow', [$licitacao->uuid])}}">Pregão Eletrônico SRP n° {{$licitacao->numero ?? '' }} / {{$licitacao->ano ?? ''}}</a>
 			</h3>
 			<p><label> Objeto da Licitação:</label>{{$licitacao->objeto ?? ''}}</p>
 		</div> 

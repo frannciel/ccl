@@ -33,56 +33,77 @@
                   <th align="center" class="center" width="50%">Descrição Detalhada</th>
                   <th align="center" class="center">Código</th>
                   <th align="center" class="center">Unidade</th>
+                  <th align="center" class="center">Local Entrega</th>
+                  <th align="center" class="center">Quantidade</th>
                   <th align="center" class="center">Quantidade Total</th>
                   <th align="center" class="center">Valor Unitário</th>
                   <th align="center" class="center">Valor Total</th>
                </tr>
             </thead>
             <tbody>
-               @if($participante) <!-- Verifica se a licitação tem participantes-->
                   @foreach ($licitacao->itens->sortBy('ordem') as $item)
-                     <tr>
-                        <td align="center" class="center">{{$item->ordem}}</td>
-                        <td align="justify" class="justificado">
-                           @php print($item->descricaoCompleta) @endphp
-                           <p>
-                              <b><br/> Local de entrega (Quantidade):</b>
-                              @if($item->quantidade > 0)
-                              Eunápolis/BA ({{$item->quantidade}})
-                              @endif
-                             
-                              @if($item->participantes()->exists())
-                                 @foreach($item->participantes as $participante)
-                                  {{ $participante->pivot->cidade->nome }}/{{ $participante->pivot->cidade->estado->sigla}}
-                                  ({{$participante->pivot->quantidade}})
-                                 @endforeach
-                              @endif
-                           </p>
-                        </td>
-                        <td align="center" class="center">{{$item->codigo =='0'?'': $item->codigo}}</td>
-                        <td align="center" class="center">{{$item->unidade->nome}}</td>
-                        <td align="center" class="center">{{$item->quantidadeTotal}}</td>
-                        <td align="center" class="center">{{$item->valorMedio}}</td>
-                        <td align="center" class="center">{{number_format($item->media * $item->quantidadeTotal, 2, ',', '.')}}</td>
-                     </tr>
-                  @endforeach
-               @else
-                  @foreach ($licitacao->itens->sortBy('ordem') as $item)
+                        @if($item->participantes()->exists())
+                           @if($item->quantidade > 0)
+                              @php $qtd = $item->participantes()->count()+1; @endphp
+                              <tr>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">{{$item->ordem}}</td>
+                                 <td align="justify" class="justificado" rowspan="{{$qtd}}">
+                                    @php print($item->descricaoCompleta) @endphp
+                                 </td>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">{{$item->codigo =='0'?'': $item->codigo}}</td>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">{{$item->unidade->nome}}</td>
+                                 <td> Eunápolis/BA </td>
+                                 <td align="center" class="center">({{$item->quantidade}})</td>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">({{$item->quantidadeTotal}})</td>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">{{$item->valorMedio}}</td>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">{{number_format(number_format($item->media, 2, '.', "") * $item->quantidadeTotal, 2, ',', '.')}}</td>
+                              </tr>
+                              @foreach($item->participantes as $participante)
+                                 <tr>
+                                    <td>{{$participante->pivot->cidade->nome }}/{{ $participante->pivot->cidade->estado->sigla}}</td>
+                                    <td align="center" class="center">{{$participante->pivot->quantidade}}</td>
+                                 </tr>
+                              @endforeach
+                           @else
+                              @php $qtd = $item->participantes()->count(); @endphp
+                              <tr>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">{{$item->ordem}}</td>
+                                 <td align="justify" class="justificado" rowspan="{{$qtd}}">
+                                 @php print($item->descricaoCompleta) @endphp
+                                 </td>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">{{$item->codigo =='0'?'': $item->codigo}}</td>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">{{$item->unidade->nome}}</td>
+                                 @php $participante = $item->participantes->first()@endphp
+                                 <td>{{$participante->pivot->cidade->nome }}/{{ $participante->pivot->cidade->estado->sigla}}</td>
+                                 <td align="center" class="center">{{$participante->pivot->quantidade}}</td>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">({{$item->quantidadeTotal}})</td>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">{{$item->valorMedio}}</td>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">{{number_format(number_format($item->media, 2, '.', "") * $item->quantidadeTotal, 2, ',', '.')}}</td>
+                              </tr>
+                              @for($i = 1; $i < $item->participantes->count(); $i++)
+                                 @php $participante = $item->participantes @endphp
+                                 <tr>
+                                    <td>{{$participante->get($i)->pivot->cidade->nome }}/{{ $participante->get($i)->pivot->cidade->estado->sigla}}</td>
+                                    <td align="center" class="center">{{$participante[$i]->pivot->quantidade}}</td>
+                                 </tr>
+                              @endfor
+                           @endif
+                        @else
                         <tr>
                            <td align="center" class="center">{{$item->ordem}}</td>
-                           <td align="justify" class="justificado">
-                              @php print($item->descricaoCompleta) @endphp
-                           </td>
+                           <td align="justify" class="justificado">@php print($item->descricaoCompleta) @endphp</td>
                            <td align="center" class="center">{{$item->codigo =='0'?'': $item->codigo}}</td>
                            <td align="center" class="center">{{$item->unidade->nome}}</td>
+                           <td> Eunápolis/BA </td>
                            <td align="center" class="center">{{$item->quantidade}}</td>
+                           <td align="center" class="center">({{$item->quantidade}})</td>
                            <td align="center" class="center">{{$item->valorMedio}}</td>
                            <td align="center" class="center">{{$item->valorTotal }}</td>
                         </tr>
-                  @endforeach
-               @endif
+                        @endif
+                     @endforeach
                <tr>
-                  <td align="right" colspan="6">TOTAL GERAL</td>
+                  <td align="right" colspan="8">TOTAL GERAL</td>
                   <td align="center">{{$licitacao->valorTotalEstimado}}</td>
                </tr>
             </tbody>

@@ -74,7 +74,7 @@ class Licitacao extends Model
     {
         $soma = 0;
         foreach ( $this->itens as  $item) 
-            $soma += $item->total;
+            $soma += $item->totalGeral;
         return $soma;
     }
 /*

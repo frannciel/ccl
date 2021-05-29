@@ -14,20 +14,19 @@
 	PROCESSO ADMINISTRATIVO Nº {{$ata->licitacao->processo ?? '23291.000000/20XX-00'}}</h4>
 	
 	<p align=justify>O INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DA BAHIA – IFBA CAMPUS EUNÁPOLIS, com sede na Avenida David Jonas Fadini, S/n, Rosa Neto, Eunápolis – Bahia. 
-	CEP 45823-431, inscrito no CNPJ sob o nº 10.764.307/0010-03, neste ato representado pelo Diretor Geral pro tempore Fabíolo Moraes Amaral, nomeado pela Portaria nº 2.808, de 29 
-	de agosto de 2018, publicada no Diário Oficial da União de 30 de agosto de 2018, inscrito no CPF sob o nº 982.829.485-00 portador da Carteira de Identidade nº 08382171-68/SSP/BA, 
+	CEP 45823-431, inscrito no CNPJ sob o nº 10.764.307/0010-03, neste ato representado pelo Diretor Geral Fabíolo Moraes Amaral, nomeado pela Portaria nº 13, de 02 de janeiro de 2020, publicada no Diário Oficial da União de 03 de janeiro de 2020, inscrito no CPF sob o nº 982.829.485-00 portador da Carteira de Identidade nº 08382171-68/SSP/BA, 
 	considerando o julgamento da licitação na modalidade de pregão, na forma eletrônica, para REGISTRO DE PREÇOS nº {{$ata->licitacao->numero }} / {{$ata->licitacao->ano}} publicada no D.O.U de {{$ata->licitacao->publicacao ?? 'xx/xx/20xx'}} 
 	processo administrativo nº  {{ $ata->licitacao->processo ?? '23291.000000/20XX-00'}}, RESOLVE registrar os preços da(s)  empresa(s) indicada(s) e qualificada(s) nesta ATA, de acordo com a classificação 
 	por ela(s) alcançada(s) e na(s)  quantidade(s)  cotada(s), atendendo as condições previstas no edital, sujeitando-se as partes às normas constantes na Lei nº 8.666, de 21 de junho de 1993 
 	e suas alterações, no Decreto n.º 7.892, de 23 de janeiro de 2013, e em conformidade com as disposições a seguir:</p>
 	<ol>
-		<li>1.	DO OBJETO
+		<li><b>DO OBJETO</b>
 			<ol>
 				<li>A presente Ata tem por objeto o registro de preços para a eventual aquisição de {{$ata->licitacao->objeto ?? ''}} conforme condições, quantidades e exigências estabelecidas no Termo de Referência, anexo I do edital de Pregão nº {{$ata->licitacao->numero}}/{{$ata->licitacao->ano?? 'XXX/XXXX'}} que é parte integrante desta Ata, assim como a proposta vencedora, independentemente de transcrição.</li>
 			</ol>
 		</li>
 		<br />
-		<li>DOS PREÇOS, ESPECIFICAÇÕES E QUANTITATIVOS
+		<li><b>DOS PREÇOS, ESPECIFICAÇÕES E QUANTITATIVOS</b>
 			<ol>
 				<li>O preço registrado, as especificações do objeto, a quantidade, fornecedor(es) e as demais condições ofertadas na(s) proposta(s) são as que seguem: </li>
 			</ol>
@@ -35,10 +34,10 @@
 				<thead>
 					<tr>
 						<td colspan=5>
-						<b>Fornecedor: {{$ata->fornecedor->nome}}</b><br />
+						<b>{{$ata->fornecedor->nome}}</b><br />
 						<b>CPF/CNPJ:</b> {{$ata->fornecedor->cpfCnpj}}	 <br />
 						<b>Endereço:</b> {{$ata->fornecedor->endereco}}	 <br />
-						<b>CEP:</b> {{$ata->fornecedor->cep}} <br />
+						<b>CEP:</b> {{$ata->fornecedor->cep}} - {{$ata->fornecedor->cidade->nome}} - {{$ata->fornecedor->cidade->estado->sigla}} <br />
 						<b>Telefone:</b> {{$ata->fornecedor->telefone_1}} / {{$ata->fornecedor->telefone_2 ?? ''}} <br />
 						<b>Email:</b> {{$ata->fornecedor->email}}		 <br />
 						<b>Representante Legal:</b> {{$ata->fornecedor->fornecedorable->representante ?? ''}}
@@ -79,7 +78,7 @@
 			</table>
 		</li>
 		<br />							
-		<li>ÓRGÃO(S) GERENCIADOR E PARTICIPANTE(S)
+		<li><b>ÓRGÃO(S) GERENCIADOR E PARTICIPANTE(S)</b>
 			@if ($participantes > 0)
 				<ol>
 					<li>O órgão gerenciador será o Instituto Federal de Educação, Ciência E Tecnologia da Bahia campus Eunápolis.</li>
@@ -114,8 +113,11 @@
 			@endif
 		</li>		
 		<br />			
-		<li>DA ADESÃO À ATA DE REGISTRO DE PREÇOS 
+		<li><b>DA ADESÃO À ATA DE REGISTRO DE PREÇOS </b>
 			<ol>
+				<li>Não será admitida a adesão à ata de registro de preços decorrente desta licitação.</li>
+			</ol>
+			<!--<ol>
 				<li>A ata de registro de preços, durante sua validade, poderá ser utilizada por qualquer órgão ou entidade da administração pública que não tenha participado do certame licitatório, mediante anuência do órgão gerenciador, desde que devidamente justificada a vantagem e respeitadas, no que couber, as condições e as regras estabelecidas na Lei nº 8.666, de 1993 e no Decreto nº 7.892, de 2013.
 					<ol>
 						<li>A manifestação do órgão gerenciador de que trata o subitem anterior, salvo para adesões feitas por órgãos ou entidades de outras esferas federativas, fica condicionada à realização de estudo, pelos órgãos e pelas entidades que não participaram do registro de preços, que demonstre o ganho de eficiência, a viabilidade e a economicidade para a administração pública federal da utilização da ata de registro de preços, conforme estabelecido em ato do Secretário de Gestão do Ministério do Planejamento, Desenvolvimento e Gestão</li>
@@ -131,16 +133,16 @@
 				<li>Ao órgão não participante que aderir à ata competem os atos relativos à cobrança do cumprimento pelo fornecedor das obrigações contratualmente assumidas e a aplicação, observada a ampla defesa e o contraditório, de eventuais penalidades decorrentes do descumprimento de cláusulas contratuais, em relação as suas próprias contratações, informando as ocorrências ao órgão gerenciador.</li>
 				<li>Após a autorização do órgão gerenciador, o órgão não participante deverá efetivar a contratação solicitada em até noventa dias, observado o prazo de validade da Ata de Registro de Preços.</li>
 				<li>Caberá ao órgão gerenciador autorizar, excepcional e justificadamente, a prorrogação do prazo para efetivação da contratação, respeitado o prazo de vigência da ata, desde que solicitada pelo órgão não participante.</li>
-			</ol>
+			</ol>-->
 		</li>
 		<br />
-		<li>VALIDADE DA ATA 
+		<li><b>VALIDADE DA ATA </b>
 			<ol>
 				<li>A validade da Ata de Registro de Preços será de 12 meses, a partir da sua assinatura, não podendo ser prorrogada.</li>
 			</ol>
 		</li>
 		<br />
-		<li>REVISÃO E CANCELAMENTO 
+		<li><b>REVISÃO E CANCELAMENTO </b>
 			<ol>
 				<li>A Administração realizará pesquisa de mercado periodicamente, em intervalos não superiores a 180 (cento e oitenta) dias, a fim de verificar a vantajosidade dos preços registrados nesta Ata.</li>
 				<li>Os preços registrados poderão ser revistos em decorrência de eventual redução dos preços praticados no mercado ou de fato que eleve o custo do objeto registrado, cabendo à Administração promover as negociações junto ao(s) fornecedor(es).</li>
@@ -171,7 +173,7 @@
 			</ol>
 		</li>
 		<br />
-		<li>DAS PENALIDADES
+		<li><b>DAS PENALIDADES</b>
 			<ol>
 				<li>O descumprimento da Ata de Registro de Preços ensejará aplicação das penalidades estabelecidas no Edital.</li>
 				<li>É da competência do órgão gerenciador a aplicação das penalidades decorrentes do descumprimento do pactuado nesta ata de registro de preço (art. 5º, inciso X, do Decreto nº 7.892/2013), exceto nas hipóteses em que o descumprimento disser respeito às contratações dos órgãos participantes, caso no qual caberá ao respectivo órgão participante a aplicação da penalidade (art. 6º, Parágrafo único, do Decreto nº 7.892/2013).</li>
@@ -179,7 +181,6 @@
 			</ol>
 		</li>
 		<br />
-		<li>CONDIÇÕES GERAIS
 		<ol>
 			<li>As condições gerais do fornecimento, tais como os prazos para entrega e recebimento do objeto, as obrigações da Administração e do fornecedor registrado, penalidades e demais condições do ajuste, encontram-se definidos no Termo de Referência, ANEXO AO EDITAL.</li>
 			<li>É vedado efetuar acréscimos nos quantitativos fixados nesta ata de registro de preços, inclusive o acréscimo de que trata o § 1º do art. 65 da Lei nº 8.666/93, nos termos do art. 12, §1º do Decreto nº 7892/13.</li>
