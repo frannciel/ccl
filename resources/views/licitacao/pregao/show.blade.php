@@ -194,7 +194,7 @@
 					<div class="tab-content">
 						<div id="guiaItens" class="tab-pane fade in active">
 							<div class="table-responsive">
-								<table class="table table-striped table-bordered" id="dataTables-example">
+								<table class="table table-striped table-bordered dataTable">
 									<thead>
 										<tr>
 											<th class=" center"><input type="checkbox" id="ckAll" name="example1"></th>
