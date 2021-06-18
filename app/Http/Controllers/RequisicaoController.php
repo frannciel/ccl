@@ -87,7 +87,7 @@ class RequisicaoController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Requisicao  $requisicao
      * @return \Illuminate\Http\Response
      */
     public function show(Requisicao $requisicao)
@@ -106,19 +106,13 @@ class RequisicaoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($uuid)
-    {
-        $requisitante = array();
-        foreach (Requisitante::all() as $value)
-            $requisitante += [$value->uuid => $value->nome];
-        return view('requisicao.edit', compact('requisitante'))->with('requisicao', Requisicao::findByUuid($uuid));
-    }
+    public function edit($uuid){}
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Requisicao  $requisicao
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Requisicao $requisicao)
@@ -149,21 +143,31 @@ class RequisicaoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Requisicao  $requisicao
      * @return \Illuminate\Http\Response
      */
     public function destroy(Requisicao $requisicao)
     {
-        $requisicao->delete();
-        return redirect()->route('requisicao')
-            ->with(['codigo' => 200,'mensagem' => 'Requisição '.$requisicao->ordem.' excluída com sucesso.']);
+        $return = $this->service->destroy($requisicao);
+        if ($return['status']){
+            return redirect()->route('requisicao')
+                ->with(['codigo' => 200,'mensagem' => 'Requisição '.$requisicao->ordem.' excluída com sucesso.']);
+        } else {
+            return redirect()->route('requisicao', $requisicao->uuid)
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao excluir requisição, tente novamente ou contate o administrador']); 
+        }
     }
 	
+    /**
+     * retorna uma requsisição baseada na pesquisa por número/ano para uma requisição assíncrona
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response Json
+     */
 	public function ajax(Request $request)
 	{
 		$ano = substr($request->numeroAno, -4);	
 		$numero = substr($request->numeroAno, 0, -4);
-
         return response()->json(['requisicao' => Requisicao::where([['ano', '=', $ano], ['numero', '=', $numero ]])->first()]);
     }
 	
@@ -218,79 +222,73 @@ class RequisicaoController extends Controller
 
     public function pesquisa(Requisicao $requisicao)
     {
-       return  view('documentos.pesquisa', compact('requisicao'));
+        $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
+        Session::forget(['mensagem','codigo']);
+       return  view('documentos.pesquisa', compact('requisicao', 'comunica'));
     }
 
     public function pesquisaPdf(Requisicao $requisicao)
     {
-        view()->share('requisicao', $requisicao);
-        $pdf = PDF::loadView('pdf.pesquisa', compact('requisicao'));
-        $pdf->setPaper('A4');
-        return $pdf->download('Requisicao_'.$requisicao->ordem.'.pdf');
+        $return = $this->service->pesquisaPrecosPDF($requisicao);
+        if ($return['status']){
+            return $return['data'];
+        } else {
+            return back()
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao baixar o arquivo, tente novamente ou contate o administrador']); 
+        }
     }
 
     public function formalizacao(Requisicao $requisicao)
     {
-       return  view('documentos.formalizacao', compact('requisicao'));
+        $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
+        Session::forget(['mensagem','codigo']);
+       return  view('documentos.formalizacao', compact('requisicao', 'comunica'));
     }
 
     public function formalizacaoPdf(Requisicao $requisicao)
     {
-        view()->share('requisicao', $requisicao);
-        $pdf = PDF::loadView('pdf.formalizacao', compact('requisicao'));
-        $pdf->setPaper('A4', 'landscape' );
-        return $pdf->download('Oficializacao_de_demanda_'.$requisicao->ordem.'.pdf');
+        $return = $this->service->formalizacaoDemandaPDF($requisicao);
+        if ($return['status']){
+            return $return['data'];
+        } else {
+            return back()
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao baixar o arquivo, tente novamente ou contate o administrador']); 
+        }
     }
 
     public function duplicarItem(Request $request)
     {
-        $itens = $request->itens;
-        if (empty($itens)) {
+        $this->validate($request, [
+            "itens" => 'required|array|min:1',
+            'itens.*' => 'string|exists:itens,uuid',
+            'requisicao'  => 'required|exists:requisicoes,uuid'
+        ]);
+
+        $return = $this->service->duplicarItens($request->all());
+        if ($return['status']){
             return redirect()->route('requisicaoShow', $request->requisicao)
-                ->with(['codigo' => 500, 'mensagem' => 'Nenhum item duplicado, selecione um ou mais itens e tente novamente.']);
-        }else{
-            $requisicao = Requisicao::findByUuid($request->requisicao);
-            foreach ($itens as  $uuid) {
-                $item = Item::findByUuid($uuid);
-                if ($request->requisicao == $item->requisicao->uuid) { // verifica se o item pertence a requisição
-                   $requisicao->itens()->create([
-                        'numero'        => $requisicao->itens()->max('numero')+1, // este número indicara itens mesclados nas  licitcaoes, eles não pertencem a nenhuma requisicão
-                        'quantidade'    => $item->quantidade,
-                        'codigo'        => $item->codigo,
-                        'objeto'        => $item->objeto,
-                        'descricao'     => $item->descricao,
-                        'unidade_id'    => $item->unidade_id,
-                    ]);
-                }
-            }   
-            return redirect()->route('requisicaoShow', $requisicao)
-                ->with(['codigo' => 200,'mensagem' => 'Item duplicado com sucesso.']);
+                ->with(['codigo' => 200,'mensagem' => 'Item(ns) duplicado com sucesso !']);
+        } else {
+            return redirect()->route('requisicaoShow', $request->requisicao)
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao duplicar item(ns), tente novamente ou contate o administrador']); 
         }
     }
 
     public function removeItens(Request $request)
     {
-        $itens = $request->itens;
-        foreach ($itens as  $uuid) {
-            $item = Item::findByUuid($uuid);
-            if ($request->requisicao == $item->requisicao->uuid) { // verifica se o item pertence a requisição
-                if (!$item->licitacao) { // verifica se o item não está relacionado a uma licitação
-                    $item->delete();
-                }
-            }
-        }
-        $this->ordenarItens(Requisicao::findByUuid($request->requisicao));
-        return redirect()->route('requisicaoShow', $request->requisicao)
-            ->with([ 'codigo' => 200, 'mensagem' => 'Item(ns) Excluido(s) com sucesso.']);
-    }
+        $this->validate($request, [
+            "itens" => 'required|array|min:1',
+            'itens.*' => 'string|exists:itens,uuid',
+            'requisicao'  => 'required|exists:requisicoes,uuid'
+        ]);
 
-    public function ordenarItens(Requisicao $requisicao){
-        $itens = $requisicao->itens()->orderBy('numero', 'asc')->get();
-        $numero = 1;
-        foreach ($itens as $item) {
-            $item->numero = $numero;
-            $item->save();
-            $numero += 1;
+        $return = $this->service->deleteItens($request->all());
+        if ($return['status']){
+            return redirect()->route('requisicaoShow', $request->requisicao)
+                ->with(['codigo' => 200,'mensagem' => 'Item(ns) removidos com sucesso !']);
+        } else {
+            return redirect()->route('requisicaoShow', $request->requisicao)
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao remover item(ns), tente novamente ou contate o administrador']); 
         }
     }
 

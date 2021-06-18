@@ -7,13 +7,14 @@ use App\Item;
 use App\Cotacao;
 use App\Requisicao;
 use App\Requisitante;
+use PDF;
 use Illuminate\Http\Request;
 use App\Services\ConversorService;
 
 class RequisicaoService
 {
     /**
-     * Função que salva uma nova cotação na base de dados
+     * Função que salva a requisição na base de dados
      *
      * @param Array  $data  
      * @param \App\Requisicao  $requisicao   
@@ -52,21 +53,6 @@ class RequisicaoService
         }
     }
 
-    protected function comparable(array $dados, Item $item)
-    {
-        $novo = new Cotacao([
-            'fonte'    => $dados['fonte'],
-            'valor'    => ConversorService::stringToFloat($dados['valor']), 
-            'data'     => ConversorService::dataHoraToDatetime($dados['data'], $dados['hora']),
-            'item_id'  => $item->id
-        ]);
-    
-        foreach ($item->cotacoes as $cotacao) 
-            if($novo->equals($cotacao))
-                return true;
-        return false;
-    }
-
     public function update(array $request, Requisicao $requisicao)
     {
         try{
@@ -98,35 +84,17 @@ class RequisicaoService
         }
     }    
 
-    public function default(array $data)
-    {
-        try{
-
-            return [
-                'status' => true,
-                'message' => 'Sucesso',
-                'data' => $data
-            ];
-        } catch (Exception $e) {
-            return [
-               'status' => false,
-               'message' => 'Ocorreu durante a execução',
-               'error' => $e
-            ];
-        }
-    }
-
     /**
      * Método que remove uma cotação específica
      * 
      * @param \App\Cotacao $cotacao 
      * @return type
      */
-    public function destroy(Cotacao $cotacao)
+    public function destroy(Requisicao $requisicao)
     {
         try {
             
-            $cotacao->delete();
+            $requisicao->delete();
 
             return [
                 'status' => true,
@@ -140,6 +108,148 @@ class RequisicaoService
             ];
         }
     }
+
+    public function pesquisaPrecosPDF(Requisicao $requisicao)
+    {
+        try{
+
+            view()->share('requisicao', $requisicao);
+            $pdf = PDF::loadView('pdf.pesquisa', compact('requisicao'));
+            $pdf->setPaper('A4');
+            $dados = $pdf->download('Requisicao_'.$requisicao->ordem.'_solicitação_de_cotação_.pdf');
+
+            return [
+                'status' => true,
+                'message' => 'Sucesso',
+                'data' => $dados
+            ];
+        } catch (Exception $e) {
+            return [
+               'status' => false,
+               'message' => 'Ocorreu durante a execução',
+               'error' => $e
+            ];
+        }
+    }
+
+    public function formalizacaoDemandaPDF(Requisicao $requisicao)
+    {
+        try{
+
+            view()->share('requisicao', $requisicao);
+            $pdf = PDF::loadView('pdf.formalizacao', compact('requisicao'));
+            $pdf->setPaper('A4', 'landscape' );
+            $dados = $pdf->download('Requisicao_'.$requisicao->ordem.'_oficializacao_de_demanda.pdf');
+
+            return [
+                'status' => true,
+                'message' => 'Sucesso',
+                'data' => $dados
+            ];
+        } catch (Exception $e) {
+            return [
+               'status' => false,
+               'message' => 'Ocorreu durante a execução',
+               'error' => $e
+            ];
+        }
+    }
+
+    public function duplicarItens(array $request)
+    {
+        try {
+            
+            $itens = $request['itens'];
+            if (empty($itens)) {
+                    abort(
+                        redirect()
+                        ->route('requisicaoShow', $request['requisicao'])
+                        ->with(['codigo' => 500, 'mensagem' => 'Nenhum item duplicado, selecione um ou mais itens e tente novamente.'])
+                        ->withInput()
+                    ); 
+            } else {
+                $requisicao = Requisicao::findByUuid($request['requisicao']);
+                foreach ($itens as  $uuid) {
+                    $item = Item::findByUuid($uuid);
+                    if ($requisicao->uuid == $item->requisicao->uuid) { // verifica se o item pertence a requisição
+                       $requisicao->itens()->create([
+                            'numero'        => $requisicao->itens()->max('numero')+1, // este número indicara itens mesclados nas  licitcaoes, eles não pertencem a nenhuma requisicão
+                            'quantidade'    => $item['quantidade'],
+                            'codigo'        => $item['codigo'],
+                            'objeto'        => $item['objeto'],
+                            'descricao'     => $item['descricao'],
+                            'unidade_id'    => $item['unidade_id'],
+                        ]);
+                    }
+                }   
+            }
+
+            return [
+                'status' => true,
+                'message' => 'Itens duplicado com sucesso',
+                'data' => $itens
+            ];
+        } catch (Exception $e) {
+            return [
+               'status' => false,
+               'message' => 'Ocorreu durante a tentiva duplicar itens',
+               'error' => $e
+            ];
+        }
+    }
+
+    public function deleteItens(array $request)
+    {
+        try {
+            
+            foreach ($request['itens'] as  $uuid) {
+                $item = Item::findByUuid($uuid);
+                if ($request['requisicao'] == $item->requisicao->uuid) { // verifica se o item pertence a requisição
+                    if (!$item->licitacao) { // verifica se o item não está relacionado a uma licitação
+                        $item->delete();
+                    }
+                }
+            }
+            $this->ordenar(Requisicao::findByUuid($request['requisicao']));
+
+            return [
+                'status' => true,
+                'message' => 'Itens duplicado com sucesso',
+                'data' => null
+            ];
+        } catch (Exception $e) {
+            return [
+               'status' => false,
+               'message' => 'Ocorreu durante a tentiva remover itens',
+               'error' => $e
+            ];
+        }
+    }
+
+    public function ordenar(Requisicao $requisicao)
+    {
+        try {
+            
+            $numero = 1;
+            foreach ($requisicao->itens()->orderBy('numero', 'asc')->get() as $item) {
+                $item->numero = $numero;
+                $item->save();
+                $numero += 1;
+            }
+
+            return [
+                'status' => true,
+                'message' => 'Itens da requisição ordenado com sucesso!',
+            ];
+        } catch (Exception $e) {
+            return [
+               'status' => false,
+               'message' => 'Ocorreu durante a tentiva de ordenação  dos itens da requisição',
+               'error' => $e
+            ];
+        }
+    }
+
 
     public function importar(array $data, Requisicao $requisicao)
     {
