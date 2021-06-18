@@ -37,7 +37,7 @@ class RequisicaoController extends Controller
         $requisicoes = Requisicao::orderBy('updated_at', 'desc')->paginate(20);
         $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
         Session::forget(['mensagem','codigo']); 
-        return view('requisicao.index', compact( 'requisicoes', 'comunica'));
+        return view('site.requisicao.compras.index', compact( 'requisicoes', 'comunica'));
     }
 
     /**
@@ -50,7 +50,7 @@ class RequisicaoController extends Controller
         $requisitantes = array();
         foreach (Requisitante::orderBy('nome', 'asc')->get() as $value)
             $requisitantes += [$value->uuid => $value->nome];
-        return view('requisicao.create')->with('requisitantes', $requisitantes);
+        return view('site.requisicao.create')->with('requisitantes', $requisitantes);
     }
 
     /**
@@ -76,10 +76,10 @@ class RequisicaoController extends Controller
 
         $return = $this->service->store($request->all());
         if ($return['status']){
-            return redirect()->route('requisicaoShow', $return['data']->uuid)
+            return redirect()->route('requisicao.show', $return['data']->uuid)
                 ->with(['codigo' => 200,'mensagem' => 'Requisicão cadsatrada com sucesso!']);
         } else {
-            return redirect()->route('requisicao')
+            return redirect()->back()->withInput()
                 ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao cadastrar a requisição, tente novamente ou contate o administrador']); 
         }
     }
@@ -97,7 +97,7 @@ class RequisicaoController extends Controller
             $requisitante += [$value->uuid => $value->nome];
         $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
         Session::forget(['mensagem','codigo']);
-        return view('requisicao.show', compact('requisitante', 'requisicao', 'comunica'));                          
+        return view('site.requisicao.show', compact('requisitante', 'requisicao', 'comunica'));                          
     }
 
     /**
@@ -132,10 +132,10 @@ class RequisicaoController extends Controller
 
         $return = $this->service->update($request->all(), $requisicao);
         if ($return['status']){
-            return redirect()->route('requisicaoShow', $return['data']->uuid)
+            return redirect()->route('requisicao.show', $return['data']->uuid)
                 ->with(['codigo' => 200,'mensagem' => 'Requisicão alterada com sucesso!']);
         } else {
-            return redirect()->route('requisicaoShow', $requisicao->uuid)
+            return redirect()->route('requisicao.show', $requisicao->uuid)
                 ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao editar a requisição, tente novamente ou contate o administrador']); 
         }
     }
@@ -150,10 +150,10 @@ class RequisicaoController extends Controller
     {
         $return = $this->service->destroy($requisicao);
         if ($return['status']){
-            return redirect()->route('requisicao')
+            return redirect()->route('requisicao.index')
                 ->with(['codigo' => 200,'mensagem' => 'Requisição '.$requisicao->ordem.' excluída com sucesso.']);
         } else {
-            return redirect()->route('requisicao', $requisicao->uuid)
+            return redirect()->route('requisicao.index', $requisicao->uuid)
                 ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao excluir requisição, tente novamente ou contate o administrador']); 
         }
     }
@@ -212,19 +212,19 @@ class RequisicaoController extends Controller
 
     public function consultar($acao)
     {
-        return view('requisicao.consultar', compact('acao'));
+        return view('site.requisicao.consultar', compact('acao'));
     }
 
     public function documento(Requisicao $requisicao)
     {
-       return  view('requisicao.relacao', compact('requisicao'));
+       return  view('site.requisicao.relacao', compact('requisicao'));
     }
 
     public function pesquisa(Requisicao $requisicao)
     {
         $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
         Session::forget(['mensagem','codigo']);
-       return  view('documentos.pesquisa', compact('requisicao', 'comunica'));
+       return  view('site.requisicao.doc.pesquisa', compact('requisicao', 'comunica'));
     }
 
     public function pesquisaPdf(Requisicao $requisicao)
@@ -242,7 +242,7 @@ class RequisicaoController extends Controller
     {
         $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
         Session::forget(['mensagem','codigo']);
-       return  view('documentos.formalizacao', compact('requisicao', 'comunica'));
+       return  view('site.requisicao.doc.formalizacao', compact('requisicao', 'comunica'));
     }
 
     public function formalizacaoPdf(Requisicao $requisicao)
@@ -266,10 +266,10 @@ class RequisicaoController extends Controller
 
         $return = $this->service->duplicarItens($request->all());
         if ($return['status']){
-            return redirect()->route('requisicaoShow', $request->requisicao)
+            return redirect()->route('requisicao.show', $request->requisicao)
                 ->with(['codigo' => 200,'mensagem' => 'Item(ns) duplicado com sucesso !']);
         } else {
-            return redirect()->route('requisicaoShow', $request->requisicao)
+            return redirect()->route('requisicao.show', $request->requisicao)
                 ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao duplicar item(ns), tente novamente ou contate o administrador']); 
         }
     }
@@ -284,10 +284,10 @@ class RequisicaoController extends Controller
 
         $return = $this->service->deleteItens($request->all());
         if ($return['status']){
-            return redirect()->route('requisicaoShow', $request->requisicao)
+            return redirect()->route('requisicao.show', $request->requisicao)
                 ->with(['codigo' => 200,'mensagem' => 'Item(ns) removidos com sucesso !']);
         } else {
-            return redirect()->route('requisicaoShow', $request->requisicao)
+            return redirect()->route('requisicao.show', $request->requisicao)
                 ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao remover item(ns), tente novamente ou contate o administrador']); 
         }
     }
@@ -296,6 +296,6 @@ class RequisicaoController extends Controller
     {
         $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
         Session::forget(['mensagem','codigo']); 
-        return view('requisicao.import',  compact('requisicao', 'comunica'));
+        return view('site.requisicao.import',  compact('requisicao', 'comunica'));
     }
 }

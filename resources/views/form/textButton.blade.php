@@ -1,5 +1,5 @@
 <div class="col-md-{{$largura ?? 12}} col-md-offset-{{$recuo ?? ''}} {{$errors->has($input) ? ' has-error' : '' }}">
-	<label for="{{$input}}" class="control-label">{{$label ?? ''}}</label>
+	<label for="{{$input}}" class="control-label">{{$label ?? ''}}  @php $a = "<font color=#f00>*</font>"; echo isset($attributes['required']) ? $a : ''; @endphp</label>
     <div class="input-group custom-search-form">
 		{!!  Form::text($input, 
 			$value ?? null, 

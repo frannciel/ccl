@@ -47,7 +47,7 @@ class CotacaoController extends Controller
             $array += [$item->uuid => $item->numero." - ".$item->objeto];
         $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
         Session::forget(['mensagem','codigo']); 
-        return view('cotacao.create',  compact('itens', 'array', 'requisicao', 'comunica'));
+        return view('site.cotacao.create',  compact('itens', 'array', 'requisicao', 'comunica'));
     }
 
     /**
@@ -121,17 +121,17 @@ class CotacaoController extends Controller
 
     public function relatorio(Requisicao $requisicao)
     {   
-        return view('documentos.cotacao')->with('requisicao', $requisicao);
+        return view('site.cotacao.doc.relatorio')->with('requisicao', $requisicao);
     }
 
     public function redirecionar(Request $request){
-        return redirect()->route('cotacaoNovo', ['requsicao_id' => $request->requisicao]);
+        return redirect()->route('cotacao.create', ['requsicao_id' => $request->requisicao]);
     }
 
     public function relatorioPdf(Requisicao $requisicao)
     {
         view()->share('requisicao', $requisicao);
-        $pdf = PDF::loadView('pdf.cotacao', compact('requisicao'));
+        $pdf = PDF::loadView('site.cotacao.pdf.relatorio', compact('requisicao'));
         $pdf->setPaper('A4');
         return $pdf->download('Pesquisa_preços__'.$requisicao->ordem.'.pdf');
     }
@@ -167,10 +167,10 @@ class CotacaoController extends Controller
     {
         $return = $this->service->importar($request->all(), $requisicao);
         if ($return['status']){
-            return redirect()->route('requisicaoShow', $requisicao->uuid)
+            return redirect()->route('requisicao.show', $requisicao->uuid)
                 ->with(['codigo' => 200,'mensagem' => 'Cotações de preços importadas com sucessos!']);
         } else {
-            return redirect()->route('requisicaoShow', $requisicao->uuid)
+            return redirect()->route('requisicao.show', $requisicao->uuid)
                 ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error durante a execução, tente novamente ou contate o administrador']); 
         }
     }

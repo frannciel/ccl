@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DB;
+use Session;
 use App\Item;
 use App\Unidade;
 use App\Licitacao;
@@ -11,7 +12,6 @@ use App\Requisicao;
 use Illuminate\Http\Request;
 use App\Services\ItemService;
 use App\Http\Requests\ItemRequest;
-
 
 class ItemController extends Controller
 {
@@ -41,12 +41,14 @@ class ItemController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($uuid)
-    {
+    public function create(Requisicao $requisicao)
+    {   
         $unidades = array();
-        foreach (Unidade::orderBy('nome', 'asc')->get() as $value)
-            $unidades += [$value->id => $value->nome];
-        return view('item.create', compact('unidades'))->with('requisicao', Requisicao::findByUuid($uuid));
+        $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
+        Session::forget(['mensagem','codigo']);
+        foreach (Unidade::orderBy('nome', 'asc')->get() as $unidade)
+            $unidades += [$unidade->uuid => $unidade->nome];
+        return view('site.item.create', compact('unidades', 'requisicao', 'comunica'));
     }
 
     /**
@@ -55,39 +57,30 @@ class ItemController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Requisicao $requisicao, $novo = null)
     {
+
         $this->validate($request, [
-            'requisicao' => 'required|string',
             'quantidade' => 'required|integer',
-            'codigo'     => 'integer|nullable',
-            'objeto'     => 'string|nullable|max:300',
+            'codigo'     => 'nullable|integer',
+            'objeto'     => 'required|string|max:300',
             'descricao'  => 'required|string',
-            'unidade'    => 'required|integer',
-            'grupo'      => 'integer|nullable'
+            'unidade'    => 'required|string|exists:unidades,uuid',
+            'grupo'      => 'nullable|integer'
         ]);
-        $requisicao = Requisicao::findByUuid($request->requisicao);
 
-        $requisicao->itens()->create([
-            'numero'        => $requisicao->itens()->max('numero') + 1,
-            'quantidade'    => $request['quantidade'],
-            'codigo'        => $request['codigo'],
-            'objeto'        => $request['objeto'],
-            'descricao'     => nl2br($request['descricao']),
-            'unidade_id'    => $request['unidade'],
-        ]);
-        return redirect()->route('requisicaoShow', $requisicao->uuid);
-        /*
-        $item = Item::create([
-            'numero' 		=> Item::where('requisicao_id', $request->requisicao)->max('numero') + 1,
-            'quantidade' 	=> $request['quantidade'],
-            'codigo' 		=> $request['codigo'],
-            'objeto'        => $request['objeto'],
-            'descricao' 	=> nl2br($request['descricao']),
-            'unidade_id' 	=> $request['unidade'],
-            'requisicao_id' => $request->requisicao
-        ]);*/
-
+        $return =  $this->service->store($request->all(), $requisicao);
+        if ($return['status']) {
+            if ($novo){ // se verdaderio retorna o formulário para cadastrar novo item
+                return redirect()->route('item.create', $requisicao->uuid)
+                    ->with(['codigo' => 200,'mensagem' => 'O item '.$return['data']->numero.' foi cadastrado com sucesso!']);
+            }
+            return redirect()->route('requisicao.show', $requisicao->uuid)
+                ->with(['codigo' => 200,'mensagem' => 'O item '.$return['data']->numero.' foi cadastrado com sucesso!']);
+        } else {
+            return redirect()->route('requisicao.show', $requisicao->uuid)
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error durante o cadastro, tente novamente ou contate o administrador!']);
+        }
     }
 
     /**
@@ -125,7 +118,7 @@ class ItemController extends Controller
             $unidades += [$value->id => $value->nome];
 
         //$item->with('cidades', 'participantes')->where('id', '=', $item->id)->first();
-        return view('requisicao.itemEdit', compact('unidades', 'item'));
+        return view('site.requisicao.itemEdit', compact('unidades', 'item'));
     }
 
     /**
@@ -141,7 +134,7 @@ class ItemController extends Controller
         $unidades = array();
         foreach (Unidade::all() as $value)
             $unidades += [$value->id => $value->nome];
-        return view('licitacao.pregao.itemEdit',  compact('item', 'licitacao', 'fornecedores', 'uasgs', 'unidades'));
+        return view('site.licitacao.pregao.itemEdit',  compact('item', 'licitacao', 'fornecedores', 'uasgs', 'unidades'));
     }
 
     /**
@@ -169,7 +162,7 @@ class ItemController extends Controller
         $item->descricao 	= nl2br($request->descricao);
         $item->unidade_id 	= $request->unidade;
         $item->save();
-        return redirect()->route('requisicaoShow', $item->requisicao->uuid);
+        return redirect()->route('requisicao.show', $item->requisicao->uuid);
     }
 
     /**
@@ -185,9 +178,9 @@ class ItemController extends Controller
             'item'       => 'required|string',
             'quantidade' => 'required|integer',
             'codigo'     => 'integer|nullable',
-            'objeto'     => 'string|nullable|max:100',
+            'objeto'     => 'required|string|max:100',
             'descricao'  => 'required|string',
-            'unidade'    => 'required|integer',
+            'unidade'    => 'required|string|unidades,uuid',
         ]);
         $item->quantidade   = $request->quantidade;
         $item->codigo       = $request->codigo;
@@ -196,7 +189,7 @@ class ItemController extends Controller
         $item->unidade_id   = $request->unidade;
         //$item->grupo_id   = $request->grupo;
         $item->save();
-        return redirect()->route('licitacaoShow', $item->licitacao->uuid);
+        return redirect()->route('licitacao.show', $item->licitacao->uuid);
     }
 
     /**
@@ -208,7 +201,7 @@ class ItemController extends Controller
     public function destroy(Item $item)
     {
         $item->delete();
-        return redirect()->route('requisicaoExibir',  [ $item->requisicao->uuid]);
+        return redirect()->route('requisicao.show', $item->requisicao->uuid);
     }
 
     /**
@@ -242,7 +235,7 @@ class ItemController extends Controller
                 }
             }
         }   
-        return view('item.atribuir', compact('itens', 'licitacao'));
+        return view('site.item.atribuir', compact('itens', 'licitacao'));
     }
 
 
@@ -319,7 +312,7 @@ class ItemController extends Controller
      */
     public function fornecedorCreate()
     {
-    	return view('item.fornecedor');
+    	return view('site.item.fornecedor');
     }
 
 	/**
@@ -335,9 +328,9 @@ class ItemController extends Controller
             foreach ($itens as $item){
                 Item::find($item)->fornecedores()->attach($request->fornecedor);
             }
-            return redirect()->route('itemFornecShow', ['fornecedor' => $request->fornecedor, 'item' => $item[0]]);
+            return redirect()->route('item.fornecedorShow', ['fornecedor' => $request->fornecedor, 'item' => $item[0]]);
         } else{
-            return redirect()->route('itemFornecNovo');
+            return redirect()->route('item.fornecedorCreate');
 
         }
     }
@@ -358,7 +351,7 @@ class ItemController extends Controller
 			'valor'  		=> $this->getFloat($request['valor']),
 		];
 		$item->fornecedores()->updateExistingPivot($request->fornecedor, $atributos);
-		return redirect()->route('itemFornecShow', ['fornecedor' => $request->fornecedor, 'item' => $request->item]);
+		return redirect()->route('item.fornecedorShow', ['fornecedor' => $request->fornecedor, 'item' => $request->item]);
     }
 	
 	/**
@@ -427,10 +420,10 @@ class ItemController extends Controller
     {
         $return = $this->service->importar($request->all(), $requisicao);
         if ($return['status']){
-            return redirect()->route('requisicaoShow', $requisicao->uuid)
+            return redirect()->route('requisicao.show', $requisicao->uuid)
                 ->with(['codigo' => 200,'mensagem' => 'Itens importados com sucessos!']);
         } else {
-            return redirect()->route('requisicaoShow', $requisicao->uuid)
+            return redirect()->route('requisicao.show', $requisicao->uuid)
                 ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error durante a importação, tente novamente ou contate o administrador']); 
         }
     }

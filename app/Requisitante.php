@@ -22,4 +22,9 @@ class Requisitante extends Model
     {
         return $this->hasMany('App\Requisicao');
     }
+
+    public function usuarios()
+    {
+         return $this->hasMany('App\User');
+    }
 }

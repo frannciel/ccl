@@ -20,7 +20,7 @@ class FornecedorController extends Controller
      */
     public function index()
     {
-		return view('fornecedor.show')->with('fornecedores', Fornecedor::orderBy('updated_at', 'desc')->get());
+		return view('site.compras.fornecedor.index')->with('fornecedores', Fornecedor::orderBy('updated_at', 'desc')->paginate(10));
     }
 
     /**
@@ -33,7 +33,7 @@ class FornecedorController extends Controller
         $estados = array();
         foreach (Estado::orderBy('nome', 'asc')->get() as $value)
             $estados += [$value->sigla => $value->nome];
-		return view('fornecedor.create', compact('estados'));
+		return view('site.compras.fornecedor.create', compact('estados'));
     }
 
     /**
@@ -102,9 +102,8 @@ class FornecedorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($uuid)
+    public function show(Fornecedor $fornecedor)
     {
-        $fornecedor = Fornecedor::find($uuid);
         return response()->json(['fornecedor' => $fornecedor]);
     }
 
@@ -114,12 +113,12 @@ class FornecedorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($uuid)
+    public function edit(Fornecedor $fornecedor)
     {
         $estados = array();
         foreach (Estado::orderBy('nome', 'asc')->get() as $value)
             $estados += [$value->sigla => $value->nome];
-        return view('fornecedor.edit', compact('estados'))->with('fornecedor', Fornecedor::findByUuid($uuid));
+        return view('site.compras.fornecedor.edit', compact('estados', 'fornecedor'));
     }
 
     /**
@@ -169,31 +168,18 @@ class FornecedorController extends Controller
             $PJ->save();
         }
 
-/*  
-
-        $fornecedor = Fornecedor::find($request->fornecedor);
-        $fornecedor->cpf_cnpj 		= $request->cpf_cnpj;
-        $fornecedor->razao_social 	= $request->razao_social;
-        $fornecedor->telefone 		= $request->telefone;
-        $fornecedor->email 			= $request->email;
-        $fornecedor->representante 	= $request->representante;
-        $fornecedor->endereco 		= $request->endereco;
-		$fornecedor->cep            = $request->cep;
-        $fornecedor->cidade_id      = $cidade->id;
-        $fornecedor->save();
-        */
 		return redirect()->route('fornecedor');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Fornecedor  $fornecedor
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Fornecedor $fornecedor)
     {
-        Fornecedor::destroy($id);
+        $fornecedor->delete();
     }
 	
 	/**
@@ -227,18 +213,14 @@ class FornecedorController extends Controller
     public function buscarCEP(Request $request)
     {
         // composer require guzzlehttp/guzzle
-            $cep = preg_replace("/[^0-9]/", "", $request->cep);
-            if (strlen($cep) === 8) {
-                $client = new Client();
-                $response = $client->request('GET', 'viacep.com.br/ws/'.$cep.'/json/');
-                return response($response->getBody());
-            } else{
-                return response(true);
-            }
-        /*  echo $res->getStatusCode(); //   "200"
-        echo $res->getHeader('content-type')[0]; // 'application/json; charset=utf8'
-        echo $res->getBody(); // {"type":"User"...'
-        */
+        $cep = preg_replace("/[^0-9]/", "", $request->cep);
+        if (strlen($cep) === 8) {
+            $client = new Client();
+            $response = $client->request('GET', 'viacep.com.br/ws/'.$cep.'/json/');
+            return response($response->getBody());
+        } else{
+            return response(true);
+        }
     }   
 
 }

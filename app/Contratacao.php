@@ -15,6 +15,7 @@ class Contratacao extends Model
 
     /**
      * Metódo que retorna o usuário que solicitou a contratação
+     * 
      * @return <Objeto>  App\User
      */
     public function usuario()

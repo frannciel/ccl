@@ -6,7 +6,6 @@ use App\Item;
 use App\Unidade;
 use App\Requisicao;
 
-
 class ItemService
 {
 
@@ -162,19 +161,28 @@ class ItemService
      * @param \App\Cliente $id
      * @return \App\telefone $telefone
      */
-    public function store(array $data, Item $item)
+    public function store(array $data, Requisicao $requisicao)
     {
         try {
 
+            $item = $requisicao->itens()->create([
+                'numero'        => $requisicao->itens()->max('numero') + 1,
+                'quantidade'    => $data['quantidade'],
+                'codigo'        => $data['codigo'],
+                'objeto'        => $data['objeto'],
+                'descricao'     => nl2br($data['descricao']),
+                'unidade_id'    => Unidade::findByUuid($data['unidade'])->id
+            ]);
+
             return [
                'status' => true,
-               'message' => 'cadastrado com sucesso',
-               'data' => $data
+               'message' => 'Item cadastrado com sucesso',
+               'data' => $item
             ];
         } catch (Exception $e) {
             return [
                'status' => false,
-               'message' => 'Ocorreu durante a execução',
+               'message' => 'Ocorreu durante o cadastro do item',
                'error' => $e
             ];
         }

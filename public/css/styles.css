@@ -21,7 +21,7 @@
 .is-valid{
     border-color: #28a745;
 }
-.pointer{ 
+.pointer:hover{ 
     cursor: pointer; 
 }
 .t-display {
@@ -69,11 +69,26 @@
 .mt-5 { 
     margin-top: 5%;
 }
+.mt-10 { 
+    margin-top: 10%;
+}
+.mb-1 { 
+    margin-bottom: 1%;
+}
 .mb-2 { 
     margin-bottom: 2%;
 }
+.mb-3 { 
+    margin-bottom: 3%;
+}
 .mb-4 { 
     margin-bottom: 4%;
+}
+.mb-5 { 
+    margin-bottom: 5%;
+}
+.mb-10 { 
+    margin-bottom: 10%;
 }
 .p-2 {
     padding: 2%
@@ -224,4 +239,17 @@
   bottom: 0;
   left: 0;
   z-index: 1001;
+}
+.busca{
+    display: none;
+ }
+
+ /*.ativo {
+     background-color: royalblue;
+ }*/
+
+ .page-title{
+   line-height: 1;
+   font-weight: 700;
+   color: #112b4a;
 }

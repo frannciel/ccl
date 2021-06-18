@@ -114,7 +114,7 @@ class RequisicaoService
         try{
 
             view()->share('requisicao', $requisicao);
-            $pdf = PDF::loadView('pdf.pesquisa', compact('requisicao'));
+            $pdf = PDF::loadView('site.requisicao.pdf.pesquisa', compact('requisicao'));
             $pdf->setPaper('A4');
             $dados = $pdf->download('Requisicao_'.$requisicao->ordem.'_solicitação_de_cotação_.pdf');
 
@@ -137,7 +137,7 @@ class RequisicaoService
         try{
 
             view()->share('requisicao', $requisicao);
-            $pdf = PDF::loadView('pdf.formalizacao', compact('requisicao'));
+            $pdf = PDF::loadView('site.requisicao.pdf.formalizacao', compact('requisicao'));
             $pdf->setPaper('A4', 'landscape' );
             $dados = $pdf->download('Requisicao_'.$requisicao->ordem.'_oficializacao_de_demanda.pdf');
 
@@ -163,7 +163,7 @@ class RequisicaoService
             if (empty($itens)) {
                     abort(
                         redirect()
-                        ->route('requisicaoShow', $request['requisicao'])
+                        ->route('requisicao.show', $request['requisicao'])
                         ->with(['codigo' => 500, 'mensagem' => 'Nenhum item duplicado, selecione um ou mais itens e tente novamente.'])
                         ->withInput()
                     ); 
@@ -249,7 +249,6 @@ class RequisicaoService
             ];
         }
     }
-
 
     public function importar(array $data, Requisicao $requisicao)
     {

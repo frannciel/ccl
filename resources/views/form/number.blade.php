@@ -1,5 +1,5 @@
 <div class="col-md-{{$largura ?? 12}} {{$errors->has($input) ? ' has-error' : '' }}">
-	<label for="{{$input}}" class="form-control-label">{{$label ?? ''}}</label>
+	<label for="{{$input}}" class="form-control-label">{{$label ?? ''}}  @php $a = "<font color=#f00>*</font>"; echo isset($attributes['required']) ? $a : ''; @endphp</label>
 	{!!  Form::number($input, 
 		$value ?? null, 
 		$attributes + ['class' => 'form-control form-control-sm'])

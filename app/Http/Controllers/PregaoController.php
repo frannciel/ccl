@@ -37,7 +37,7 @@ class PregaoController extends Controller
             $formas +=  [$value->id => $value->dado];
         foreach (Informacao::where('dado', 'Menor Preço')->get() as $value)
             $tipos +=  [$value->id => $value->dado];
-        return view('licitacao.pregao.create', compact('formas', 'tipos'));
+        return view('site.licitacao.compras.pregao.create', compact('formas', 'tipos'));
     }
 
     /**
@@ -69,7 +69,7 @@ class PregaoController extends Controller
             'processo'      => $request->processo,
             'objeto'        => nl2br($request->objeto),
         ]);
-        return redirect()->route('pregaoShow', $pregao->uuid);
+        return redirect()->route('pregao.show', $pregao->uuid);
     }
 
     /**
@@ -107,7 +107,7 @@ class PregaoController extends Controller
             $formas +=  [$value->id => $value->dado];
         foreach (Informacao::where('dado', 'Menor Preço')->get() as $value)
             $tipos +=  [$value->id => $value->dado];
-        return view('licitacao.pregao.show', compact('formas', 'tipos', 'licitacao', 'lista', 'uasgs'));
+        return view('site.licitacao.compras.pregao.show', compact('formas', 'tipos', 'licitacao', 'lista', 'uasgs'));
     }
 
     /**
@@ -167,6 +167,6 @@ class PregaoController extends Controller
         $unidades = array();
         foreach (Unidade::all() as $value)
             $unidades += [$value->id => $value->nome];
-        return view('licitacao.pregao.itemEdit',  compact('item', 'licitacao', 'fornecedores', 'uasgs', 'unidades'));
+        return view('site.licitacao.compras.pregao.itemEdit',  compact('item', 'licitacao', 'fornecedores', 'uasgs', 'unidades'));
     }
 }
