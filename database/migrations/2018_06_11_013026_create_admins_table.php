@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateLicitacoesTable extends Migration
+class CreateAdminsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,16 @@ class CreateLicitacoesTable extends Migration
      */
     public function up()
     {
-        Schema::create('licitacoes', function (Blueprint $table) {
+        Schema::create('admins', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uuid');
-            $table->smallInteger('numero');
-            $table->smallInteger('ano');
-            $table->string('objeto', 300);
-            $table->string('processo', 20);
-            $table->integer('licitacaoable_id')->unsigned();
-            $table->string('licitacaoable_type', 100);
+            $table->string('name', 60);
+            $table->string('email', 60)->unique();
+            $table->string('password');
+            $table->string('cargo', 80);
+            $table->integer('matricula')->nullable();
+            $table->string('telefone', 12)->unique();
+            $table->rememberToken();
             $table->timestamps();
         });
     }
@@ -33,6 +34,6 @@ class CreateLicitacoesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('licitacoes');
+        Schema::dropIfExists('admins');
     }
 }

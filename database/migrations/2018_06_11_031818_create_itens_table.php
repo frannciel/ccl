@@ -21,8 +21,11 @@ class CreateItensTable extends Migration
             $table->integer('codigo')->nullable();
             $table->string('objeto', 300)->nullable();
             $table->text('descricao');
+            $table->integer('ordem')->nullable();
             $table->integer('requisicao_id')->unsigned()->nullable();
             $table->integer('unidade_id')->unsigned();
+            $table->integer('licitacao_id')->unsigned()->nullable();
+            $table->foreign('licitacao_id')->references('id')->on('licitacoes')->onDelete('set null');
             $table->foreign('unidade_id')->references('id')->on('unidades');
             $table->foreign('requisicao_id')->references('id')->on('requisicoes')->onDelete('cascade');
             $table->timestamps();
