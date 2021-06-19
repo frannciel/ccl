@@ -20,8 +20,8 @@ class CreateUasgsTable extends Migration
             $table->string('telefone', 15)->nullable();
             $table->string('email', 50)->nullable();
             $table->integer('codigo')->unique();
-            $table->integer('cidades_id')->nullable()->unsigned();
-            $table->foreign('cidades_id')->references('id')->on('cidades');
+            $table->integer('cidade_id')->nullable()->unsigned();
+            $table->foreign('cidade_id')->references('id')->on('cidades');
             $table->timestamps();
         });
     }
