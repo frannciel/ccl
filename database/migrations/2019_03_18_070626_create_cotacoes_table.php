@@ -20,7 +20,7 @@ class CreateCotacoesTable extends Migration
             $table->double('valor', 10, 4);
             $table->datetime('data')->nullable();
             $table->integer('item_id')->unsigned();
-            $table->foreign('item_id')->references('id')->on('itens');
+            $table->foreign('item_id')->references('id')->on('itens')->onDelete('cascade');
             $table->timestamps();
         });
     }
