@@ -53,61 +53,24 @@ $(document).ready(function(){
      */
     $('button[data-modal="licitacao-requisicao"]').click(function(event) { 
         if (!$('#pregao-confirma-delete').length){ 
-             $('body').append(`
-                <div class="modal fade" id="lcitacao-requisicao-remove" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <h4 class="modal-title" id="removeRequisicaoModal">Remover Itens</h4>
-                                    </div><!-- / col-md-6 -->   
-                                    <div class="col-md-6">
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                </div>    
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div class="col-md-2 text-center">
-                                        <i class="fa fa-exclamation-triangle fa-5x color-orange" aria-hidden="true"></i>
-                                    </div>                                         
-                                    <div class="col-md-10">
-                                        <h5>
-                                            <p class="font-weight-bold">
-                                                Realmente deseja remover da licitação esta requisição?
-                                            </p>
-                                            <p> - Todos os itens da requisição serão removidos da licitação.</p>
-                                            <p> - Você poderá incluir esta requisição novamente.</p>
-                                            <p> - Será defeita a mesclagem de itens que contenha elementos desta requisição.</p>
-                                        </h5>
-                                    </div> 
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <div class="row">
-                                     <div class="col-md-3 col-md-offset-6">
-                                        <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancelar</button>
-                                    </div>  
-                                    <div class="col-md-3">
-                                     <form id="form-requisicao-remove" method="post">
-                                        <input type="hidden" name="_token">
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <button  type="submit" class="btn btn-warning btn-block">Remover</button>
-                                     </form>
-                                    </div> 
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> `);
-        }
+             $('body').append(` <div class="modal fade" id="lcitacao-requisicao-remove" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <div class="row"> <div class="col-md-6"> <h4 class="modal-title" id="removeRequisicaoModal">Remover Itens</h4> </div><!-- / col-md-6 --> <div class="col-md-6"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> </div> </div> <div class="modal-body"> <div class="row"> <div class="col-md-2 text-center"> <i class="fa fa-exclamation-triangle fa-5x color-orange" aria-hidden="true"></i> </div> <div class="col-md-10"> <h5> <p class="font-weight-bold"> Realmente deseja remover da licitação esta requisição? </p> <p> - Todos os itens da requisição serão removidos da licitação.</p> <p> - Você poderá incluir esta requisição novamente.</p> <p> - Será defeita a mesclagem de itens que contenha elementos desta requisição.</p> </h5> </div> </div> </div> <div class="modal-footer"> <div class="row"> <div class="col-md-3 col-md-offset-6"> <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancelar</button> </div> <div class="col-md-3"> <form id="form-requisicao-remove" method="post"> <input type="hidden" name="_token"> <input type="hidden" name="_method" value="DELETE"> <button  type="submit" class="btn btn-warning btn-block">Remover</button> </form> </div> </div> </div> </div> </div> </div> `);
+              }
         $('input[name="_token"]').val($('meta[name="csrf-token"]').attr('content')); 
         $('#form-requisicao-remove').attr('action', $(this).attr('data-route')); 
         $('#lcitacao-requisicao-remove').modal({show:true}); 
     });
+    /*
+     * Modal para apagar um item específico view item.edit
+     */
+    $('button[data-modal="item-delete"]').click(function(event) { 
+        if (!$('#confirma-item-delete').length){ 
+            $('body').append(`<div class="modal fade" id="item-confirma-delete" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <div class="row"> <div class="col-md-6"> <h4 class="modal-title" id="mediumModalLabel">Apagar item</h4> </div> <div class="col-md-6"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> </div> </div> <div class="modal-body"> <div class="row"> <div class="col-md-12"> <h5> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Tem certeza que deseja excluir definitivamente este item? </h5> </div> </div> </div> <div class="modal-footer"> <div class="row"> <div class="col-md-3 col-md-offset-6"> <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancelar</button> </div> <div class="col-md-3"> <form id="form-item-delete" method="POST"> <input type="hidden" name="_token"> <input type="hidden" name="_method" value="DELETE"> <button type="submit" class="btn btn-danger btn-block">Excluir</button> </form> </div> </div> </div> </div> </div> </div>`);
+        }
+        $('input[name="_token"]').val($('meta[name="csrf-token"]').attr('content')); 
+        $('#form-item-delete').attr('action', $(this).attr('data-route')); 
+        $('#item-confirma-delete').modal({show:true}); 
+    });
+
 
     $('button[data-modal="separar"]').click(function(event) { 
         if (!$('#confirma-mesclar-delete').length){ 
@@ -170,6 +133,7 @@ $(document).ready(function(){
         $('#mesclar-delete').attr('action', $(this).attr('data-route')); 
         $('#confirma-mesclar-delete').modal({show:true}); 
     });
+
 
 
     $('.dataTable').DataTable( {

@@ -5,9 +5,21 @@ namespace App\Services;
 use App\Item;
 use App\Unidade;
 use App\Requisicao;
+use App\Services\RequisicaoService;
 
 class ItemService
 {
+    protected $requisicaoService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct(RequisicaoService $requisicaoService)
+    {
+        $this->requisicaoService = $requisicaoService;
+    }
 
     /**
      * Handle the incoming request.
@@ -188,21 +200,31 @@ class ItemService
         }
     }
 
-    public function delete(Item $item)
+    public function destroy(Item $item)
     {
         try {
 
+            if ($item->licitacao()->exists()){
+                abort(
+                    redirect()
+                    ->route('item.edit', $item->uuid)
+                    ->with(['codigo' => 500, 'mensagem' => 'Item associado a uma licitacão não pode ser apagado.'])
+                    ->withInput()
+                ); 
+            }           
+
             $item->delete();
+            $this->requisicaoService->ordenar($item->requisicao);
             
             return [
                 'status' => true,
-                'message' => 'Locação Excluida  com sucesso',
-                'data' => $item
+                'message' => 'Item Excluído  com sucesso',
+                'data' => null
             ];
         } catch (Exception $e) {
             return [
                'status' => false,
-               'message' => 'Ocorreu durante a tetiva de excluir a locação',
+               'message' => 'Ocorreu durante a tentiva de excluir o item',
                'error' => $e
             ];
         }
@@ -212,18 +234,22 @@ class ItemService
     {
         try {
            
-            $item->numero = $data['numero'];
+            $item->quantidade   = $data['quantidade'];
+            $item->codigo       = $data['codigo'];
+            $item->objeto       = $data['objeto'];
+            $item->descricao    = nl2br($data['descricao']);
+            $item->unidade_id   = Unidade::findByUuid($data['unidade'])->id;
             $item->save();
 
             return [
                 'status' => true,
                 'message' => 'Item alterado com sucesso',
-                'data' => $data
+                'data' => $item
             ];
         } catch (Exception $e) {
             return [
                 'status' => false,
-                'message' => 'Ocorreu um erro durante a execucao',
+                'message' => 'Ocorreu um erro durante a alteração de item',
                 'error' => $e
             ];
         }

@@ -27,7 +27,7 @@
 		</div><!-- / panel-heading -->
 	</div><!-- / panel -->
 
-	{{Form::open(['route' => array('itemUpdateItemLicitacao', $item->uuid), 'method' => 'post', 'class' => 'form-padrao'])}}
+	{{Form::open(['route' => ['item.licitacao.edit', $item->uuid], 'method' => 'post', 'class' => 'form-padrao'])}}
 
 		@include('form.hidden', ['input' => '_method', 'value' => 'PUT', 'attributes' => [] ])
 

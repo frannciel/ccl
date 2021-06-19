@@ -247,7 +247,7 @@
 								</thead>
 								<tbody>
 									@forelse ($uasgs as $uasg)
-									<tr onclick="location.href ='{{route('itemEditar', $uasg['codigo'])}}'; target='_blank';" style="cursor: hand;">
+									<tr onclick="location.href ='{{route('item.updateItemLicitacao', $uasg['codigo'])}}'; target='_blank';" style="cursor: hand;">
 										<td class="center">{{$uasg['codigo']}}</td>
 										<td>{{$uasg['nome']}}</td>
 										<td class="center">

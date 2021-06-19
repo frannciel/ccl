@@ -31,10 +31,7 @@ class ItemController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        
-    }
+    public function index() { }
 
     /**
      * Show the form for creating a new resource.
@@ -59,14 +56,12 @@ class ItemController extends Controller
      */
     public function store(Request $request, Requisicao $requisicao, $novo = null)
     {
-
         $this->validate($request, [
             'quantidade' => 'required|integer',
             'codigo'     => 'nullable|integer',
             'objeto'     => 'required|string|max:300',
             'descricao'  => 'required|string',
             'unidade'    => 'required|string|exists:unidades,uuid',
-            'grupo'      => 'nullable|integer'
         ]);
 
         $return =  $this->service->store($request->all(), $requisicao);
@@ -101,27 +96,63 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($uuid)
-    {
-        $item = Item::findByUuid($uuid);
-       /* $dados = DB::table('cidade_participante')
-            ->join('participantes', 'participantes.id', '=', 'cidade_participante.participante_id')
-            ->join('cidades', 'cidades.id', '=', 'cidade_participante.cidade_id')
-            ->select('participantes.uasg', 'participantes.nome as participante' , 'cidades.nome', 'cidades.estado_id', 'cidade_participante.quantidade')
-            ->where('cidade_participante.item_id', '=', $item->id)
-            ->Join('estados', 'estados.id', '=', 'estado_id')
-            ->select('participantes.uasg', 'participantes.nome as participante' , 'cidades.nome as cidade', 'estados.sigla as estado','cidade_participante.quantidade')
-            ->get();*/
-     
+    public function edit(Item $item)
+    {     
         $unidades = array();
-        foreach (Unidade::all() as $value)
-            $unidades += [$value->id => $value->nome];
-
-        //$item->with('cidades', 'participantes')->where('id', '=', $item->id)->first();
-        return view('site.requisicao.itemEdit', compact('unidades', 'item'));
+        $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
+        Session::forget(['mensagem','codigo']);
+        foreach (Unidade::all() as $unidade)
+            $unidades += [$unidade->uuid => $unidade->nome];
+        return view('site.item.edit', compact('unidades', 'item', 'comunica'))->with('requisicao', $item->requisicao);
     }
 
     /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Item $item)
+    {
+        $this->validate($request, [
+            'quantidade' => 'required|integer',
+            'codigo'     => 'nullable|integer',
+            'objeto'     => 'required|string|max:300',
+            'descricao'  => 'required|string',
+            'unidade'    => 'required|string|exists:unidades,uuid',
+        ]);
+
+        $return =  $this->service->update($request->all(), $item);
+        if ($return['status']) {
+            return redirect()->route('requisicao.show', $item->requisicao->uuid)
+                ->with(['codigo' => 200,'mensagem' => 'O item '.$return['data']->numero.' foi alterado com sucesso!']);
+        } else {
+            return redirect()->route('requisicao.show',$item->requisicao->uuid)
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error durante o alteração do item, tente novamente ou contate o administrador!']);
+        }
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     * 
+     * @param Item $item 
+     * @return type
+     */
+    public function destroy(Item $item)
+    {
+        $return =  $this->service->destroy($item);
+        if ($return['status']) {
+            return redirect()->route('requisicao.show', $item->requisicao->uuid)
+                ->with(['codigo' => 200,'mensagem' => 'O item foi apagado com sucesso!']);
+        } else {
+            return redirect()->route('requisicao.show',$item->requisicao->uuid)
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error durante o exclusão do item, tente novamente ou contate o administrador!']);
+        }
+    }
+
+        /**
      * Mostra o formulário para editar um item específico relacionada a uma licitacão
      *
      * @param  Item  $item
@@ -134,36 +165,9 @@ class ItemController extends Controller
         $unidades = array();
         foreach (Unidade::all() as $value)
             $unidades += [$value->id => $value->nome];
-        return view('site.licitacao.pregao.itemEdit',  compact('item', 'licitacao', 'fornecedores', 'uasgs', 'unidades'));
+        return view('site.licitacao.compras.pregao.itemEdit',  compact('item', 'licitacao', 'fornecedores', 'uasgs', 'unidades'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request)
-    {
-        $this->validate($request, [
-            'item'       => 'required|string',
-            'quantidade' => 'required|integer',
-            'codigo'     => 'integer|nullable',
-            'objeto'     => 'string|nullable|max:100',
-            'descricao'  => 'required|string',
-            'unidade'    => 'required|integer',
-        ]);
-
-        $item = Item::findByUuid($request->item);
-        $item->quantidade 	= $request->quantidade;
-        $item->codigo 		= $request->codigo;
-        $item->objeto       = $request->objeto;
-        $item->descricao 	= nl2br($request->descricao);
-        $item->unidade_id 	= $request->unidade;
-        $item->save();
-        return redirect()->route('requisicao.show', $item->requisicao->uuid);
-    }
 
     /**
      * Atualiza um ite específico relacionado a uma licitação
@@ -190,18 +194,6 @@ class ItemController extends Controller
         //$item->grupo_id   = $request->grupo;
         $item->save();
         return redirect()->route('licitacao.show', $item->licitacao->uuid);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Item $item)
-    {
-        $item->delete();
-        return redirect()->route('requisicao.show', $item->requisicao->uuid);
     }
 
     /**

@@ -59,7 +59,7 @@ Route::middleware('auth')->group(function(){
 		Route::get('/editar/{item}',  								'ItemController@edit')->name('edit');
 		Route::post('/editar/{item}',  								'ItemController@update')->name('update');
 		Route::delete('/apagar/{item}', 							'ItemController@destroy')->name('destroy');
-		Route::get('/licitacao/editar/{item}',						'ItemController@editItemLicitacao')->name('editItemLicitacao');
+		Route::get('/licitacao/editar/{item}',						'ItemController@editItemLicitacao')->name('item.licitacao.edit');
 		Route::get('/fornecedor/novo',								'ItemController@fornecedorCreate')->name('fornecedorCreate');
 		Route::get('/fornecedor/exibir/{fornecedor_id}/{item_id}', 	'ItemController@fornecedorShow')->name('fornecedorShow');
 		Route::put('/licitacao/update/{item}',						'ItemController@updateItemLicitacao')->name('updateItemLicitacao');
