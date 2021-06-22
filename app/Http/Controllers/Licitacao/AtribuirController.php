@@ -38,7 +38,7 @@ class AtribuirController extends Controller
         return view('site.licitacao.compras.atrubuirItem',  compact('licitacao', 'requisicao', 'comunica'));
     }
     /**
-     * Adiciona na relação de itens da licitação um ou mais itens informados no array de itens.
+     * Adiciona à relação de itens da licitação um ou mais itens informados no array de itens.
      * 
      * @param Licitacao $licitacao 
      * @param Requisicao $requisicao 

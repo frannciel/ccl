@@ -147,12 +147,47 @@ class ItemController extends Controller
             return redirect()->route('requisicao.show', $item->requisicao->uuid)
                 ->with(['codigo' => 200,'mensagem' => 'O item foi apagado com sucesso!']);
         } else {
-            return redirect()->route('requisicao.show',$item->requisicao->uuid)
+            return redirect()->route('requisicao.show', $item->requisicao->uuid)
                 ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error durante o exclusão do item, tente novamente ou contate o administrador!']);
         }
     }
 
-        /**
+
+    public function deleteAll(Request $request)
+    {
+        $this->validate($request, [
+            "itens" => 'required|array|min:1',
+            'itens.*' => 'string|exists:itens,uuid',
+        ]);
+
+        $return = $this->service->deleteAll($request->itens);
+        if ($return['status']){
+            return redirect()->route('requisicao.show', $return['data']->uuid)
+                ->with(['codigo' => 200,'mensagem' => 'Item(ns) selecionado(s) removidos com sucesso !']);
+        } else {
+            return redirect()->route('requisicao.show', $return['data']->uuid)
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao remover item(ns), tente novamente ou contate o administrador']); 
+        }
+    }
+
+    public function duplicar(Request $request)
+    {
+        $this->validate($request, [
+            "itens" => 'required|array|min:1',
+            'itens.*' => 'string|exists:itens,uuid',
+        ]);
+
+        $return = $this->service->duplicar($request->itens);
+        if ($return['status']){
+            return redirect()->route('requisicao.show',  $return['data']->uuid)
+                ->with(['codigo' => 200,'mensagem' => 'Item(ns) duplicado com sucesso !']);
+        } else {
+            return redirect()->route('requisicao.show',  $return['data']->uuid)
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao duplicar item(ns), tente novamente ou contate o administrador']); 
+        }
+    }
+
+    /**
      * Mostra o formulário para editar um item específico relacionada a uma licitacão
      *
      * @param  Item  $item

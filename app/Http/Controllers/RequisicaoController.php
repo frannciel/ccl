@@ -274,24 +274,6 @@ class RequisicaoController extends Controller
         }
     }
 
-    public function removeItens(Request $request)
-    {
-        $this->validate($request, [
-            "itens" => 'required|array|min:1',
-            'itens.*' => 'string|exists:itens,uuid',
-            'requisicao'  => 'required|exists:requisicoes,uuid'
-        ]);
-
-        $return = $this->service->deleteItens($request->all());
-        if ($return['status']){
-            return redirect()->route('requisicao.show', $request->requisicao)
-                ->with(['codigo' => 200,'mensagem' => 'Item(ns) removidos com sucesso !']);
-        } else {
-            return redirect()->route('requisicao.show', $request->requisicao)
-                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao remover item(ns), tente novamente ou contate o administrador']); 
-        }
-    }
-
     public function importar(Requisicao $requisicao)
     {
         $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];

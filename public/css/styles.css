@@ -233,6 +233,16 @@
 .color-green{
     color: #5cb85c;
 }
+.color-danger{
+    color: #d9534f;
+}
+.color-warning{
+    color: #ffcc00;
+}
+.color-success{
+    color: #5cb85c;
+}
+
 .fixed-bottom {
   position: fixed;
   right: 0;

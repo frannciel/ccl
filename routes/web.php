@@ -48,7 +48,6 @@ Route::middleware('auth')->group(function(){
 		Route::get('/importar/{requisicao}', 				'RequisicaoController@importar')->name('importar');
 		Route::post('/ajax', 								'RequisicaoController@ajax')->name('ajax');
 		Route::post('/ata/create', 							'RequisicaoController@ataCreate')->name('ataCreate');
-		Route::post('/duplicar/item', 						'RequisicaoController@duplicarItem')->name('duplicarItem');
 		Route::post('/remove/item', 						'RequisicaoController@removeItens')->name('removeItens');
 		Route::delete('/apagar/{requisicao}', 				'RequisicaoController@destroy')->name('destroy');
 	});
@@ -59,6 +58,8 @@ Route::middleware('auth')->group(function(){
 		Route::get('/editar/{item}',  								'ItemController@edit')->name('edit');
 		Route::post('/editar/{item}',  								'ItemController@update')->name('update');
 		Route::delete('/apagar/{item}', 							'ItemController@destroy')->name('destroy');
+		Route::post('/apagar/tudo', 								'ItemController@deleteAll')->name('deleteAll');
+		Route::post('/duplicar', 									'ItemController@duplicar')->name('duplicar');
 		Route::get('/licitacao/editar/{item}',						'ItemController@editItemLicitacao')->name('item.licitacao.edit');
 		Route::get('/fornecedor/novo',								'ItemController@fornecedorCreate')->name('fornecedorCreate');
 		Route::get('/fornecedor/exibir/{fornecedor_id}/{item_id}', 	'ItemController@fornecedorShow')->name('fornecedorShow');

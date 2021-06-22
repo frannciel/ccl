@@ -463,7 +463,7 @@ class LicitacaoController extends Controller
         }
         $participantes = $participantes->sortBy('codigo');
         view()->share('licitacao', compact('licitacao', 'participantes'));
-        $pdf = PDF::loadView('pdf.relacao_de_itens', compact('licitacao', 'participantes'));
+        $pdf = PDF::loadView('site.licitacao.pdf.relacao_de_itens', compact('licitacao', 'participantes'));
         $pdf->setPaper('A4');
         return $pdf->download('Relacao_de_itens_pregão_'.$licitacao->ordem.'.pdf');
     }

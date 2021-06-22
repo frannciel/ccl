@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Services;
-
+use Auth;
 use App\Item;
 use App\Unidade;
 use App\Requisicao;
@@ -211,20 +211,68 @@ class ItemService
                     ->with(['codigo' => 500, 'mensagem' => 'Item associado a uma licitacão não pode ser apagado.'])
                     ->withInput()
                 ); 
-            }           
+            } else {
 
-            $item->delete();
-            $this->requisicaoService->ordenar($item->requisicao);
+                $requisicao = $item->requisicao;
+                if (Auth::user()->requisitante->is($requisicao->requisitante) || Auth::user()->isAc) { 
+                    $item->delete();
+                    $this->requisicaoService->ordenar($item->requisicao);  
+                } else {
+                    abort(
+                        redirect()
+                            ->route('item.edit', $item->uuid)
+                            ->with(['codigo' => 500, 'mensagem' => 'O usuário não tem autorização para apagar este item.'])
+                            ->withInput()
+                    );
+                }
+            } 
             
             return [
                 'status' => true,
                 'message' => 'Item Excluído  com sucesso',
-                'data' => null
+                'data' => $item->requisicao
             ];
         } catch (Exception $e) {
             return [
                'status' => false,
                'message' => 'Ocorreu durante a tentiva de excluir o item',
+               'error' => $e
+            ];
+        }
+    }
+
+    public function deleteAll(array $itens)
+    {
+        try {
+
+            $requisicao = "";
+            foreach ($itens as  $uuid) {
+                $item = Item::findByUuid($uuid);
+                $requisicao = $item->requisicao;
+                if (Auth::user()->requisitante->is($requisicao->requisitante) || Auth::user()->isAc) { // verifica se o usuário pertence ao mesmo requisitante da requisicão
+                    if (!$item->licitacao()->exists()) { // verifica se o item não está relacionado a uma licitação
+                        $item->delete();
+                    }
+                } else {
+                   abort(
+                        redirect()
+                            ->route('requisicao.show', $requisicao->uuid)
+                            ->with(['codigo' => 500, 'mensagem' => 'O usuário não tem autorização para apagar o item '.$item->numero.' da requisicao '.$requisicao->ordem])
+                            ->withInput()
+                    ); 
+                }
+            }
+            $this->requisicaoService->ordenar($requisicao);
+
+            return [
+                'status' => true,
+                'message' => 'Itens excluidos com sucesso',
+                'data' => $requisicao
+            ];
+        } catch (Exception $e) {
+            return [
+               'status' => false,
+               'message' => 'Ocorreu durante a tentiva remover itens',
                'error' => $e
             ];
         }
@@ -255,4 +303,44 @@ class ItemService
         }
     }
 
+    public function duplicar(array $itens)
+    {
+        try {
+            
+            $requisicao = "";
+            foreach ($itens as  $uuid) {
+                $item = Item::findByUuid($uuid);
+                $requisicao = $item->requisicao;
+                if (Auth::user()->requisitante->is($requisicao->requisitante) || Auth::user()->isAc) { // verifica se o usuário pertence ao mesmo requisitante da requisicão
+                   $requisicao->itens()->create([
+                        'numero'        => $requisicao->itens()->max('numero')+1, 
+                        'quantidade'    => $item['quantidade'],
+                        'codigo'        => $item['codigo'],
+                        'objeto'        => $item['objeto'],
+                        'descricao'     => $item['descricao'],
+                        'unidade_id'    => $item['unidade_id'],
+                    ]);
+                } else {
+                   abort(
+                        redirect()
+                            ->route('requisicao.show', $requisicao->uuid)
+                            ->with(['codigo' => 500, 'mensagem' => 'O usuário não tem autorização para alterar esta requisicao.'])
+                            ->withInput()
+                    ); 
+                }
+            }   
+
+            return [
+                'status' => true,
+                'message' => 'Itens duplicado com sucesso',
+                'data' => $requisicao
+            ];
+        } catch (Exception $e) {
+            return [
+               'status' => false,
+               'message' => 'Ocorreu durante a tentiva duplicar itens',
+               'error' => $e
+            ];
+        }
+    }
 }

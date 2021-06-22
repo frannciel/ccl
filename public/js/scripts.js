@@ -134,7 +134,75 @@ $(document).ready(function(){
         $('#confirma-mesclar-delete').modal({show:true}); 
     });
 
+    /*
+     * Modal para apagar multiplos itens da requisição
+     */
+    $('button[data-modal="itens-delete"]').click(function(event) { 
+        if (!$('#itens-confirma-delete').length){ 
+            $('body').append(`<div class="modal fade" id="itens-confirma-delete" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <div class="row"> <div class="col-md-6"> <h4 class="modal-title">Apagar Itens da Requisição</h4> </div> <div class="col-md-6"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> </div> </div> <div class="modal-body"> <div class="row"> <div class="col-md-2 text-center"> <i class="fa fa-exclamation-triangle fa-5x color-danger" aria-hidden="true"></i> </div> <div class="col-md-10 mb-2"> <h5> <p class="font-weight-bold"> Tem certeza que deseja apagar os itens selecionados ? </p> </h5> </div> </div> <div id="divItens"></div> </div> <div class="modal-footer"> <div class="row"> <div class="col-md-3 col-md-offset-6"> <button type="button" class="btn btn-primary btn-block font-weight-bold" data-dismiss="modal">Cancelar</button> </div> <div class="col-md-3"> <button id="form-itens-submit" class="btn btn-danger btn-block font-weight-bold">Excluir</button> </div> </div> </div> </div> </div> </div>`); 
+        }
+        $('#form-requisicao-itens').attr('action', $(this).attr('data-route')); 
+        $('#itens-confirma-delete').modal({show:true}); 
+    });
+    $('body').on('click', '#form-itens-submit', function() {
+        $('#form-requisicao-itens').submit();
+    });
 
+    /*
+     * Modal para apagar multiplos itens da requisição
+     */
+    $('button[data-modal="itens-duplicar"]').click(function(event) { 
+        if (!$('#itens-confirma-duplicar').length){ 
+            $('body').append(`<div class="modal fade" id="itens-confirma-duplicar" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h4 class="modal-title">Apagar Itens da Requisição</h4>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                    </div>  
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-2 text-center">
+                                            <i class="fa fa-exclamation-triangle fa-5x color-success" aria-hidden="true"></i>
+                                        </div>  
+                                        <div class="col-md-10 mb-2">
+                                            <h5>
+                                                <p class="font-weight-bold">
+                                                    Tem certeza que deseja duplicar os itens selecionados ?
+                                                </p>   
+                                            </h5>
+                                        </div>
+                                    </div>
+                                    <div id="divItens"></div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="row">
+                                        <div class="col-md-3 col-md-offset-6">
+                                            <button type="button" class="btn btn-primary btn-block font-weight-bold" data-dismiss="modal">Cancelar</button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button id="form-itens-submit" class="btn btn-success btn-block font-weight-bold">Duplicar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`);
+        }
+        $('#form-requisicao-itens').attr('action', $(this).attr('data-route')); 
+        $('#itens-confirma-duplicar').modal({show:true}); 
+    });
+    $('body').on('click', '#btn-itens-duplicar', function() {
+        $('#form-requisicao-itens').submit();
+    });
 
     $('.dataTable').DataTable( {
         "language": {

@@ -13,15 +13,15 @@
 	</div>
 
 	{{ Form::open(['route' => ['requisicao.update', $requisicao->uuid], 'method' => 'post', 'class' => 'form-padrao']) }}			
-	<div class="row">
-		@include('form.text', [
+		<div class="row">
+			@include('form.text', [
 			'input' => 'ordem',
 			'label' => 'Número', 
 			'largura' => 2,
 			'value' => $requisicao->ordem ?? '',
 			'attributes' => ['id' => 'ordem', 'disabled' => '' ]])
 
-		@include('form.select', [
+			@include('form.select', [
 			'input' => 'requisitante', 
 			'label' => 'Requisitante', 
 			'largura' => 5,
@@ -55,83 +55,82 @@
 
 		<div class="row">
 			@include('form.radioButton', [
-				'input' => 'prioridade',
-				'label' => 'Grau de Prioridade*',
-				'value' => old($input ?? '') ?? $requisicao->prioridade,
-				'largura' => 3, 
-				'options' => ['1' => 'Alta', '2' => 'Média', '3' => 'Baixa' ], 
-				'attributes' => ['id' => 'prioridade', 'required' => '']])
+			'input' => 'prioridade',
+			'label' => 'Grau de Prioridade*',
+			'value' => old($input ?? '') ?? $requisicao->prioridade,
+			'largura' => 3, 
+			'options' => ['1' => 'Alta', '2' => 'Média', '3' => 'Baixa' ], 
+			'attributes' => ['id' => 'prioridade', 'required' => '']])
 
 			@include('form.radioButton', [
-				'input' => 'renovacao',
-				'label' => 'Renovação de Contrato*',
-				'value' => old($input ?? '') ?? $requisicao->renovacao,
-				'largura' => 3, 
-				'options' => ['1' => 'Sim', '2' => 'Não' ], 
-				'attributes' => ['id' => 'renovacao', 'required' => '']])
+			'input' => 'renovacao',
+			'label' => 'Renovação de Contrato*',
+			'value' => old($input ?? '') ?? $requisicao->renovacao,
+			'largura' => 3, 
+			'options' => ['1' => 'Sim', '2' => 'Não' ], 
+			'attributes' => ['id' => 'renovacao', 'required' => '']])
 
 			@include('form.radioButton', [
-				'input' => 'capacitacao',
-				'label' => 'Necessita Capacitação*',
-				'value' => old($input ?? '') ?? $requisicao->capacitacao,
-				'largura' => 3, 
-				'options' => ['1' => 'Sim', '2' => 'Não' ], 
-				'attributes' => ['id' => 'capacitacao', 'required' => '']])
+			'input' => 'capacitacao',
+			'label' => 'Necessita Capacitação*',
+			'value' => old($input ?? '') ?? $requisicao->capacitacao,
+			'largura' => 3, 
+			'options' => ['1' => 'Sim', '2' => 'Não' ], 
+			'attributes' => ['id' => 'capacitacao', 'required' => '']])
 
 			@include('form.radioButton', [
-				'input' => 'pac',
-				'label' => 'Registrado no PAC*',
-				'value' => old($input ?? '') ?? $requisicao->pac,
-				'largura' => 3, 
-				'options' => ['1' => 'Sim', '2' => 'Não' ], 
-				'attributes' => ['id' => 'pac', 'required' => '']])
+			'input' => 'pac',
+			'label' => 'Registrado no PAC*',
+			'value' => old($input ?? '') ?? $requisicao->pac,
+			'largura' => 3, 
+			'options' => ['1' => 'Sim', '2' => 'Não' ], 
+			'attributes' => ['id' => 'pac', 'required' => '']])
+		</div>
+
+		<div class="row">
+			@include('form.text', [
+			'input' => 'descricao',
+			'label' => 'Objeto', 
+			'value' => old($input ?? '') ?? $requisicao->descricao ?? 'error',
+			'attributes' => ['id' => 'descricao', 'required' => '', 'autocomplete' => 'off']])
+
+			@include('form.textarea', [
+			'input' => 'justificativa',
+			'label' => 'Justificativa da Contratação*',
+			'value' => old($input ?? '') ?? $requisicao->justificativa,
+			'largura' => 12, 
+			'attributes' => ['id' => 'justificativa',  'rows'=>'5']])
+		</div>
+
+		<div class="row">
+			@include('form.text', [
+			'input' => 'previsao',
+			'label' => 'Data da Necessidade',
+			'value' => old($input ?? '') ?? $requisicao->previsao,
+			'largura' => 4, 
+			'attributes' => ['id' => 'data']])
+
+			@include('form.text', [
+			'input' => 'metas',
+			'label' => 'Código da(s) Meta(s) do PMI, separdas por vírgula',
+			'value' => old($input ?? '') ?? $requisicao->metas,
+			'largura' => 8, 
+			'attributes' => ['id' => 'metas']])
+		</div>
+
+		<div class="row mt-2">
+			<div class="col-md-3  col-md-offset-1">
+				<a href="{{route('requisicao.index')}}" class="btn btn-primary btn-block font-weight-bold" type="button">Voltar</a>
 			</div>
 
-			<div class="row">
-				@include('form.text', [
-					'input' => 'descricao',
-					'label' => 'Objeto', 
-					'value' => old($input ?? '') ?? $requisicao->descricao ?? 'error',
-					'attributes' => ['id' => 'descricao', 'required' => '', 'autocomplete' => 'off']])
+			@include('form.submit', [
+			'input' => 'Salvar', 
+			'largura' => 3 ])
 
-				@include('form.textarea', [
-					'input' => 'justificativa',
-					'label' => 'Justificativa da Contratação*',
-					'value' => old($input ?? '') ?? $requisicao->justificativa,
-					'largura' => 12, 
-					'attributes' => ['id' => 'justificativa',  'rows'=>'5']])
-				</div>
-
-				<div class="row">
-					@include('form.text', [
-						'input' => 'previsao',
-						'label' => 'Data da Necessidade',
-						'value' => old($input ?? '') ?? $requisicao->previsao,
-						'largura' => 4, 
-						'attributes' => ['id' => 'data']])
-
-					@include('form.text', [
-						'input' => 'metas',
-						'label' => 'Código da(s) Meta(s) do PMI, separdas por vírgula',
-						'value' => old($input ?? '') ?? $requisicao->metas,
-						'largura' => 8, 
-						'attributes' => ['id' => 'metas']])
-					</div>
-
-
-					<div class="row mt-2">
-						<div class="col-md-3  col-md-offset-1">
-							<a href="{{route('requisicao.index')}}" class="btn btn-primary btn-block" type="button">Voltar</a>
-						</div>
-
-						@include('form.submit', [
-							'input' => 'Salvar', 
-							'largura' => 3 ])
-
-							<div class="col-md-3">
-								<button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#mediumModalLabel">Excluir</button>
-							</div>
-						</div>
+			<div class="col-md-3">
+				<button type="button" class="btn btn-danger btn-block font-weight-bold" data-toggle="modal" data-target="#mediumModalLabel">Excluir</button>
+			</div>
+		</div>
 	{{ Form::close() }}
 
 
@@ -178,8 +177,7 @@
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-{{ Form::open(['url' => '', 'method' => 'POST', 'class' => 'form-padrao mt-4']) }}
-	{{ Form::hidden('requisicao', $requisicao->uuid) }}
+{{ Form::open(['url' => '', 'method' => 'POST', 'class' => 'form-padrao mt-4', 'id' => "form-requisicao-itens"]) }}
 	<div class="panel panel-default">
 		<div class="panel-heading">
 			<div class="btn-group btn-group-justified" role="group" aria-label="...">
@@ -196,25 +194,22 @@
 					<a type="button" class="btn btn-success btn-outline" title="Relação de Itens" href="{{route('requisicao.documento', $requisicao->uuid)}}"><i class="glyphicon glyphicon-list"></i></a>
 				</div>
 				<div class="btn-group" role="group">
-					<button type="submit" formaction="{{url('requisicao/duplicar/item')}}" class="btn btn-success btn-outline" title="Duplicar Itens"><i class="glyphicon glyphicon-duplicate"></i></button>
+					<button type="button" class="btn btn-success btn-outline" data-modal="itens-duplicar" data-route="{{route('item.duplicar')}}" title="Duplicar itens"><i class="glyphicon glyphicon-duplicate"></i></button>
 				</div>
-
 				<div class="btn-group" role="group">
-					<button type="button" id="removeAll" class="btn btn-danger btn-outline" data-toggle="modal" data-target="#removeItemModal"><i class="glyphicon glyphicon-trash"></i></button>
+					<button type="button" class="btn btn-danger btn-outline" data-modal="itens-delete" data-route="{{route('item.deleteAll')}}" title="Excluir itens"><i class="glyphicon glyphicon-trash"></i></button>
 				</div>
 			</div>
 
 			<div class="row text-center">
 				<div class="col-md-12 mt-2 mb-2">
-					<a type="button" href="{{route('cotacao.relatorio', ['uuid' => $requisicao->uuid])}}" class="btn btn-outline btn-primary rounded-pill">
+					<a type="button" class="btn btn-outline btn-primary rounded-pill" href="{{route('cotacao.relatorio', $requisicao->uuid)}}">
 						Relatório de Pesquisa de Preços
 					</a>
-
-					<a type="button" href="{{route('requisicao.pesquisa', $requisicao->uuid)}}"  class="btn btn-outline btn-primary rounded-pill">
+					<a type="button" class="btn btn-outline btn-primary rounded-pill" href="{{route('requisicao.pesquisa', $requisicao->uuid)}}" >
 						Solicitação de Pesquisa de Preços
 					</a>
-
-					<a type="button" href="{{route('requisicao.formalizacao', $requisicao->uuid)}}" class="btn btn-outline btn-primary rounded-pill">
+					<a type="button" class="btn btn-outline btn-primary rounded-pill" href="{{route('requisicao.formalizacao', $requisicao->uuid)}}">
 						Formalização de Demanda
 					</a>
 				</div>
@@ -260,45 +255,5 @@
 			</div><!-- table-responsive -->
 		</div><!-- panel-body -->
 	</div><!-- /.panel -->
-
-	<div class="modal fade" id="removeItemModal" tabindex="-1" role="dialog" aria-labelledby="removeItemModal" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<div class="row">
-						<div class="col-md-6">
-							<h4 class="modal-title" id="removeItemModal">Apagar Itens da Requisição</h4>
-						</div>
-						<div class="col-md-6">
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
-						</div>
-					</div>	
-				</div><!-- /.modal-header -->
-				<div class="modal-body">
-					<div class="row">
-						<div class="col-md-12 mb-2">
-							<b>
-								<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-								<span id="msgRemoveItem"></span>
-							</b>
-						</div>
-					</div>
-					<div id="divItens"></div>
-				</div><!-- /.modal-body -->
-				<div class="modal-footer">
-					<div class="row">
-						<div class="col-md-3 col-md-offset-6">
-							<button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancelar</button>
-						</div>
-						<div class="col-md-3">
-							<button id="btnRemoveItem" type="submit" formaction="{{url('requisicao/remove/item')}}" class="btn btn-danger btn-block">Excluir</button>
-						</div>
-					</div>
-				</div><!-- /.modal-footer -->
-			</div><!-- /.modal-content -->
-		</div><!-- /.modal-dialog -->
-	</div><!-- /.modal --> 
 {{ Form::close() }}
 @endsection

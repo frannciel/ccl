@@ -45,7 +45,7 @@
    </style>;
 </head>
 <body>
-   @include('pdf.cabecalho')
+   @include('site.pdf.cabecalho')
    <h3 align="center">{{strtoupper($licitacao->licitacaoable_type)}} Nº {{$licitacao->ordem ?? ''}} @if ($licitacao->licitacaoable->srp == 1) (SRP) @endif
       <br/>RELAÇÃO DE ITENS
    </h3>
