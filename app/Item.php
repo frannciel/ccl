@@ -59,7 +59,8 @@ class Item extends Model
         return $this->belongsToMany('App\Uasg', 'cidade_uasg', 'item_id', 'uasg_id')
             ->using('App\Participante')
             ->withPivot('cidade_id')
-            ->withPivot('quantidade');
+            ->withPivot('quantidade')
+            ->withTimestamps();
     }
 
     // $item->participantes->first()->pivot->cidade->nome ?? ''
@@ -74,7 +75,8 @@ class Item extends Model
         return $this->belongsToMany('App\Cidade', 'cidade_uasg', 'item_id', 'cidade_id')
             ->using('App\Participante')
             ->withPivot('uasg_id')
-            ->withPivot('quantidade');
+            ->withPivot('quantidade')
+            ->withTimestamps();
     }
 
     public function fornecedores()

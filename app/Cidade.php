@@ -33,7 +33,8 @@ class Cidade extends Model
         return $this->belongsToMany('App\Uasg', 'cidade_uasg','cidade_id', 'uasg_id')
             ->using('App\Participante')
             ->withPivot('item_id')
-            ->withPivot('quantidade');
+            ->withPivot('quantidade')
+            ->withTimestamps();
     }
 	
     /**
@@ -47,7 +48,8 @@ class Cidade extends Model
         return $this->belongsToMany('App\Item', 'cidade_uasg','cidade_id', 'item_id')
             ->using('App\Participante')
             ->withPivot('uasg_id')
-            ->withPivot('quantidade');
+            ->withPivot('quantidade')
+            ->withTimestamps();
     }
 
     /**

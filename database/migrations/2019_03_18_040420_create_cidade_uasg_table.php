@@ -21,6 +21,7 @@ class CreateCidadeUasgTable extends Migration
             $table->foreign('cidade_id')->references('id')->on('cidades');
 			$table->foreign('item_id')->references('id')->on('itens');
             $table->foreign('uasg_id')->references('id')->on('uasgs');
+            $table->timestamps();
         });
     }
 
