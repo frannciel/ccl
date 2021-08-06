@@ -66,9 +66,9 @@ class LicitacaoController extends Controller
    {
       switch ($licitacao->licitacaoable_type) {
          case 'Pregão Eletrônico':
-            return redirect()->action('PregaoController@show', [$licitacao->licitacaoable()->first()->uuid]);
-         case 'App\Dispensa':
-            return redirect()->action('PregaoController@itemEdit', [$uuid]);
+            return redirect()->route('pregao.show', $licitacao->uuid);
+         /*case 'App\Dispensa':
+            return redirect()->action('PregaoController@itemEdit', [$uuid]);*/
       }
    }
 
@@ -472,6 +472,34 @@ class LicitacaoController extends Controller
     {
         $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
         Session::forget(['mensagem','codigo']); 
-        return view('site.licitacao.compras..import',  compact('licitacao', 'comunica'));
+        return view('site.licitacao.compras.import',  compact('licitacao', 'comunica'));
+    }
+    
+    /**
+     * Retorna a interface de ordenação de itens da licitação
+     *
+     * @param  \App\Licitacao $licitacao
+     * @return void
+     */
+    public function ordenarCreate(Licitacao $licitacao)
+    {
+        return view('site.licitacao.compras.ordenar',  compact('licitacao'));
+    }
+    
+    /**
+     * Método responsável por salvar a reodenação de itens da requisição via requisição assíncrona
+     *
+     * @param \Illuminate\Http\Request  $request  The request
+     * @param  \App\Licitacao $licitacao
+     * @return void
+     */
+    public function ordenarStore(Request $request, Licitacao $licitacao)
+    {
+        $ordem = 1;
+        foreach ($request->itens as $uuid) {
+            DB::table('itens')->where('uuid', $uuid)->update(['ordem' => $ordem]);
+            $ordem++;
+        }
+        return 'Ordenado com sucesso!!';
     }
 }

@@ -93,7 +93,7 @@
 							<a type="button"  class="btn btn-success btn-outline" title="Importar Dados" href="{{route('licitacao.importar', $licitacao->uuid)}}"><i class="fa fa-upload" aria-hidden="true"></i></a>
 						</div>
 						<div class="btn-group" role="group">
-							<button type="button" class="btn btn-success btn-outline " title="Adicionar Novo Item"><i class="glyphicon glyphicon-plus"></i></button>
+							<a type="button" href="{{route('licitacao.ordenar.create', $licitacao->uuid)}}" class="btn btn-success btn-outline" title="Ordenar Itens"><i class="fa fa-sort"></i></a>
 						</div>
 						<div class="btn-group" role="group">
 							<a type="button" class="btn btn-success btn-outline" title="Mesclar Itens" href="{{route('licitacao.mesclar.create', $licitacao->uuid)}}"><i class="glyphicon glyphicon-resize-small"></i></a>
@@ -166,7 +166,7 @@
 													<span class="input-group-addon">
 														<input type="checkbox" id="defaultCheck"  class="chk" name="itens[]" value="{{$item->uuid}}" >
 													</span>
-													<a class="btn btn-default" href="{{url('item/licitacao/editar', $item->uuid)}}" role="button">Detalhar</a>
+													<a class="btn btn-default" href="{{route('pregao.item.edit', $item->uuid)}}" role="button">Detalhar</a>
 												</div>
 											</td>
 											<td class=" center">{{$item->ordem}}</td>
@@ -189,20 +189,20 @@
 {{ Form::close() }} 	
 
 						<div id="guiaRequisicao" class="tab-pane fade">
-							<table class="table table-hover tablesorter">
+							<table class="table table-striped table-bordered">
 								<thead>
 									<tr>
 										<th class="center">Requisição</th>
-										<th class="center">Descrição</th>
+										<th class="center">Objeto da Reqisição</th>
 										<th class="center">Solicitante</th>
 									</tr>
 								</thead>
 								<tbody>
 									@forelse ($licitacao->requisicoes as $requisicao)
 									<tr onclick="location.href ='{{route('licitacao.atribuir.create', [$licitacao->uuid, $requisicao->uuid])}}'; target='_blank';" class="pointer">
-										<td class="center">{{$requisicao->numero}}/{{$requisicao->ano}}</td>
+										<td class="center">{{$requisicao->ordem}}</td>
 										<td>{{$requisicao->descricao}}</td>
-										<td class="center">{{$requisicao->requisitante->first()['sigla']}}</td>
+										<td class="center">{{$requisicao->requisitante->sigla}}</td>
 									</tr>
 									@empty
 									<tr><td colspan=4><center><i> Nenhuma Requisição Encontrada </i></center></td></tr>
@@ -212,7 +212,7 @@
 						</div><!-- / tab requisição -->
 
 						<div id="guiaFornecedor" class="tab-pane fade">
-							<table class="table table-hover tablesorter">
+							<table class="table table-striped table-bordered">
 								<thead> 
 									<tr>
 										<th>CNPJ</th>
@@ -237,7 +237,7 @@
 						</div>
 
 						<div id="guiaParticipante" class="tab-pane fade">
-							<table class="table table-hover tablesorter">
+							<table class="table table-striped table-bordered">
 								<thead>
 									<tr>
 										<th class="center">Código Uasg</th>

@@ -16,7 +16,6 @@ http://www.bosontreinamentos.com.br/mysql/opcoes-de-chave-estrangeira-mysql/
 	composer dump-autoload
 */
 
-
 Route::prefix('admin')->name('admin.')->namespace('Admin')->group(function () {
     Auth::routes();
     Route::get('home', 'HomeController@index')->name('home');
@@ -29,6 +28,7 @@ Route::middleware('guest')->group(function(){
 	Route::get('/', function () {
 	    return view('auth.login');
 	});
+
 });
 
 Route::middleware('auth')->group(function(){
@@ -96,19 +96,28 @@ Route::middleware(['auth', 'ac'])->group(function(){
 		Route::post('/atribuir/item/{licitacao}', 						'AtribuirController@store')->name('atribuir.store');
 		Route::post('/remover/item/{licitacao}', 						'AtribuirController@remove')->name('atribuir.remove'); 
 		Route::delete('/remover/requisicao/{licitacao}/{requisicao}',	'AtribuirController@removerRequisicao')->name('requisicao.remove');
-	//  Route::post('/atribuir/requisicao/{licitacao}/{requisicao}', 	'AtribuirController@atribuirRequisicao')->name('requisicao.atribuir'); // metodo não utilizado, verificar necesssidade
+		//  Route::post('/atribuir/requisicao/{licitacao}/{requisicao}', 	'AtribuirController@atribuirRequisicao')->name('requisicao.atribuir'); // metodo não utilizado, verificar necesssidade
 
-		Route::get('/item/mesclar/novo/{licitacao}',					'MesclarItemController@create')->name('mesclar.create');
-		Route::post('/item/mesclar/novo',								'MesclarItemController@store')->name('mesclar.store');
+		Route::get('/item/mesclar/{licitacao}',							'MesclarItemController@create')->name('mesclar.create');
+		Route::post('/item/mesclar/',									'MesclarItemController@store')->name('mesclar.store');
 		Route::delete('/item/separar/{item}',							'MesclarItemController@separar')->name('mesclar.separar');
+
+
+
+
+		Route::get('/ordenar/{licitacao}', 								'LicitacaoController@ordenarCreate')->name('ordenar.create');
+		Route::post('/ordenar/{licitacao}', 							'LicitacaoController@ordenarStore')->name('ordenar.store');
+	
+
 	});
 
-	Route::prefix('pregao')->name('pregao.')->group(function(){
+	Route::prefix('pregao')->name('pregao.')->namespace('Pregao')->group(function(){
 		Route::get('/novo', 						'PregaoController@create')->name('create');
 		Route::post('/novo', 						'PregaoController@store')->name('store');
-		Route::post('/update', 						'PregaoController@update')->name('update');
-		Route::get('/exibir/{pregao}',				'PregaoController@show')->name('show');
-		Route::get('/item/editar/{uuid}',			'PregaoController@itemEdit')->name('itemEdit');
+		Route::post('/editar', 						'PregaoController@update')->name('update');
+		Route::get('/exibir/{licitacao}',				'PregaoController@show')->name('show');
+		Route::get('/item/editar/{item}',			'ItemPregaoEditController')->name('item.edit');
+		Route::put('/item/editar/{item}',			'ItemPregaoUpdateController')->name('item.update');
 	});
 
 	Route::prefix('registro/precos')->name('registroDePreco.')->group(function(){
@@ -139,6 +148,17 @@ Route::middleware(['auth', 'ac'])->group(function(){
 		Route::post('/fornecedor', 					'FornecedorController@getFornecedor')->name('getFornecedor');
 		Route::delete('/apagar/{fornecedor}', 		'FornecedorController@destroy')->name('destroy');
 	});
+
+	Route::prefix('uasg')->name('uasg.')->group(function(){
+		Route::get('/', 							'UasgController@index')->name('index');
+		Route::get('/novo', 						'UasgController@create')->name('create');
+		Route::post('/novo', 	 					'UasgController@store')->name('store');
+		Route::get('/editar/{uasg}',  				'UasgController@edit')->name('edit');
+		Route::post('/editar', 						'UasgController@update')->name('update');
+		Route::get('/exibir/{uuid}', 				'UasgController@show')->name('show');
+		Route::post('/importar/excel/{licitacao}', 	'UasgController@importar')->name('importar');
+		Route::post('/importar/salvar/{licitacao}', 'UasgController@importarStore')->name('importarStore');
+	});
 });
 
 Route::get('atribuir', function () {
@@ -151,12 +171,7 @@ Route::post('item/primeiro', 	 								'ItemController@primeiro');
 Route::get('item/segundo', 	 									'ItemController@segundo');
 Route::post('cep', 												'FornecedorController@buscarCEP');
 
-Route::get('uasg', 												'UasgController@index')->name('uasg');
-Route::get('uasg/novo', 										'UasgController@create')->name('uasg.nova');
-Route::get('uasg/editar/{uuid}',  								'UasgController@edit')->name('uasg.editar');
-Route::get('uasg/exibir/{uuid}', 								'UasgController@show')->name('uasg.exibir');
-Route::post('uasg/store', 	 									'UasgController@store');
-Route::post('uasg/update', 										'UasgController@update');
+
 
 Route::get('enquadramento', 			'InformacaoController@index')->name('enquadramento');
 Route::get('enquadramento/novo', 		'InformacaoController@create')->name('enquadramentoNovo');

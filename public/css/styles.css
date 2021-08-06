@@ -30,6 +30,19 @@
 .align-middle{
     vertical-align: middle;
 }
+.align-center-col{
+    float: none; 
+    margin: 0 auto; 
+    text-align: center;
+}
+
+.centered {
+    text-align: center;
+}
+.centered > div {
+    float: none;
+    display: inline-block;
+}
 .t-float{ 
     float: center; 
 }
@@ -258,8 +271,27 @@
      background-color: royalblue;
  }*/
 
- .page-title{
+.page-title{
    line-height: 1;
    font-weight: 700;
    color: #112b4a;
+}
+.dragHelper{
+    display: block;
+       padding: 30px;
+       margin-top: 10px;
+    background: #fff;
+    border: 2px dashed #c2cdda;
+    border-radius: 3px;
+    text-align: center;
+    -webkit-transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease;
+}	
+
+.item{
+    padding: 5px;
+    cursor: move;
+    border-left: 1px solid #5bc0de;
+    border-left-width: 5px;
+    border-radius: 3px;
 }
