@@ -295,3 +295,12 @@
     border-left-width: 5px;
     border-radius: 3px;
 }
+.panel-group .item {
+    border-left: 1px solid #337ab7;
+    border-left-width: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.modal .bg-primary{
+    border-radius: 4px;
+}

@@ -64,6 +64,13 @@ $(document).ready(function(){
         $(".busca").slideToggle();
     });
 
+    $("#limpar").click(function(){
+        $('input[name="data"]').val("");
+        $('input[name="hora"]').val("");
+        $('input[name="valor"]').val("");
+        $('input[name="fonte"]').val("");
+    });
+
     /*
     * Método utilizado pela view importe registro de preços para marcar todos os itens a serem importados
     */

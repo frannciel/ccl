@@ -62,7 +62,7 @@ Route::middleware('auth')->group(function(){
 		Route::post('/duplicar', 									'ItemController@duplicar')->name('duplicar');
 		Route::get('/licitacao/editar/{item}',						'ItemController@editItemLicitacao')->name('item.licitacao.edit');
 		Route::get('/fornecedor/novo',								'ItemController@fornecedorCreate')->name('fornecedorCreate');
-		Route::get('/fornecedor/exibir/{fornecedor_id}/{item_id}', 	'ItemController@fornecedorShow')->name('fornecedorShow');
+		Route::get('/fornecedor/exibir/{fornecedor}/{item}', 	'ItemController@fornecedorShow')->name('fornecedorShow');
 		Route::put('/licitacao/update/{item}',						'ItemController@updateItemLicitacao')->name('updateItemLicitacao');
 		Route::post('/ajax', 										'ItemController@ajax')->name('ajax');
 		Route::post('/fornecedor/store', 							'ItemController@fornecedorStore')->name('fornecedorStore');
@@ -72,7 +72,7 @@ Route::middleware('auth')->group(function(){
 
 	Route::prefix('cotacao')->name('cotacao.')->group(function(){
 		Route::get('/novo/{requisicao}', 					'CotacaoController@create')->name('create');
-		Route::post('/novo/{requisicao}', 					'CotacaoController@store')->name('store');
+		Route::post('/novo', 								'CotacaoController@store')->name('store');
 		Route::get('/relatorio/{requisicao}', 				'CotacaoController@relatorio')->name('relatorio');
 		Route::get('/relatorio/pdf/{requisicao}', 			'CotacaoController@relatorioPdf')->name('relatorioPdf');
 		Route::post('/importar/excel/{requisicao}', 		'CotacaoController@importarExcel')->name('importarExcel');
@@ -103,8 +103,6 @@ Route::middleware(['auth', 'ac'])->group(function(){
 		Route::delete('/item/separar/{item}',							'MesclarItemController@separar')->name('mesclar.separar');
 
 
-
-
 		Route::get('/ordenar/{licitacao}', 								'LicitacaoController@ordenarCreate')->name('ordenar.create');
 		Route::post('/ordenar/{licitacao}', 							'LicitacaoController@ordenarStore')->name('ordenar.store');
 	
@@ -115,7 +113,7 @@ Route::middleware(['auth', 'ac'])->group(function(){
 		Route::get('/novo', 						'PregaoController@create')->name('create');
 		Route::post('/novo', 						'PregaoController@store')->name('store');
 		Route::post('/editar', 						'PregaoController@update')->name('update');
-		Route::get('/exibir/{licitacao}',				'PregaoController@show')->name('show');
+		Route::get('/exibir/{licitacao}',			'PregaoController@show')->name('show');
 		Route::get('/item/editar/{item}',			'ItemPregaoEditController')->name('item.edit');
 		Route::put('/item/editar/{item}',			'ItemPregaoUpdateController')->name('item.update');
 	});
