@@ -10,8 +10,7 @@ class Requisicao extends Model
     use HasUuid;
     protected $table = 'requisicoes';
     protected $fillable = [
-        'numero', 'ano', 'descricao', 'tipo', 'prioridade', 
-        'renovacao','pac', 'capacitacao', 'previsao', 'metas', 'justificativa', 'requisitante_id', 
+        'numero', 'ano', 'descricao', 'tipo', 'prioridade', 'renovacao','pac', 'capacitacao', 'previsao', 'metas', 'justificativa', 'requisitante_id'
     ];
 
     public function itens()

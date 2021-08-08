@@ -33,11 +33,10 @@ class RequisicaoService
                 'pac'           => $request['pac'],
                 'metas'         => $request['metas'],
                 'descricao'     => $request['descricao'],
-                'justificativa' => $request['justificativa']
+                'justificativa' => $request['justificativa'],
+                'data'          => $request['previsao'],
+                'requisitante_id' => Requisitante::findByUuid($request['requisitante'])->id
             ]);
-            $requisicao->data = $request['previsao']; // formata o campo previsão em formato de data
-            $requisicao->requisitante()->associate(Requisitante::findByUuid($request['requisitante'])); // representa o  requisitante
-            $requisicao->save();
 
             return [
                 'status' => true,
@@ -52,7 +51,14 @@ class RequisicaoService
             ];
         }
     }
-
+    
+    /**
+     * método para salvar alteração de requisiação específica
+     *
+     * @param  mixed $request
+     * @param  mixed $requisicao
+     * @return void
+     */
     public function update(array $request, Requisicao $requisicao)
     {
         try{

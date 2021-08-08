@@ -54,18 +54,17 @@
       </tbody>
    </table>
    <br/>
-   <br/>
 </div> 
 
-<div class="row">
-   <div class="col-md-3 col-md-offset-1">
-      <a class="btn btn-primary btn-block" type="button" href="{{url('requisicao/exibir', $item->requisicao->uuid)}}" >Voltar</a>
+<div class="row centered">
+   <div class="col-md-3">
+      <a class="btn btn-primary btn-block" type="button" href="{{route('requisicao.show', $requisicao->uuid)}}" >Voltar</a>
    </div>
    <div class="col-md-3">
       <button class='btn btn-block btn-success' data-clipboard-action='copy' data-clipboard-target='#pesquisa'>Copiar </button>
    </div>
    <div class="col-md-3">
-      <a class="btn btn-default btn-block" type="button" href="{{url('requisicao/pesquisa/pdf', $item->requisicao->uuid)}}" role="button" target="_black">
+      <a class="btn btn-default btn-block" type="button" href="{{url('requisicao/pesquisa/pdf', $requisicao->uuid)}}" role="button" target="_black">
          Exportar PDF
       </a> 
    </div>

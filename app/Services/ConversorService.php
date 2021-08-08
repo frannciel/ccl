@@ -56,6 +56,24 @@ class ConversorService
 	  	}
 	}
 
+	/** 
+	 * Convert variável numérica em inteiro ou retora NULL caso esta não seja um número
+	 *
+	 * @param String $val,
+	 * @return Integer $val
+	 */
+	public static function stringToInt($val)
+	{ 
+		if (is_numeric($val)) {
+			return intval($val);
+		} else {
+			$val = preg_replace('/[^0-9]/', '', $val);
+			if (is_numeric($val))
+				return intval($val);
+			return NULL;
+		}
+	}
+
 	/**
      * Retorno o nome do estado a partir da sigla
 	 * 

@@ -36,7 +36,7 @@ class MesclarItemController extends Controller
         $this->validate($request, [
                 'principal'  => 'required',
                 'itens'      => 'required|array|min:2',
-                'itens.*'    => 'string|exists:itens,uuid',
+                //'itens.*'    => 'exists:itens,uuid',
             ], [ 
                 'principal.required' => 'Clique no item que terá as características mantidas!',
                 'itens.min' => 'São necessários no mínimos dois itens de requisições diferentes para realizar a mesclagem.'
@@ -69,7 +69,7 @@ class MesclarItemController extends Controller
                 }
 
                 $mesclado = $licitacao->itens()->create([
-                    'numero'        => 10000, // este número indicara itens mesclados nas  licitcaoes, eles não pertencem a nenhuma requisicão
+                    'numero'        => 10000, # este número indicara itens mesclados nas  licitcaoes, eles não pertencem a nenhuma requisicão #
                     'quantidade'    => $quantidade,
                     'codigo'        => $principal->codigo,
                     'objeto'        => $principal->objeto,
@@ -97,8 +97,8 @@ class MesclarItemController extends Controller
                     $itensMesclar += [$item->id => ['licitacao_id' => $licitacao->id]];
                 }
                 $mesclado->mesclados($licitacao)->attach($itensMesclar);
-                # reordena a numeração dos item da licitacão licitacão#
-                $this->ordenador($licitacao);
+                # reordena a numeração dos item da licitacão licitacão #
+                $this->service->ordenador($licitacao);
 
                 return redirect()->route('licitacao.mesclar.create', $licitacao->uuid)
                     ->with(['codigo' => 200,'mensagem' => 'Os itens selecionados foram mesclados com sucesso, vide item '.$mesclado->ordem]);
@@ -113,15 +113,17 @@ class MesclarItemController extends Controller
 
     public function create(Licitacao $licitacao)
     {
-
         try{
-                $requisicoes = array();
-                $mesclados = $licitacao->mesclados()->get()->unique();//()->get()->unique();
-                # Array de arrays, contendo itens com atributos uuid e numero concatenado com objetos item #
-                $selectItens = array(); 
-                # retorna todos os itens da licitação agrupados por pela requisição #
-                $gruposItem = Item::where('licitacao_id', $licitacao->id)->get()->groupBy('requisicao_id');
-                foreach ($gruposItem as $key =>  $grupo) { 
+            
+            $requisicoes = array();
+            $mesclados = $licitacao->mesclados()->get()->unique();//()->get()->unique();
+            # Array de arrays, contendo itens com atributos uuid e numero concatenado com objetos item #
+            $selectItens = array(); 
+            # retorna todos os itens da licitação agrupados por pela requisição #
+            $gruposItem = Item::where('licitacao_id', $licitacao->id)->get()->groupBy('requisicao_id');
+
+            foreach ($gruposItem as $key =>  $grupo) { 
+                if ($key != null) {
                     $lista = array();
                     foreach ($grupo as $item) {
                         if(!$item->itens()->exists()){// verifica se o item não está associado a uma licitação
@@ -130,17 +132,15 @@ class MesclarItemController extends Controller
                         }
                     }
                     $selectItens[] = $lista;  // insere mais um array na lista de arrays
-                    if ($key != null) {
-                        $requisicao = Requisicao::find($key);
-                        $concatenado = $requisicao->ordem.' - '.$requisicao->descricao; // Conacate numero do item com objeto do item
-                        $requisicoes[] = substr_replace($concatenado, (strlen($concatenado) > 100 ? '...' : ''), 100);//$requisicao->ordem.' - '.$requisicao->descricao; // concatena o item como objeto da requisicao
-                    }
-                   
+                    $requisicao = Requisicao::find($key);
+                    $concatenado = $requisicao->ordem.' - '.$requisicao->descricao; // Conacate numero do item com objeto do item
+                    $requisicoes[] = substr_replace($concatenado, (strlen($concatenado) > 100 ? '...' : ''), 100);//$requisicao->ordem.' - '.$requisicao->descricao; // concatena o item como objeto da requisicao
                 }
+            }
 
-                $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
-                Session::forget(['mensagem','codigo']); 
-                return view('site.licitacao.compras.mesclarItem', compact('selectItens', 'requisicoes', 'mesclados', 'licitacao', 'comunica'));
+            $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
+            Session::forget(['mensagem','codigo']); 
+            return view('site.licitacao.compras.mesclarItem', compact('selectItens', 'requisicoes', 'mesclados', 'licitacao', 'comunica'));
 
         } catch (Exception $e) {
             return redirect()->route('licitacao.show', $licitacao->uuid)
@@ -153,10 +153,10 @@ class MesclarItemController extends Controller
     {
         $return =  $this->service->separar($item);
         if ($return['status']) {
-            return redirect()->route('licitacao.mesclar.create', $licitacao->uuid)
-                ->with(['codigo' => 200,'mensagem' => 'O item mesclado foi separado com sucesso !']);
+            return redirect()->route('licitacao.mesclar.create', $item->licitacao->uuid)
+                ->with(['codigo' => 200,'mensagem' => 'O item informado foi separado com sucesso !']);
         } else {
-            return redirect()->route('licitacao.mesclar.create', $licitacao->uuid)
+            return redirect()->route('licitacao.mesclar.create', $item->licitacao->uuid)
                 ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao separar itens, tente novamente ou contate o administrador']);
         }
     }

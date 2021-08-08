@@ -113,7 +113,7 @@
 							<a type="button" href="{{url('importar',['uuid' => $licitacao->uuid])}}" class="btn btn-success btn-outline" title="Importar Dados"><i class="fa fa-upload"></i></a>
 						</div>
 						<div class="btn-group" role="group">
-							<button type="button" class="btn btn-success btn-outline " title="Adicionar Novo Item"><i class="glyphicon glyphicon-plus"></i></button>
+							<a type="button" href="{{route('licitacao.ordenar.create', $licitacao->uuid)}}" class="btn btn-success btn-outline" title="Ordenar Itens"><i class="fa fa-sort"></i></a>
 						</div>
 						<div class="btn-group" role="group">
 							<a type="button" class="btn btn-success btn-outline" title="Mesclar Itens" href="{{route('licitacaoMesclar', ['uuid' => $licitacao->uuid])}}"><i class="glyphicon glyphicon-resize-small"></i></a>

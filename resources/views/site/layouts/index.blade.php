@@ -273,6 +273,7 @@
     @endisset
     <!-- jQuery  -->
     <script src="{{asset('vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{asset('vendor/jquery-ui/jquery-ui.min.js')}}"></script>
     <!-- Bootstrap Core JavaScript -->
     <script src="{{asset('vendor/bootstrap/js/bootstrap.min.js')}}"></script>
     <!-- Metis Menu Plugin JavaScript-->
@@ -291,6 +292,7 @@
     <script src="{{asset('vendor/datatables/js/dataTables.bootstrap.js') }}"></script>
     <!-- Scripts próprios  -->
     <script src="{{asset('js/scripts.js')}}"></script>
+    <script src="{{asset('js/modals.js')}}"></script>
     <script type="text/javascript">
         /*variavel.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL'}) coverte em formato contábil com cifrão R$ 0,00*/
         /*variavel.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) coverte formato em contábil sem cifrão 0,00*/
@@ -325,32 +327,6 @@
             else 
                 $(".chk").prop("checked", false);   // se não, elas tambem serão desmarcadas
         });
-
-        /*
-         * Método utilizado pela view importe registro de preços para marcar todos os itens a serem importados
-         */
-        $(document).on("click", "#marcarTodos", function(){
-            if($(this).attr("data-check") == 'true'){
-                $('input[type="checkbox"]').prop("checked", false);
-                $(this).attr("data-check", 'false');
-                $(this).html("Marcar Todos");
-            } else{
-                $('input[type="checkbox"]').prop("checked", true);
-                $(this).attr("data-check", 'true');
-                 $(this).html("Desmarcar Todos");
-            }
-        });
-
-        /*
-         * Método utilizado pela view importe registro de preços para marcar todos os itens de um determinado fornecedor a serem importados
-         */
-        $(".checkboxAll").click(function() {  // minha chk que marcará as outras
-            if ($(this).prop("checked"))   // se ela estiver marcada... 
-                $(".checkbox"+$(this).attr('name')).prop("checked", true);  // as que estiverem nessa classe ".chk" tambem serão marcadas
-            else 
-                $(".checkbox"+$(this).attr('name')).prop("checked", false);   // se não, elas tambem serão desmarcadas
-        });
-
 
         $(document).ready(function(){
             /*

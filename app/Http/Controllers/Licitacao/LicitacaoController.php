@@ -103,7 +103,7 @@ class LicitacaoController extends Controller
             ->with(['codigo' => 200,'mensagem' => 'Licitaçao '.$licitacao->ordem.' excluída com sucesso.']);
     }
 
-    public function removerRequisicao(Licitacao $licitacao, Requisicao $requisicao)
+    /*public function removerRequisicao(Licitacao $licitacao, Requisicao $requisicao)
     {
       if ($requisicao->licitacoes()->where('licitacao_id',  $licitacao->id)->first()) {
            foreach (Item::where('licitacao_id','=', $licitacao->id)->where('requisicao_id','=',$requisicao->id)->get() as $item) {
@@ -118,7 +118,7 @@ class LicitacaoController extends Controller
         }
         return redirect()->route('licitacao.atribuirItemShow', [$licitacao->uuid, $requisicao->uuid])
                 ->with(['codigo' => 500, 'mensagem' => 'Nenhum item da requisição '.$requisicao->ordem.' está atribuido a esta licitação']);
-    }
+    }*/
 
     /**
      * Get User by scope query.
@@ -195,7 +195,7 @@ class LicitacaoController extends Controller
         }
     }*/
 
-    public function atribuirRequisicao(Request $request){
+   /* public function atribuirRequisicao(Request $request){
         $lista = $request->itens;
         $requisicao = Requisicao::findByUuid($request->requisicao);
         $licitacao = Licitacao::findByUuid($request->licitacao);
@@ -263,7 +263,7 @@ class LicitacaoController extends Controller
      * @param      \Illuminate\Http\Request  $request  The request
      * @return     <type>                    ( description_of_the_return_value )
      */
-    public function mesclarStore(Request $request)
+    /*public function mesclarStore(Request $request)
     {
         $this->validate($request,  # validações dos caompus principal e itens 
             [
@@ -331,13 +331,13 @@ class LicitacaoController extends Controller
         foreach ($itens_id as  $value)
             $array_attach += [$value => ['licitacao_id' => $licitacao->id]];
         $mesclado->itens()->attach($array_attach); // insere os registros do itens que foram mescados na tebela 'mesclado'
-        */
+        
         return redirect()->route('licitacaoMesclarCreate', $licitacao->uuid)
            ->with(['codigo' => 200,'mensagem' => 'A mescla do itens selecionados foi realizada com sucesso, vide item '.$mesclado->ordem]);
 
-    }
+    }*/
 
-    public function mesclarCreate(Licitacao $licitacao)
+    /*public function mesclarCreate(Licitacao $licitacao)
     {
         //$requisicoes = array();
         //$licitacao = Licitacao::findByUuid($uuid); // busca a licitacao pelo uuid
@@ -357,7 +357,7 @@ class LicitacaoController extends Controller
                 $objetos[] = $requisicao->numero.'/'.$requisicao->ano.' - '.$requisicao->descricao; // concatena o item como objeto da requisicao
                 $itens_array[] = $lista;  // insere mais um array na lista de arrays
             }
-        }*/
+        }
         //var_dump(count($item->itens->toArray()));
 
         $requisicoes = array();
@@ -395,21 +395,11 @@ class LicitacaoController extends Controller
             }
             $objetos[] = $requisicao->numero.'/'.$requisicao->ano.' - '.$requisicao->descricao;
             $itens[] = $lista;
-        }*/
+        }
         $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
         Session::forget(['mensagem','codigo']); 
         return view('licitacao.mesclarCreate', compact('selectItens', 'requisicoes', 'mesclados', 'licitacao', 'comunica'));
-    }
-
-    public function ordenador(Licitacao $licitacao)
-    {
-        $ordem = 1;
-        foreach ($licitacao->itens->sortBy('ordem') as  $item){
-            $item->ordem = $ordem;
-            $item->save();
-            $ordem += 1;
-        }
-    }
+    }*/
 
     public function itemDuplicar(Request $request, Licitacao $licitacao)
     {

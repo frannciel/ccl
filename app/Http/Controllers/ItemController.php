@@ -152,29 +152,38 @@ class ItemController extends Controller
         }
     }
 
-
     public function deleteAll(Request $request)
     {
         $this->validate($request, [
             "itens" => 'required|array|min:1',
             'itens.*' => 'string|exists:itens,uuid',
+        ], [
+            'required' => 'Selecione pelo menos um item a ser excluido',
         ]);
 
         $return = $this->service->deleteAll($request->itens);
         if ($return['status']){
             return redirect()->route('requisicao.show', $return['data']->uuid)
-                ->with(['codigo' => 200,'mensagem' => 'Item(ns) selecionado(s) removidos com sucesso !']);
+                ->with(['codigo' => 200,'mensagem' => 'Item(ns) selecionado(s) apagados com sucesso !']);
         } else {
             return redirect()->route('requisicao.show', $return['data']->uuid)
-                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao remover item(ns), tente novamente ou contate o administrador']); 
+                ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao excluir item(ns), tente novamente ou contate o administrador']); 
         }
     }
-
+    
+    /**
+     * método para duplicar itens da requisicão. Recebe como parametro um array de uuid 
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function duplicar(Request $request)
     {
         $this->validate($request, [
             "itens" => 'required|array|min:1',
-            'itens.*' => 'string|exists:itens,uuid',
+            'itens.*' => 'string|exists:itens,uuid'
+        ],[
+            'required' => 'Selecione pelo menos um item a ser duplicado',
         ]);
 
         $return = $this->service->duplicar($request->itens);
@@ -185,50 +194,6 @@ class ItemController extends Controller
             return redirect()->route('requisicao.show',  $return['data']->uuid)
                 ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error ao duplicar item(ns), tente novamente ou contate o administrador']); 
         }
-    }
-
-    /**
-     * Mostra o formulário para editar um item específico relacionada a uma licitacão
-     *
-     * @param  Item  $item
-     * @return \Illuminate\Http\Response
-     */
-    public function editItemLicitacao(Item $item){
-        $licitacao = $item->licitacao;
-        $fornecedores = $item->fornecedores;
-        $uasgs = $item->participantes;
-        $unidades = array();
-        foreach (Unidade::all() as $value)
-            $unidades += [$value->id => $value->nome];
-        return view('site.licitacao.compras.pregao.itemEdit',  compact('item', 'licitacao', 'fornecedores', 'uasgs', 'unidades'));
-    }
-
-
-    /**
-     * Atualiza um ite específico relacionado a uma licitação
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function updateItemLicitacao(Request $request, Item $item)
-    {
-        $this->validate($request, [
-            'item'       => 'required|string',
-            'quantidade' => 'required|integer',
-            'codigo'     => 'integer|nullable',
-            'objeto'     => 'required|string|max:100',
-            'descricao'  => 'required|string',
-            'unidade'    => 'required|string|unidades,uuid',
-        ]);
-        $item->quantidade   = $request->quantidade;
-        $item->codigo       = $request->codigo;
-        $item->objeto       = $request->objeto;
-        $item->descricao    = nl2br($request->descricao);
-        $item->unidade_id   = $request->unidade;
-        //$item->grupo_id   = $request->grupo;
-        $item->save();
-        return redirect()->route('licitacao.show', $item->licitacao->uuid);
     }
 
     /**
@@ -318,8 +283,6 @@ class ItemController extends Controller
             }
         }
     }
-
-
 
     /**
      * Remove the specified resource from storage.
@@ -424,7 +387,8 @@ class ItemController extends Controller
 	 * @param      String  $string  The string
 	 * @return     Float  The float.
 	 */
-	protected function getFloat($string) { 
+	protected function getFloat($string) 
+    { 
 	  	if(strstr($string, ",")) { 
 		    $string = str_replace(",", ".", str_replace(".", "", $string));
 	  	} 

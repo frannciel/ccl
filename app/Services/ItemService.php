@@ -200,6 +200,31 @@ class ItemService
         }
     }
 
+    public function update(array $data, Item $item)
+    {
+        try {
+           
+            $item->quantidade   = $data['quantidade'];
+            $item->codigo       = $data['codigo'];
+            $item->objeto       = $data['objeto'];
+            $item->descricao    = nl2br($data['descricao']);
+            $item->unidade_id   = Unidade::findByUuid($data['unidade'])->id;
+            $item->save();
+
+            return [
+                'status' => true,
+                'message' => 'Item alterado com sucesso',
+                'data' => $item
+            ];
+        } catch (Exception $e) {
+            return [
+                'status' => false,
+                'message' => 'Ocorreu um erro durante a alteração de item',
+                'error' => $e
+            ];
+        }
+    }
+
     public function destroy(Item $item)
     {
         try {
@@ -277,32 +302,7 @@ class ItemService
             ];
         }
     }
-
-    public function update(array $data, Item $item)
-    {
-        try {
-           
-            $item->quantidade   = $data['quantidade'];
-            $item->codigo       = $data['codigo'];
-            $item->objeto       = $data['objeto'];
-            $item->descricao    = nl2br($data['descricao']);
-            $item->unidade_id   = Unidade::findByUuid($data['unidade'])->id;
-            $item->save();
-
-            return [
-                'status' => true,
-                'message' => 'Item alterado com sucesso',
-                'data' => $item
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => false,
-                'message' => 'Ocorreu um erro durante a alteração de item',
-                'error' => $e
-            ];
-        }
-    }
-
+    
     public function duplicar(array $itens)
     {
         try {

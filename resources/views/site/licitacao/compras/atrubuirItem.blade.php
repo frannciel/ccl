@@ -45,7 +45,7 @@
 				<td class="center">{{$requisicoes->requisitante->sigla}}</td>
 				<td class="center">
 					<a href="{{route('licitacao.atribuir.create', [$licitacao->uuid, $requisicoes->uuid])}}" class="btn btn-success btn-sm"><i class="fa fa-search"></i></a>
-					<button data-route="{{route('licitacao.requisicao.remove', [$licitacao->uuid, $requisicao->uuid])}}" class="btn btn-warning btn-sm" data-modal="licitacao-requisicao"> <i class="glyphicon glyphicon-trash"></i></button>
+					<button data-route="{{route('licitacao.requisicao.remove', [$licitacao->uuid, $requisicoes->uuid])}}" class="btn btn-warning btn-sm" data-modal="licitacao-requisicao"> <i class="glyphicon glyphicon-trash"></i></button>
 				</td>
 			</tr>
 			@empty

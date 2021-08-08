@@ -68,7 +68,7 @@
 		'attributes' => ['id' => 'descricao', 'required' => '' ]])
 	</div>
    
-	<div class="row mt-3">
+	<div class="row centered mt-3">
 		@include('form.button', [
 		'value' => 'Voltar',
 		'largura' 	=> 3,

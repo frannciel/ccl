@@ -25,7 +25,7 @@ class AtribuirController extends Controller
     }
 
     /**
-     * Retorno a view que permite a inclusão e remoção de itens da relação de itens da licitação.
+     * Retorna a view que permite a inclusão e remoção de itens da relação de itens da licitação.
      * 
      * @param Licitacao $licitacao 
      * @param Requisicao|null $requisicao 
@@ -37,16 +37,16 @@ class AtribuirController extends Controller
         Session::forget(['mensagem','codigo']);
         return view('site.licitacao.compras.atrubuirItem',  compact('licitacao', 'requisicao', 'comunica'));
     }
+
     /**
      * Adiciona à relação de itens da licitação um ou mais itens informados no array de itens.
      * 
      * @param Licitacao $licitacao 
-     * @param Requisicao $requisicao 
-     * @return type
+     * @param Request $request 
+     * @return View
      */
     public function store(Request $request, Licitacao $licitacao)
     {
-
         $this->validate($request, [
                 'itens'      => 'required|array|min:1',
                 'itens.*'    => 'string|exists:itens,uuid',
@@ -96,7 +96,7 @@ class AtribuirController extends Controller
                 'itens'      => 'required|array|min:1',
                 'itens.*'    => 'string|exists:itens,uuid',
             ], [ 
-                'itens.min' => 'Nenhum item atribuido, selecione um ou mais itens e tente novamente.'
+                'itens.required' => 'Nenhum item atribuido, selecione um ou mais itens na tabela e tente novamente.'
         ]);          
 
         $return =  $this->service->remove($request->itens, $licitacao);
@@ -116,7 +116,8 @@ class AtribuirController extends Controller
      * @param Requisicao $requisicao 
      * @return type
      */
-    public function atribuirRequisicao(Licitacao $licitacao, Requisicao $requisicao){
+    public function atribuirRequisicao(Licitacao $licitacao, Requisicao $requisicao)
+    {
         $lista = $request->itens;
         if ($requisicao != null) {
             $this->atribuirItem($requisicao->itens->sortBy('numero'), $licitacao);
@@ -151,27 +152,11 @@ class AtribuirController extends Controller
                 $item->save();
             }
             $licitacao->requisicoes()->detach($requisicao);
-            $this->ordenador($licitacao);
+            $this->service->ordenador($licitacao);
             return redirect()->route('licitacao.atribuir.create', $licitacao->uuid)
                 ->with(['codigo' => 200,'mensagem' => 'Todos os itens da requisição '.$requisicao->ordem.' foram removidos desta licitação com sucesso']);
         }
         return redirect()->route('licitacao.atribuir.create', [$licitacao->uuid, $requisicao->uuid])
                 ->with(['codigo' => 500, 'mensagem' => 'Nenhum item da requisição '.$requisicao->ordem.' está atribuido a esta licitação']);
-    }
-
-    /**
-     * Ordena a ordem dos itens de uma licitação, método utilizado apos a remoção ou mesclagem de itens.
-     * 
-     * @param Licitacao $licitacao 
-     * @return type
-     */
-    public function ordenador(Licitacao $licitacao)
-    {
-        $ordem = 1;
-        foreach ($licitacao->itens->sortBy('ordem') as  $item){
-            $item->ordem = $ordem;
-            $item->save();
-            $ordem += 1;
-        }
     }
 }

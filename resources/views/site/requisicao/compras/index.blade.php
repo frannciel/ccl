@@ -81,7 +81,7 @@
 
 
 	<div class="row">
-		<div class="col-md-6 text-center" style="float: none; margin: 0 auto;">
+		<div class="col-md-6 align-center-col">
 			{{ $requisicoes->links() }}
 		</div>
 	</div>

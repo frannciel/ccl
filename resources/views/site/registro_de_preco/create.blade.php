@@ -13,7 +13,7 @@
 		<div class="alert alert-default" role="alert">
 			<h3>
 				<span class="glyphicon glyphicon-link" aria-hidden="true"></span>
-				<a href="{{route('pregaoShow', [$licitacao->licitacaoable->uuid])}}">Pregão Eletrônico SRP N° {{$licitacao->numero ?? '' }} / {{$licitacao->ano ?? ''}}</a>
+				<a href="{{route('pregao.show', [$licitacao->licitacaoable->uuid])}}">Pregão Eletrônico SRP N° {{$licitacao->numero ?? '' }} / {{$licitacao->ano ?? ''}}</a>
 			</h3>
 			<p><label>Objeto da Licitação:</label> {{$licitacao->objeto ?? ''}}</p>
 		</div> 
@@ -85,13 +85,13 @@
 				'value' => 'Voltar',
 				'largura' 	=> 3,
 				'class'		=> 'btn btn-primary btn-block',
-				'url' 		=> 	route('pregaoShow', [$licitacao->licitacaoable->uuid])])
+				'url' 		=> 	route('pregao.show', [$licitacao->licitacaoable->uuid])])
 
 				@include('form.button', [
 				'value' => 'Voltar',
 				'largura' 	=> 3,
 				'class'		=> 'btn btn-primary btn-block',
-				'url' 		=> 	route('requisicaoShow', [$licitacao->uuid]) ])
+				'url' 		=> 	route('requisicao.show', [$licitacao->uuid]) ])
 
 
 				@include('form.submit', [

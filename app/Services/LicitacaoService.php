@@ -19,7 +19,7 @@ class LicitacaoService
     public function store(Request $request, Requisicao $requisicao)
     {
         try{
-
+            
             return [
                 'status' => true,
                 'message' => 'Sucesso',
@@ -67,13 +67,13 @@ class LicitacaoService
             foreach ($licitacao->itens->sortBy('ordem') as  $item) {
                 $item->ordem = $ordem;
                 $item->save();
-                $ordem += 1;
+                $ordem++;
             }
 
             return [
                 'status' => true,
                 'message' => 'Item(ns) ordenados com sucesso.',
-                'data' => $licitacao
+                'data' => NULL
             ];
         } catch (Exception $e) {
             return [
@@ -137,7 +137,7 @@ class LicitacaoService
             return [
                 'status' => true,
                 'message' => 'Item(ns) removidos da licitação com sucesso.',
-                'data' => $licitacao
+                'data' => NULL
             ];
         } catch (Exception $e) {
             return [

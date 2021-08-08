@@ -174,8 +174,8 @@
 
    </div>
 
-   <div class="row mt-1">
-      <div class="col-md-3 col-md-offset-1">
+   <div class="row centered">
+      <div class="col-md-3">
          <a class="btn btn-primary btn-block" type="button" href="{{route('requisicao.show', $requisicao->uuid)}}" >Voltar</a>
       </div>
       <div class="col-md-3">

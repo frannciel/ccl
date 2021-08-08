@@ -118,8 +118,8 @@
 			'attributes' => ['id' => 'metas']])
 		</div>
 
-		<div class="row mt-2">
-			<div class="col-md-3  col-md-offset-1">
+		<div class="row centered mt-2">
+			<div class="col-md-3">
 				<a href="{{route('requisicao.index')}}" class="btn btn-primary btn-block font-weight-bold" type="button">Voltar</a>
 			</div>
 
@@ -128,132 +128,96 @@
 			'largura' => 3 ])
 
 			<div class="col-md-3">
-				<button type="button" class="btn btn-danger btn-block font-weight-bold" data-toggle="modal" data-target="#mediumModalLabel">Excluir</button>
+				<button type="button" class="btn btn-danger btn-block font-weight-bold" data-modal="requisicao-delete" data-route="{{route('requisicao.destroy', $requisicao->uuid)}}">Excluir</button>
 			</div>
 		</div>
 	{{ Form::close() }}
 
-
-<div class="modal fade" id="mediumModalLabel" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<div class="row">
-					<div class="col-md-6">
-						<h4 class="modal-title" id="mediumModalLabel">Apagar Requisição</h4>
+	{{ Form::open(['url' => '', 'method' => 'POST', 'class' => 'form-padrao mt-4', 'id' => "form-requisicao-itens"]) }}
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<div class="btn-group btn-group-justified" role="group" aria-label="...">
+					<div class="btn-group" role="group">
+						<a type="button" class="btn btn-success btn-outline" title="Adicionar Novo Item" href="{{route('item.create', $requisicao->uuid)}}"><i class="glyphicon glyphicon-plus"></i></a>
 					</div>
-					<div class="col-md-6">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
+					<div class="btn-group" role="group">
+						<a type="button"  class="btn btn-success btn-outline" title="Pesquisa de Preços" href="{{route('cotacao.create', ['requisicao' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-usd"></i></a>
 					</div>
-				</div>	
-			</div><!-- /.modal-header -->
-			<div class="modal-body">
-				<div class="row">
-					<div class="col-md-12">
-						<h5>
-							<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-							Tem certeza que deseja excluir definitivamente esta Requisição? Isso também apaga todos os dados dos itens relacionados a ela.
-						</h5>
+					<div class="btn-group" role="group">
+						<a type="button" class="btn btn-success btn-outline" title="Importar Dados" href="{{route('requisicao.importar', $requisicao->uuid)}}"><i class="fa fa-upload"></i></a>
+					</div>
+					<div class="btn-group" role="group">
+						<a type="button" class="btn btn-success btn-outline" title="Relação de Itens" href="{{route('requisicao.documento', $requisicao->uuid)}}"><i class="glyphicon glyphicon-list"></i></a>
+					</div>
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-success btn-outline" data-modal="itens-duplicar" data-route="{{route('item.duplicar')}}" title="Duplicar itens"><i class="glyphicon glyphicon-duplicate"></i></button>
+					</div>
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-danger btn-outline" data-modal="itens-delete" data-route="{{route('item.deleteAll')}}" title="Excluir itens"><i class="glyphicon glyphicon-trash"></i></button>
 					</div>
 				</div>
-			</div><!-- /.modal-body -->
-			<div class="modal-footer">
-				<div class="row">
-					<div class="col-md-3 col-md-offset-6">
-						<button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancelar</button>
+
+				<div class="row text-center">
+					<div class="col-md-12 mt-2 mb-2">
+						<a type="button" class="btn btn-outline btn-primary rounded-pill" href="{{route('cotacao.relatorio', $requisicao->uuid)}}">
+							Relatório de Pesquisa de Preços
+						</a>
+						<a type="button" class="btn btn-outline btn-primary rounded-pill" href="{{route('requisicao.pesquisa', $requisicao->uuid)}}" >
+							Solicitação de Pesquisa de Preços
+						</a>
+						<a type="button" class="btn btn-outline btn-primary rounded-pill" href="{{route('requisicao.formalizacao', $requisicao->uuid)}}">
+							Formalização de Demanda
+						</a>
 					</div>
-					<div class="col-md-3">
-						<form action="{{route('requisicao.destroy', $requisicao->uuid)}}" method="post">
-							{{csrf_field() }}
-							<input type="hidden" name="_method" value="DELETE">
-							<button type="submit" class="btn btn-danger btn-block">Excluir</button>
-						</form>
-					</div>
 				</div>
-			</div><!-- /.modal-footer -->
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+			</div><!-- panel-heading -->
 
-{{ Form::open(['url' => '', 'method' => 'POST', 'class' => 'form-padrao mt-4', 'id' => "form-requisicao-itens"]) }}
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<div class="btn-group btn-group-justified" role="group" aria-label="...">
-				<div class="btn-group" role="group">
-					<a type="button" class="btn btn-success btn-outline" title="Adicionar Novo Item" href="{{route('item.create', $requisicao->uuid)}}"><i class="glyphicon glyphicon-plus"></i></a>
-				</div>
-				<div class="btn-group" role="group">
-					<a type="button"  class="btn btn-success btn-outline" title="Pesquisa de Preços" href="{{route('cotacao.create', ['requisicao' => $requisicao->uuid])}}"><i class="glyphicon glyphicon-usd"></i></a>
-				</div>
-				<div class="btn-group" role="group">
-					<a type="button" class="btn btn-success btn-outline" title="Importar Dados" href="{{route('requisicao.importar', $requisicao->uuid)}}"><i class="fa fa-upload"></i></a>
-				</div>
-				<div class="btn-group" role="group">
-					<a type="button" class="btn btn-success btn-outline" title="Relação de Itens" href="{{route('requisicao.documento', $requisicao->uuid)}}"><i class="glyphicon glyphicon-list"></i></a>
-				</div>
-				<div class="btn-group" role="group">
-					<button type="button" class="btn btn-success btn-outline" data-modal="itens-duplicar" data-route="{{route('item.duplicar')}}" title="Duplicar itens"><i class="glyphicon glyphicon-duplicate"></i></button>
-				</div>
-				<div class="btn-group" role="group">
-					<button type="button" class="btn btn-danger btn-outline" data-modal="itens-delete" data-route="{{route('item.deleteAll')}}" title="Excluir itens"><i class="glyphicon glyphicon-trash"></i></button>
-				</div>
-			</div>
+			<div class="panel-body">
+				<div class="table-responsive">
+					<table class="table table-striped table-bordered dataTable">
+						<thead>
+							<tr>
+								<th class=" center"><input type="checkbox" id="ckAll" name="example1"></th>
+							    <th class=" center">Número</th>
+							    <th class=" center">Descrição Detalhada</th>
+							    <th class=" center">Código</th>
+							    <th class=" center">Unidade</th>
+							    <th class=" center">Quantidade</th>
+							</tr>
+						</thead>
 
-			<div class="row text-center">
-				<div class="col-md-12 mt-2 mb-2">
-					<a type="button" class="btn btn-outline btn-primary rounded-pill" href="{{route('cotacao.relatorio', $requisicao->uuid)}}">
-						Relatório de Pesquisa de Preços
-					</a>
-					<a type="button" class="btn btn-outline btn-primary rounded-pill" href="{{route('requisicao.pesquisa', $requisicao->uuid)}}" >
-						Solicitação de Pesquisa de Preços
-					</a>
-					<a type="button" class="btn btn-outline btn-primary rounded-pill" href="{{route('requisicao.formalizacao', $requisicao->uuid)}}">
-						Formalização de Demanda
-					</a>
-				</div>
-			</div>
-		</div><!-- panel-heading -->
+						<tbody>
+							@forelse ($requisicao->itens->sortBy('numero') as $item)
+							<tr>
+								<td>
+									<div class="input-group">
+										<span class="input-group-addon">
+											<input type="checkbox" class="chk" name="itens[]" value="{{$item->uuid}}" data-object="{{$item->numero}} - {{$item->objeto}}">
+										</span>
+										<a class="btn btn-default" href="{{route('item.edit', $item->uuid)}}" role="button">Detalhar</a>
+									</div>
+								</td>
+								<td class="center">{{$item->numero}}</td>
+								<td class="justificado">@php print($item->descricaoCompleta) @endphp</td>
+								<td class="center">{{$item->codigo =='0'?'': $item->codigo}}</td>
+								<td class="center">{{$item->unidade->nome}}</td>
+								<td class="center">{{$item->quantidadeTotal}}</td>
+							</tr>
+							@empty
+							<tr><td colspan=7><center><i> Nenhum item encontrado </i></center></td></tr>
+							@endforelse
+						</tbody>
+					</table>
+				</div><!-- table-responsive -->
+			</div><!-- panel-body -->
+		</div><!-- /.panel -->
+	{{ Form::close() }}
 
-		<div class="panel-body">
-			<div class="table-responsive">
-				<table class="table table-striped table-bordered dataTable">
-					<thead>
-						<tr>
-							<th class=" center"><input type="checkbox" id="ckAll" name="example1"></th>
-						    <th class=" center">Número</th>
-						    <th class=" center">Descrição Detalhada</th>
-						    <th class=" center">Código</th>
-						    <th class=" center">Unidade</th>
-						    <th class=" center">Quantidade</th>
-						</tr>
-					</thead>
-
-					<tbody>
-						@forelse ($requisicao->itens->sortBy('numero') as $item)
-						<tr>
-							<td>
-								<div class="input-group">
-									<span class="input-group-addon">
-										<input type="checkbox" class="chk" name="itens[]" value="{{$item->uuid}}" data-object="{{$item->numero}} - {{$item->objeto}}">
-									</span>
-									<a class="btn btn-default" href="{{route('item.edit', $item->uuid)}}" role="button">Detalhar</a>
-								</div>
-							</td>
-							<td class="center">{{$item->numero}}</td>
-							<td class="justificado">@php print($item->descricaoCompleta) @endphp</td>
-							<td class="center">{{$item->codigo =='0'?'': $item->codigo}}</td>
-							<td class="center">{{$item->unidade->nome}}</td>
-							<td class="center">{{$item->quantidadeTotal}}</td>
-						</tr>
-						@empty
-						<tr><td colspan=7><center><i> Nenhum item encontrado </i></center></td></tr>
-						@endforelse
-					</tbody>
-				</table>
-			</div><!-- table-responsive -->
-		</div><!-- panel-body -->
-	</div><!-- /.panel -->
-{{ Form::close() }}
+	@if ($errors->has('itens'))
+		<div class="alert alert-danger fixed-bottom w-5" id="success-alert">
+			<strong>Error!</strong>
+			<button type="button" class="close" data-dismiss="alert">x</button>
+			{{ $errors->first('itens') }}
+		</div>
+	@endif
 @endsection

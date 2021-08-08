@@ -83,7 +83,7 @@
 				</thead>
 				<tbody>
 					@forelse ($licitacoes as $licitacao)
-						<tr onclick="location.href ='{{route('pregao.show', $licitacao->licitacaoable->uuid)}}'; target='_blank';" class="pointer">
+						<tr onclick="location.href ='{{route('pregao.show', $licitacao->uuid)}}'; target='_blank';" class="pointer">
 							<td>{{$licitacao->numero}}</td>
 							<td>{{$licitacao->ano}}</td>
 							<td>{{$licitacao->licitacaoable_type}}</td>

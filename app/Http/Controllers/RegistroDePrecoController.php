@@ -17,7 +17,7 @@ class RegistroDePrecoController extends Controller
      */
     public function index()
     {
-        return view('registro_de_preco.index')
+        return view('site.registro_de_preco.index')
         ->with('registroDePrecos', RegistroDePreco::orderBy('updated_at', 'desc')->get());
     }
 
@@ -52,7 +52,7 @@ class RegistroDePrecoController extends Controller
 
         foreach ($forncedores as $fornecedor)
             $empresas += [$fornecedor->uuid => $fornecedor->nome];
-        return view('registro_de_preco.create', compact('licitacao', 'empresas', 'ata_numero', 'ata_ano'));
+        return view('site.registro_de_preco.create', compact('licitacao', 'empresas', 'ata_numero', 'ata_ano'));
     }
 
     /**
@@ -94,7 +94,7 @@ class RegistroDePrecoController extends Controller
             $ata->itens()->attach($item);
         //return redirect()->action('PregaoController@show', [ $licitacao->licitacaoable->uuid]);
         //return redirect()->action('RegistroDePrecoController@documentoCreate', [$ata->uuid]);
-        return redirect()->action('RegistroDePrecoController@create', [$licitacao->uuid]);
+        return redirect()->route('registroDePreco.create', $licitacao->uuid);
 
 
     }
@@ -110,10 +110,7 @@ class RegistroDePrecoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
-    }
+    public function show($id) { }
 
     /**
      * Show the form for editing the specified resource.
@@ -121,10 +118,7 @@ class RegistroDePrecoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        //
-    }
+    public function edit($id) { }
 
     /**
      * Update the specified resource in storage.
@@ -133,10 +127,7 @@ class RegistroDePrecoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+    public function update(Request $request, $id) { }
 
     /**
      * Remove the specified resource from storage.
@@ -147,7 +138,7 @@ class RegistroDePrecoController extends Controller
     public function destroy(RegistroDePreco $registroDePreco)
     {
         $registroDePreco->delete();
-        return redirect()->action('RegistroDePrecoController@create', $registroDePreco->licitacao);
+        return redirect()->route('registroDePreco.create', $registroDePreco->licitacao);
     }
 
     public function documentoCreate(RegistroDePreco $registroDePreco)
@@ -174,7 +165,7 @@ class RegistroDePrecoController extends Controller
             $total +=  floatval($valor) * intval($quantidade);
         }
         $participantes = $registroDePreco->itens()->has('participantes')->count();
-        return view('documentos.arp', compact('total', 'participantes'))->with('ata', $registroDePreco);
+        return view('site.registro_de_preco.doc.arp', compact('total', 'participantes'))->with('ata', $registroDePreco);
         //return view('documentos.ata', compact('fornecedor', 'itens', 'dados', 'total'))->with('participante', count($participante));
     }
 
@@ -191,7 +182,7 @@ class RegistroDePrecoController extends Controller
 
         $ata = $registroDePreco;
         view()->share('ata', compact('ata','total', 'participantes'));
-        $pdf = PDF::loadView('pdf.arp', compact('ata','total', 'participantes'));
+        $pdf = PDF::loadView('site.registro_de_preco.pdf.arp', compact('ata','total', 'participantes'));
         $pdf->setPaper('A4');
         return $pdf->download($registroDePreco->ordem.'_'.$registroDePreco->fornecedor->fornecedorable->razao_social.'.pdf');
     }

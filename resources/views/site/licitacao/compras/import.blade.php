@@ -60,7 +60,7 @@
 	</div>
 {{ Form::close() }}
 
-{{ Form::open(['route' => ['cotacao.importarExcel', $licitacao->uuid], 'method'=>'post', 'class'=>'form-padrao', 'enctype'=>'multipart/form-data'])}}
+{{ Form::open(['route' => ['uasg.importar', $licitacao->uuid], 'method'=>'post', 'class'=>'form-padrao', 'enctype'=>'multipart/form-data'])}}
 	<div class="row mt-4">
 		<div class="col-md-8 {{$errors->has('arquivo') ? ' has-error' : '' }}">
 			<label class="custom-file-label" for="arquivo">PARTICIPANTES - Selecinone o arquivo Excel com extensão XLSX, XML e XLS </label>
@@ -68,7 +68,7 @@
 
 			@if ($errors->has('arquivo'))
 			    <span class="help-block ">
-			    	<strong>{{ $errors->first($input)}}</strong>
+			    	<strong>{{ $errors->first('arquivo')}}</strong>
 			    </span>
 			@endif
 		</div>

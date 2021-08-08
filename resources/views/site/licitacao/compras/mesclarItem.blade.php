@@ -65,14 +65,6 @@
 			</div>
 		</div>
 
-		<div class="{{$errors->has('principal') ? ' has-error' : '' }} col-lg-12">
-			@if ($errors->has('principal'))
-			<span class="help-block">
-				<strong>Falha Encontrada: {{ $errors->first('principal') }}</strong>
-			</span>
-			@endif 
-		</div>
-
 		<div class="{{$errors->has('itens') ? ' has-error' : '' }} col-lg-12">
 			@if ($errors->has('itens'))
 			<span class="help-block">
@@ -80,6 +72,14 @@
 			</span>
 			@endif 
 		</div>
+
+		@if ($errors->has('principal'))
+		<div class="alert alert-danger fixed-bottom w-5" id="success-alert">
+			<strong>Erro Encontrado!</strong>
+		   <button type="button" class="close" data-dismiss="alert">x</button>
+		   {{ $errors->first('principal') }}
+	   	</div>
+		@endif
 		
 		<div class="row mt-2 mb-2">
 			<div class="col-md-3 col-6 col-md-offset-3">

@@ -12,7 +12,7 @@
 		<h1 Class="page-header page-title">Cadastrar requisição</h1>
 	</div>
 
-	{{ Form::open(['url' => 'requisicao.store', 'method' => 'post', 'class' => 'form-padrao']) }}
+	{{ Form::open(['route' => 'requisicao.store', 'method' => 'post', 'class' => 'form-padrao']) }}
 		<div class="row">
 			@include('form.select', [
 			'input' => 'requisitante', 
