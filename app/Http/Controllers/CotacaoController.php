@@ -41,7 +41,7 @@ class CotacaoController extends Controller
      */
     public function create(Requisicao $requisicao)
     {
-        $itens = $requisicao->itens()->orderBy('numero', 'asc')->get();
+        $itens = $requisicao->itens()->orderBy('numero', 'asc')->paginate(20);
         $array = array();
         foreach ($itens as $item)
             $array += [$item->uuid => $item->numero." - ".$item->objeto];
@@ -56,7 +56,7 @@ class CotacaoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Requisicao $requisicao)
+    public function store(Request $request)
     {
         $request->validate([
             'item'   => 'required|exists:itens,uuid',
@@ -66,12 +66,12 @@ class CotacaoController extends Controller
             'hora'   => 'nullable|date_format:H:i',
         ]);
 
-        $return = $this->service->store($request, $requisicao);
+        $return = $this->service->store($request);
         if ($return['status']){
-            return redirect()->route('cotacao.create', $requisicao->uuid)
-                 ->with(['codigo' => 200,'mensagem' => 'Cotacão de preços cadastrada com sucesso !']);
+            //return redirect()->route('cotacao.create', $requisicao->uuid)
+                return back()->with(['codigo' => 200,'mensagem' => 'Cotacão de preços cadastrada com sucesso item  !']);
         } else {
-            return redirect()->route('cotacao.create', $requisicao->uuid)
+            return redirect()->back()
                 ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error durante a execução, tente novamente ou contate o administrador']); 
         }
    }
@@ -111,10 +111,10 @@ class CotacaoController extends Controller
         $return = $this->service->destroy($cotacao);
         $requisicao = $cotacao->item->requisicao->uuid;
         if ($return['status']){
-            return redirect()->route('cotacao.create', $requisicao)
+            return redirect()->back()
                 ->with(['codigo' => 200,'mensagem' => 'Cotação de preços excluída com sucesso!']);
         } else {
-            return redirect()->route('cotacao.create', $requisicao)
+            return redirect()->back()
                 ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error durante a execução, tente novamente ou contate o administrador']); 
         }
     }

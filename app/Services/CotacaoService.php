@@ -15,15 +15,14 @@ class CotacaoService
      * Função que salva uma nova cotação na base de dados
      *
      * @param Array  $data  
-     * @param \App\Requisicao  $requisicao   
      */
-    public function store(Request $request, Requisicao $requisicao)
+    public function store(Request $request)
     {
         $item = Item::findByUuid($request->item);
         if ($this->comparable($request->all(), $item)){
             abort(
                 redirect()
-                ->route('cotacao.create', $requisicao->uuid)
+                ->route('cotacao.create', $item->requisicao->uuid)
                 ->with(['codigo' => 500, 'mensagem' => 'Esta cotação de preços já existe para este item'])
                 ->withInput()
             ); 

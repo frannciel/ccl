@@ -63,8 +63,8 @@
          </table>
       </div>
    
-      <div class="row mt-2">
-         <div class="col-md-3 col-md-offset-1">
+      <div class="row centered mt-3">
+         <div class="col-md-3">
             <a class="btn btn-primary btn-block" type="button" href="{{url('requisicao/exibir', $requisicao->uuid)}}" >Voltar</a>
          </div>
          <div class="col-md-3">
