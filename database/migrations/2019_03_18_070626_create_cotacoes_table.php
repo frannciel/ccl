@@ -16,7 +16,7 @@ class CreateCotacoesTable extends Migration
         Schema::create('cotacoes', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uuid');
-            $table->string('fonte', 60);
+            $table->string('fonte', 150);
             $table->double('valor', 10, 4);
             $table->datetime('data')->nullable();
             $table->integer('item_id')->unsigned();

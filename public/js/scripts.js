@@ -35,12 +35,9 @@ $(document).ready(function(){
 
 
     /*
-     * Oculta a mensagem interessão com o usuário após transcorrido o tempo
+     * Oculta a mensagem de interação com usuário por meio de alert
      */
-    /*$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
-        $("#success-alert").slideUp(500);
-    });*/
-    $(".alert").delay(5000).slideUp(200, function() {
+    $(".ocultar").delay(5000).slideUp(200, function() {
         $(this).alert('close');
     });
 
@@ -95,6 +92,9 @@ $(document).ready(function(){
         else 
             $(".checkbox"+$(this).attr('name')).prop("checked", false);   // se não, elas tambem serão desmarcadas
     });
+    /**
+     * Ordenador de lista de itens da licitação e requisição
+     */
 
     $(function(){
         $(".sortable").sortable({
@@ -113,7 +113,9 @@ $(document).ready(function(){
                         itens: itens,
                         "_token": $('meta[name="csrf-token"]').attr('content'),
                     },
-                    success: function(data) { }
+                    success: function(data) {
+
+                    }
                 });
             },
         });

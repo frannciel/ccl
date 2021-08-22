@@ -276,8 +276,8 @@ class RequisicaoController extends Controller
 
     public function importar(Requisicao $requisicao)
     {
-        $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
-        Session::forget(['mensagem','codigo']); 
+        $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem'), 'pulados' => Session::get('pulados')];
+        Session::forget(['mensagem','codigo', 'pulados']); 
         return view('site.requisicao.import',  compact('requisicao', 'comunica'));
     }
 }

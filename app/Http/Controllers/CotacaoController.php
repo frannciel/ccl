@@ -145,14 +145,23 @@ class CotacaoController extends Controller
      */
     public function importarExcel(Request $request, Requisicao $requisicao)
     {
+        $request->validate([
+            'arquivo'   => 'required|file|mimes:xls,xml,xlsx',
+        ], ['arquivo.mimes' => ' o arquivo deve ter extensão xml, xls ou xlxs.',
+            'arquivo.required' => ' Nenhum arquivo para enviado.'
+        ]);
+
         $headings = (new HeadingRowImport)->toArray($request->file('arquivo'));
         $headings = $headings[0][0];
         if ($headings[0]=='item'&&$headings[1]=='fonte'&&$headings[2]=='valor'&&$headings[3]=='data'&&$headings[4]=='hora') {
             Excel::import(new CotacoesImport($requisicao), $request->file('arquivo'));
-            return redirect()->route('requisicaoShow', $requisicao->uuid)
-                ->with(['codigo' => 200,'mensagem' => 'Dados importados com sucesso!']);
+
+            if(Session::get('pulados')->count() == 0)
+                return redirect()->route('cotacao.create', $requisicao->uuid)
+                    ->with(['codigo' => 200, 'mensagem' => 'Dados importados com sucesso!']);
+            return redirect()->back()->with(['codigo' => 200, 'mensagem' => 'Os dados importados, más itens já cadsatrados ou linhas repetidas foram ignorados!']);
         } else {
-            return redirect()->route('requisicao.importar', $requisicao->uuid)
+            return redirect()->back()
                 ->with(['codigo' => 500,'mensagem' => 'Favor verificar a linha de cabeçalho da planilha e tente novamente']);
         }
     }
