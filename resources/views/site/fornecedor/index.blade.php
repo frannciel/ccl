@@ -14,7 +14,7 @@
     <div class="row">
 		<div class="col-md-4">
 			<a href="{{route('fornecedor.create')}}" class="btn btn-primary">Adicionar Fornecedor</a>
-			<a href="{{route('fornecedor.create')}}" class="btn btn-default">Importar</a>
+			<a href="{{route('fornecedor.importar')}}" class="btn btn-default">Importar</a>
 		</div>
 		<div class="col-md-5">
 			<div class="input-group custom-search-form">

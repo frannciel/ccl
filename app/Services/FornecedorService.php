@@ -12,7 +12,7 @@ use App\PessoaJuridica;
 use Illuminate\Http\Request;
 use App\Services\ConversorService;
 
-class CotacaoService
+class FornecedorService
 {
     /**
      * Função que salva uma nova cotação na base de dados
@@ -37,8 +37,6 @@ class CotacaoService
             ];
         }
     }
-
-
 
     public function default(array $data)
     {
@@ -129,7 +127,7 @@ class CotacaoService
                         'telefone_1'    => trim($valor[7]),
                         'telefone_2'    => trim($valor[8])
                     ]);
-                } else{
+                } else {
                     $fornec->endereco   = trim($valor[2]);
                     $fornec->cep        = trim($valor[3]);
                     $fornec->cidade_id  = $cidade->id;
@@ -138,18 +136,17 @@ class CotacaoService
                     $fornec->telefone_2 = trim($valor[8]);
                     $fornec->save();
                 }
-
-
+            }
             return [
                 'status' => true,
-                'message' => 'Item(ns) cadastrados com sucesso',
+                'message' => 'Fornecedor(es) cadastrado(s) com sucesso',
                 'data' => $data
             ];
         } catch (Exception $e) {
-            return [
-               'status' => false,
-               'message' => 'Ocorreu durante a execução',
-               'error' => $e
+            return [ 
+                'status' => false, 
+                'message' => 'Ocorreu durante a execução', 
+                'error' => $e 
             ];
         }
     }

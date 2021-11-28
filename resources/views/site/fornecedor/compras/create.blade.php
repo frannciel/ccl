@@ -18,14 +18,14 @@
 		<div class="row">
 			@include('form.text', [
 			'input' => 'cpf_cnpj',
-			'label' => 'CPF ou CNPJ *',			
+			'label' => 'CPF ou CNPJ',			
 			'largura' => 3, 
 			'value' => old($input ?? ''),
 			'attributes' => ['id' => 'cpf_cnpj', 'required' => '' ]])
 
 			@include('form.text', [
 			'input' => 'razaoSocial',
-			'label' => 'Nome ou Razão Social *', 
+			'label' => 'Nome ou Razão Social', 
 			'largura' => 9, 
 			'value' => old($input ?? ''),
 			'attributes' => ['id' => 'razaoSocial', 'required' => '' ]])
@@ -34,7 +34,7 @@
 		<div class="row">
 			@include('form.textButton', [
 			'input' => 'cep',
-			'label' => 'CEP *',
+			'label' => 'CEP',
 			'largura' => 3, 
 			'buttonId' => 'buscarCep',
 			'value' => old($input ?? ''),
@@ -42,7 +42,7 @@
 
 			@include('form.select', [
 			'input' => 'estado',
-			'label' => 'Estado *',
+			'label' => 'Estado',
 			'largura' => 3, 
 			'selected' => old($input ?? ''),
 			'options' => $estados ?? '',
@@ -50,7 +50,7 @@
 			
 			@include('form.text', [
 			'input' => 'cidade',
-			'label' => 'Cidade *',
+			'label' => 'Cidade',
 			'largura' => 6, 
 			'class' => 'telefone',
 			'value' => old($input ?? ''),
@@ -60,14 +60,14 @@
 		<div class="row">
 			@include('form.text', [
 			'input' => 'endereco',
-			'label' => 'Endereço *',
+			'label' => 'Endereço',
 			'largura' => 6, 
 			'value' => old($input ?? ''),
 			'attributes' => ['id' => 'endereco', 'required' => '',]])
 
 			@include('form.text', [
 			'input' => 'telefone1',
-			'label' => 'Telefone 01 *',
+			'label' => 'Telefone 01',
 			'largura' => 3, 
 			'value' => old($input ?? ''),
 			'attributes' => ['id' => 'telefone1', 'required' => '', 'class' => 'form-control form-control-sm telefone']])
