@@ -88,9 +88,7 @@
             </div>
          </div><!-- / row -->
          
-         {{Form::open(['url' => 'contratacao/store', 'id' => 'form', 'method' => 'post', 'class' => 'form-padrao'])}}
-            {{ Form::hidden('licitacao', $licitacao->uuid)}}
-            
+         {{Form::open(['route' => ['contratacao.store', $licitacao->uuid], 'id' => 'form', 'method' => 'post', 'class' => 'form-padrao'])}}          
             <div class="row mt-2">
                @include('form.textarea', [
                'input' => 'observacao',
@@ -105,7 +103,7 @@
                'value' => 'Voltar',
                'largura'   => 3,
                'class'     => 'btn btn-primary btn-block',
-               'url'       =>  route('licitacaoShow', [$licitacao->uuid]),
+               'url'       =>  route('licitacao.show', [$licitacao->uuid]),
                'recuo'  => 3 ])
 
                @include('form.submit', [

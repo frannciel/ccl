@@ -1,24 +1,37 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use PDF;
+use Session;
 use App\Item;
-use App\Contratacao;
 use App\Licitacao;
+use App\Contratacao;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Services\ContratacaoService;
+
 
 class ContratacaoController extends Controller
 {
+
+    protected $service;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct(ContratacaoService $service)
+    {
+        $this->service = $service;
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-
-    }
+    public function index() {  }
 
     /**
      * Show the form for creating a new resource.
@@ -27,36 +40,16 @@ class ContratacaoController extends Controller
      */
     public function create(Licitacao $licitacao)
     {
-        $itens = $licitacao->itens()->has('registrosDePrecos')->orderBy('ordem', 'asc')->get();
-        $contratacoes = $licitacao->contratacoes()->get();
-       /*
-       foreach ($contratacoes as $contratacao) {
-            $licitacao->contratacoes()->itens()->where('item_id', $item_id)->sum('quantidade');
-       }
-        $email = DB::table('contratacao_item')->where('item_id', $item_id)->value('email');*/
-        $dados = collect();
-        foreach ($itens as $item) {
-        $empenhado = DB::table('contratacao_item')->where('item_id', $item->id)->sum('quantidade');
-        $quatidade = $item->quantidade;
-        $valor = $item->fornecedores()->first()->pivot->valor;
-           /*
-           verificar quantidade do campus eunápolis menos dos participantes
-           */
-           if ($item->quantidade > 0) {
-                $dados->push([
-                    'item' => $item, 
-                    'empenhado' => $empenhado,
-                    'valor' => number_format($valor, 2, ',', '.'),
-                    'saldo' => $quatidade - $empenhado
-                ]);
-            }
-           // dd( $contratacoes->first()->total);
-            //$empenhado = Contratacao::where('item_id', $item->id)->sum('quantidade');
-            //$empenhado = $licitacao->contratacoes()->itens()->where('item_id', $item_id)->sum('quantidade');
+        $comunica = ['cod' => Session::get('codigo'), 'msg' => Session::get('mensagem')];
+        Session::forget(['mensagem','codigo']); 
+
+        $return = $this->service->create($licitacao);
+        if ($return['status']){
+            return  view('site.contratacao.create', compact('licitacao', 'comunica'))
+                ->with(['dados' => $return['data']['dados'],'contratacoes'=> $return['data']['contratacoes']]);
+        } else {
+            return redirect()->back()->with($comunica); 
         }
-        //dd( $dados);
-        //$requisicao->itens->sortBy('numero')
-        return  view('contratacao.create', compact('dados', 'licitacao', 'contratacoes'));
     }
 
     /**
@@ -65,39 +58,16 @@ class ContratacaoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Licitacao $licitacao)
     {
-        $licitacao = Licitacao::findByUuid($request->licitacao);
-
-        $conteudo = collect();
-        foreach ($request->itens as $key => $item) {
-            $item = Item::findByUuid($item);
-            $conteudo->push([
-                'itemId' =>  $item->id, 
-                'fornecedorId' => $item->fornecedores->first()->id,
-                'valor' =>  $item->fornecedores->first()->pivot->valor,
-                'quantidade' =>  $request->quantidades[$key],
-            ]);
+        $return = $this->service->store($request, $licitacao);
+        if ($return['status']){
+            return  redirect()->route('contratacao.create', compact('licitacao'))
+                ->with(['codigo' => 200,'mensagem' => 'Contratação(ões) registradas com sucesso!']);
+        } else {
+            return redirect()->back()
+            ->with(['codigo' => 500, 'mensagem' => 'Ocorreu um error durante a execução, tente novamente ou contate o administrador']); 
         }
-        $agrupados = $conteudo->groupBy('fornecedorId');
-
-        foreach ($agrupados->toArray() as $key => $grupo) {
-            $contratacao = $licitacao->contratacoes()->create([
-                'observacao'    => nl2br($request->observacao),
-                'contrato'      => $request->contrato,
-                'fornecedor_id' => $key,
-            ]);
-
-            foreach ($grupo as $elemento) {
-                $contratacao->itens()->attach($elemento['itemId'],
-                   [ 
-                        'quantidade' => $elemento['quantidade'],
-                        'valor' => $elemento['valor']
-                ]);
-            }
-  
-        }
-        return redirect()->action('ContratacaoController@create', $licitacao);
     }
 
     /**
@@ -106,10 +76,7 @@ class ContratacaoController extends Controller
      * @param  \App\Contratacao  $contratacao
      * @return \Illuminate\Http\Response
      */
-    public function show(Contratacao $contratacao)
-    {
-        //
-    }
+    public function show(Contratacao $contratacao){ }
 
     /**
      * Show the form for editing the specified resource.
@@ -117,10 +84,7 @@ class ContratacaoController extends Controller
      * @param  \App\Contratacao  $contratacao
      * @return \Illuminate\Http\Response
      */
-    public function edit(Contratacao $contratacao)
-    {
-        //
-    }
+    public function edit(Contratacao $contratacao) { }
 
     /**
      * Update the specified resource in storage.
@@ -134,7 +98,7 @@ class ContratacaoController extends Controller
         /*Aprimorar validação do reposta e na view*/
         $validator = $request->validate([
             'observacao' => 'nullable|string',
-            'contrato' => 'nullable|string|max:8'
+            'contrato' =>   'nullable|string|max:8'
         ]);
 
         $contratacao = Contratacao::findByUuid($request->contratacao);
@@ -153,7 +117,7 @@ class ContratacaoController extends Controller
     public function destroy(Contratacao $contratacao)
     {
         $contratacao->delete();
-        return redirect()->action('ContratacaoController@create', $contratacao->licitacao);
+        return redirect()->route('contratacao.create', $contratacao->licitacao);
     }
     /**
      * Retorna um docuemnto de solicitação de empenho específico em formato copiável
@@ -163,13 +127,13 @@ class ContratacaoController extends Controller
      */
     public function documento(Contratacao $contratacao)
     {   
-        return view('documentos.contratacao', compact('contratacao'));
+        return view('site.contratacao.doc.contratacao', compact('contratacao'));
     }
 
     public function downloadPdf(Contratacao $contratacao)
     {   
         view()->share('contratacao', $contratacao);
-        $pdf = PDF::loadView('pdf.contratacao', compact('contratacao'));
+        $pdf = PDF::loadView('site.contratacao.pdf.contratacao', compact('contratacao'));
         $pdf->setPaper('A4', 'landscape');
         return $pdf->download($contratacao->fornecedor->nome.'.pdf');
     }
