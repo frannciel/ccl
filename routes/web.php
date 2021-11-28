@@ -62,7 +62,6 @@ Route::middleware('auth')->group(function(){
 		Route::post('/duplicar', 									'ItemController@duplicar')->name('duplicar');
 		Route::get('/licitacao/editar/{item}',						'ItemController@editItemLicitacao')->name('item.licitacao.edit');
 		Route::get('/fornecedor/novo',								'ItemController@fornecedorCreate')->name('fornecedorCreate');
-		Route::get('/fornecedor/exibir/{fornecedor}/{item}', 	'ItemController@fornecedorShow')->name('fornecedorShow');
 		Route::put('/licitacao/update/{item}',						'ItemController@updateItemLicitacao')->name('updateItemLicitacao');
 		Route::post('/ajax', 										'ItemController@ajax')->name('ajax');
 		Route::post('/fornecedor/store', 							'ItemController@fornecedorStore')->name('fornecedorStore');
@@ -79,6 +78,21 @@ Route::middleware('auth')->group(function(){
 		Route::post('Cotacao/importar/texto/{requisicao}', 	'CotacaoController@importarTexto')->name('importarTexto');
 		Route::delete('/apagar/{cotacao}',  				'CotacaoController@destroy')->name('destroy');
 	});
+
+	Route::prefix('contratacao')->name('contratacao.')->group(function(){
+		Route::get('/{licitacao}', 					'ContratacaoController@index')->name('index');
+		Route::get('/novo/{licitacao}', 			'ContratacaoController@create')->name('create');
+		Route::post('/novo/{licitacao}', 			'ContratacaoController@store')->name('store');
+		Route::post('/update', 						'ContratacaoController@update')->name('update');
+		Route::get('/documento/{contratacao}', 		'ContratacaoController@documento')->name('documento');
+		Route::get('/pdf/{contratacao}', 			'ContratacaoController@downloadPdf')->name('downloadPdf');
+		Route::delete('/apagar/{contratacao}', 		'ContratacaoController@destroy')->name('destroy');
+	});
+
+	Route::prefix('endereco')->name('endereco.')->group(function(){
+		Route::get('/cep/{cep}', 	'EnderecoController@enderecoViaCep')->name('enderecoViaCep');
+	});
+
 });
 
 Route::middleware(['auth', 'ac'])->group(function(){
@@ -87,13 +101,14 @@ Route::middleware(['auth', 'ac'])->group(function(){
 		Route::post('/novo', 											'LicitacaoController@store')->name('store');
 		Route::get('/exibir/{licitacao}',								'LicitacaoController@show')->name('show'); 
 		Route::delete('/apagar/{licitacao}',							'LicitacaoController@destroy')->name('destroy');
-		Route::post('/item/duplicar/{licitacao}',						'LicitacaoController@itemDuplicar')->name('itemDuplicar');
+		
 		Route::get('/relacaodeitem/{licitacao}', 						'LicitacaoController@relacaoDeItem')->name('relacaoDeItem');
 		Route::get('/relacaodeitem/pdf/{licitacao}', 					'LicitacaoController@relacaoDeItemPdf')->name('relacaoDeItemPdf');
 		Route::get('/importar/{licitacao}', 							'LicitacaoController@importar')->name('importar');
 
 		Route::get('/atribuir/ítem/{licitacao}/{requisicao?}', 			'AtribuirController@create')->name('atribuir.create');
 		Route::post('/atribuir/item/{licitacao}', 						'AtribuirController@store')->name('atribuir.store');
+		Route::post('/item/duplicar/{licitacao}',						'AtribuirController@duplicar')->name('atribuir.duplicar');
 		Route::post('/remover/item/{licitacao}', 						'AtribuirController@remove')->name('atribuir.remove'); 
 		Route::delete('/remover/requisicao/{licitacao}/{requisicao}',	'AtribuirController@removerRequisicao')->name('requisicao.remove');
 		//  Route::post('/atribuir/requisicao/{licitacao}/{requisicao}', 	'AtribuirController@atribuirRequisicao')->name('requisicao.atribuir'); // metodo não utilizado, verificar necesssidade
@@ -118,33 +133,35 @@ Route::middleware(['auth', 'ac'])->group(function(){
 		Route::put('/item/editar/{item}',			'ItemPregaoUpdateController')->name('item.update');
 	});
 
-	Route::prefix('registro/precos')->name('registroDePreco.')->group(function(){
-		Route::get('/',									'RegistroDePrecoController@index');
-		Route::get('/novo/{licitacao}', 				'RegistroDePrecoController@create');
-		Route::post('/store', 							'RegistroDePrecoController@store');
-		Route::get('/documento/{registroDePreco}', 		'RegistroDePrecoController@documentoCreate');
-		Route::get('/pdf/{registroDePreco}', 			'RegistroDePrecoController@downloadPdf');
-		Route::delete('/apagar/{registroDePreco}', 		'RegistroDePrecoController@destroy');
+	Route::prefix('registrodeprecos')->name('registroDePreco.')->group(function(){
+		Route::get('/',									'RegistroDePrecoController@index')->name('index');
+		Route::get('/novo/{licitacao}', 				'RegistroDePrecoController@create')->name('create');
+		Route::post('/novo/{licitacao}', 	'RegistroDePrecoController@store')->name('store');
+		Route::delete('/apagar/{registroDePreco}', 		'RegistroDePrecoController@destroy')->name('destroy');
+		Route::get('/documento/{registroDePreco}', 		'RegistroDePrecoController@showAta')->name('showAta');
+		Route::get('/pdf/{registroDePreco}', 			'RegistroDePrecoController@downloadPdf')->name('downloadPdf');
+
 	});
 
-	Route::prefix('contratacao')->name('contratacao.')->group(function(){
-		Route::get('/{licitacao}', 					'ContratacaoController@index')->name('index');
-		Route::get('/novo/{licitacao}', 			'ContratacaoController@create')->name('create');
-		Route::post('/update', 						'ContratacaoController@update')->name('update');
-		Route::post('/store', 						'ContratacaoController@store')->name('store');
-		Route::get('/documento/{contratacao}', 		'ContratacaoController@documento')->name('documento');
-		Route::get('/pdf/{contratacao}', 			'ContratacaoController@downloadPdf')->name('downloadPdf');
-		Route::delete('/apagar/{contratacao}', 		'ContratacaoController@destroy')->name('destroy');
-	});
-
-	Route::prefix('fornecedor')->name('fornecedor.')->group(function(){
+	Route::prefix('fornecedor')->name('fornecedor.')->namespace('Fornecedor')->group(function(){
 		Route::get('/', 							'FornecedorController@index')->name('index');
 		Route::get('/novo',							'FornecedorController@create')->name('create');
 		Route::post('/novo', 	 					'FornecedorController@store')->name('store');
+		Route::get('/exibir', 	 					'FornecedorController@show')->name('show');
 		Route::get('/editar/{fornecedor}', 		 	'FornecedorController@edit')->name('edit');
 		Route::post('/editar', 						'FornecedorController@update')->name('update');
 		Route::post('/fornecedor', 					'FornecedorController@getFornecedor')->name('getFornecedor');
 		Route::delete('/apagar/{fornecedor}', 		'FornecedorController@destroy')->name('destroy');
+		Route::get('/importar/', 					'FornecedorController@importar')->name('importar');
+		Route::post('/importar/excel', 				'FornecedorController@importarExcel')->name('importarExcel');
+		Route::post('/importar/texto/', 			'FornecedorController@importarTexto')->name('importarTexto');
+		Route::get('/item/editar/{fornecedor}/{licitacao}/{item?}', 'ItemFornecedorController@edit')->name('item.edit');
+		Route::post('/item/editar/{fornecedor}/{item}', 			'ItemFornecedorController@update')->name('item.update');
+		Route::post('/item/importar/visualizar/{licitacao}',   		'ItemFornecedorController@importarPreVisualizar')->name('item.importarPreVisualizar');
+		Route::post('/item/importar/salvar/{licitacao}',   			'ItemFornecedorController@importarStore')->name('item.importarStore');
+		Route::post('/item/atribuir/{licitacao}',   				'ItemFornecedorController@create')->name('item.create');
+		Route::post('/item/atribuir/assincrono/{item}/{fornecedor}', 'ItemFornecedorController@updateAjax')->name('item.updateAjax');
+		//Route::get('/item/exibir/{fornecedor}/{item}', 	'ItemFornecedorController@fornecedorShow')->name('fornecedorShow');
 	});
 
 	Route::prefix('uasg')->name('uasg.')->group(function(){
@@ -167,9 +184,6 @@ Route::post('licitacao/modalidade', 							'LicitacaoController@modalidade')->na
 Route::get('cotacao/novo', 										'CotacaoController@redirecionar');
 Route::post('item/primeiro', 	 								'ItemController@primeiro');
 Route::get('item/segundo', 	 									'ItemController@segundo');
-Route::post('cep', 												'FornecedorController@buscarCEP');
-
-
 
 Route::get('enquadramento', 			'InformacaoController@index')->name('enquadramento');
 Route::get('enquadramento/novo', 		'InformacaoController@create')->name('enquadramentoNovo');
