@@ -53,8 +53,8 @@
                                  <td align="center" class="center" rowspan="{{$qtd}}">{{$item->codigo =='0'?'': $item->codigo}}</td>
                                  <td align="center" class="center" rowspan="{{$qtd}}">{{$item->unidade->nome}}</td>
                                  <td> Eunápolis/BA </td>
-                                 <td align="center" class="center">({{$item->quantidade}})</td>
-                                 <td align="center" class="center" rowspan="{{$qtd}}">({{$item->quantidadeTotal}})</td>
+                                 <td align="center" class="center">{{$item->quantidade}}</td>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">{{$item->quantidadeTotal}}</td>
                                  <td align="center" class="center" rowspan="{{$qtd}}">{{$item->valorMedio}}</td>
                                  <td align="center" class="center" rowspan="{{$qtd}}">{{number_format(number_format($item->media, 2, '.', "") * $item->quantidadeTotal, 2, ',', '.')}}</td>
                               </tr>
@@ -76,7 +76,7 @@
                                  @php $participante = $item->participantes->first()@endphp
                                  <td>{{$participante->pivot->cidade->nome }}/{{ $participante->pivot->cidade->estado->sigla}}</td>
                                  <td align="center" class="center">{{$participante->pivot->quantidade}}</td>
-                                 <td align="center" class="center" rowspan="{{$qtd}}">({{$item->quantidadeTotal}})</td>
+                                 <td align="center" class="center" rowspan="{{$qtd}}">{{$item->quantidadeTotal}}</td>
                                  <td align="center" class="center" rowspan="{{$qtd}}">{{$item->valorMedio}}</td>
                                  <td align="center" class="center" rowspan="{{$qtd}}">{{number_format(number_format($item->media, 2, '.', "") * $item->quantidadeTotal, 2, ',', '.')}}</td>
                               </tr>
@@ -96,7 +96,7 @@
                            <td align="center" class="center">{{$item->unidade->nome}}</td>
                            <td> Eunápolis/BA </td>
                            <td align="center" class="center">{{$item->quantidade}}</td>
-                           <td align="center" class="center">({{$item->quantidade}})</td>
+                           <td align="center" class="center">{{$item->quantidade}}</td>
                            <td align="center" class="center">{{$item->valorMedio}}</td>
                            <td align="center" class="center">{{$item->valorTotal }}</td>
                         </tr>

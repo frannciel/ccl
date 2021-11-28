@@ -186,7 +186,7 @@
 			</thead>
 			<tbody>
 				@forelse ($item->fornecedores as $value)
-					<tr onclick="location.href ='{{route('item.fornecedorShow', [$value->uuid, $item->uuid])}}'; target='_blank';" style="cursor: hand;">
+					<tr onclick="location.href ='{{route('fornecedor.item.edit', [$value->uuid, $licitacao->uuid, $item->uuid])}}'; target='_blank';" >
 						<td class="center">{{$value->cpfCnpj}}</td>
 						<td class="center">{{$value->nome}}</td>
 						<td class="center">{{$value->pivot->quantidade}}</td>

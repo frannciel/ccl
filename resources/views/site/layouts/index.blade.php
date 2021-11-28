@@ -146,6 +146,9 @@
                                 <li>
                                     <a href="{{route('fornecedor.index')}}">Consultar</a>
                                 </li>
+                                <li>
+                                    <a href="{{route('fornecedor.importar')}}">Importar</a>
+                                </li>
                             </ul><!-- /.nav-second-level -->
                         </li>
                         <li>
@@ -257,14 +260,14 @@
     </div><!-- /#wrapper -->
     @isset($comunica)
         @if($comunica['cod'] == 500)
-            <div class="alert alert-danger fixed-bottom w-5" id="success-alert">
-                 <strong>Erro Encontrado!</strong>
+            <div class="alert ocultar alert-danger fixed-bottom w-5 ocultar" id="success-alert">
+                <strong>Erro Encontrado!</strong>
                 <button type="button" class="close" data-dismiss="alert">x</button>
                 {{$comunica['msg'] ?? ''}}
             </div>
         @endif
         @if($comunica['cod'] == 200)
-            <div class="alert alert-success fixed-bottom w-5" id="success-alert">
+            <div class="alert ocultar alert-success fixed-bottom w-5 ocultar" id="success-alert">
                 <strong>Success!</strong>
                 <button type="button" class="close" data-dismiss="alert">x</button>
                 {{$comunica['msg'] ?? ''}}
@@ -291,8 +294,7 @@
     <script src="{{asset('vendor/datatables/js/jquery.dataTables.js') }}"></script>
     <script src="{{asset('vendor/datatables/js/dataTables.bootstrap.js') }}"></script>
     <!-- Scripts próprios  -->
-    <script src="{{asset('js/scripts.js')}}"></script>
-    <script src="{{asset('js/modals.js')}}"></script>
+     <script src="{{asset('js/scripts.js')}}"></script>
     <script type="text/javascript">
         /*variavel.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL'}) coverte em formato contábil com cifrão R$ 0,00*/
         /*variavel.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) coverte formato em contábil sem cifrão 0,00*/
@@ -326,28 +328,6 @@
                 $(".chk").prop("checked", true);  // as que estiverem nessa classe ".chk" tambem serão marcadas
             else 
                 $(".chk").prop("checked", false);   // se não, elas tambem serão desmarcadas
-        });
-
-        $(document).ready(function(){
-            /*
-             * A clicar no botão copiar o conteudo da <div> para a àrea de transferêcia
-             */
-            var clipboard = new Clipboard('.btn'); 
-            clipboard.on('success', function(e){
-                console.log(e); 
-            });     
-             clipboard.on('error', function(e){
-                console.log(e);  
-            });
-
-            /*
-             * Exibe a opção escolhida no radio durante o carregamento da página
-             */
-            $(window).on("load", function(){
-                $('input:hidden').each(function() {
-                    radioButton($(this).attr('name'), $(this).val());
-                });
-            });
         });
 
 
@@ -443,7 +423,7 @@
     });
 
 
-    $(document).on("click", "#salvar", function(){
+  /*   $(document).on("click", "#salvar", function(){
         $.ajax({
             method:'GET',
             url: '/item/segundo',
@@ -483,37 +463,7 @@
             }
         });
     });
-
-    /**
-     *  Função que busca o endereço a partir do cep informado no campo CEP
-     *  View create fornecedor
-     *  
-     *  @paran $cep
-     */
-    $(document).on("click", "#buscarCep", function(){
-         $.ajax({
-            method:'POST',
-            url: '/cep',
-            data: {
-                cep: $('#cep').val(),
-                "_token": "{{ csrf_token() }}"
-            },
-            success: function(data) {
-                var endereco = JSON.parse(data);
-                if (endereco.erro) {
-                    $('#cidade').removeAttr("readonly", "").val('');
-                    $('#estado').removeAttr("readonly", "").val('');
-                    $('#endereco').val(''); 
-                    alert('CEP inválido ou não encontrado !!!')
-                } else {
-                    $('#cidade').val(endereco.localidade).attr("readonly", "");
-                    $('#estado').val(endereco.uf).attr("readonly", "");
-                    $('#endereco').val(endereco.logradouro + ', ' + endereco.bairro);
-                }               
-            }
-        });
-    });
-
+ */
     $(document).on("click", "#buscarForncecedor", function(){
         $.ajax({
             method:'POST',

@@ -48,7 +48,7 @@
          				<td width="10%" align="center">{{$key + 1}}</td>
          				<td width="50%" align="left">{{$cotacao->fonte ?? ''}}</td>
          				<td width="20%" align="center">{{$cotacao->data ?? ''}}</td>
-         				<td width="20%" align="center" >{{$cotacao->contabil ?? ''}}</td> 
+         				<td width="20%" align="center">{{$cotacao->contabil ?? ''}}</td> 
          			</tr> 
          		@endforeach
             </table>

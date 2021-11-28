@@ -137,8 +137,10 @@
 									<td class="col-md-2 center">{{$cotacao->contabil ?? '' }}</td>
 									<td class="col-md-2 center">{{$cotacao->data  ?? ''}}</td>
 									<td>
-										<i class="glyphicon glyphicon-trash text-red" title="Apagar cotação" data-modal="cotacao-delete" data-route="{{route('cotacao.destroy', $cotacao->uuid)}}"></i>
-									</td>	
+										<button class="btn btn-default" title="Apagar cotação" data-modal="cotacao-delete" data-route="{{route('cotacao.destroy', $cotacao->uuid)}}">
+											<i class="glyphicon glyphicon-trash text-red"></i>
+										</button>
+										</td>	
 								</tr>
 							@endforeach
 						</table>  

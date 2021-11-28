@@ -77,116 +77,99 @@
 		</div>
 	{{ Form::close() }} <!-- /Formulário de update de pregão -->
 
-
-
-
-{{ Form::open(['route' => ['licitacao.itemDuplicar', $licitacao->uuid], 'method' => 'POST', 'class' => 'form-padrao mt-3']) }}
-	<div class="row">
-		<div class="col-md-12">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<div class="btn-group btn-group-justified" role="group" aria-label="...">
-						<div class="btn-group" role="group">
-							<button type="submit"  class="btn btn-success btn-outline" title="Atribuir Fornecedor" formaction="{{url('item/primeiro')}}"><i class="glyphicon glyphicon-briefcase"></i></button>
+	{{ Form::open(['url' => "", 'id' => 'form-licitacao-itens', 'method' => 'POST', 'class' => 'form-padrao mt-3']) }}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<div class="btn-group btn-group-justified" role="group" aria-label="...">
+							<div class="btn-group" role="group">
+								<a type="button"  class="btn btn-success btn-outline" title="Atribuir ou Remover Itens" href="{{route('licitacao.atribuir.create', $licitacao->uuid)}}"><i class="fa fa-plus-square" aria-hidden="true"></i></a>
+							</div>
+							<div class="btn-group" role="group">
+								<a type="button"  class="btn btn-success btn-outline" title="Importar Dados" href="{{route('licitacao.importar', $licitacao->uuid)}}"><i class="fa fa-upload" aria-hidden="true"></i></a>
+							</div>
+							<div class="btn-group" role="group">
+								<a type="button"  class="btn btn-success btn-outline" title="Ordenar Itens" href="{{route('licitacao.ordenar.create', $licitacao->uuid)}}"><i class="fa fa-sort"></i></a>
+							</div>
+							<div class="btn-group" role="group">
+								<a type="button" class="btn btn-success btn-outline" title="Mesclar Itens" href="{{route('licitacao.mesclar.create', $licitacao->uuid)}}"><i class="glyphicon glyphicon-resize-small"></i></a>
+							</div>
+							<div class="btn-group" role="group">
+								<button type="submit" class="btn btn-success btn-outline" title="Duplicar Itens" formaction="{{route('licitacao.atribuir.duplicar', $licitacao->uuid)}}"><i class="glyphicon glyphicon-duplicate"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button type="submit" class="btn btn-success btn-outline" title="Atribuir Fornecedor" formaction="{{route('fornecedor.item.create', $licitacao->uuid)}}"><i class="glyphicon glyphicon-briefcase"></i></button>
+							</div>
+							<div class="btn-group" role="group">
+								<button type="button" class="btn btn-danger btn-outline" title="Remover Itens" data-modal="licitacao-itens-delete" data-route="{{route('licitacao.atribuir.remove',$licitacao->uuid)}}"><i class="glyphicon glyphicon-trash"></i></button>
+							</div>
 						</div>
-						<div class="btn-group" role="group">
-							<a type="button"  class="btn btn-success btn-outline" title="Importar Dados" href="{{route('licitacao.importar', $licitacao->uuid)}}"><i class="fa fa-upload" aria-hidden="true"></i></a>
+
+						<div class="row text-center">
+							<div class="col-md-12 mt-2 mb-2">
+								<a type="submit" href="{{url('licitacao/relacaodeitem', $licitacao->uuid)}}" class="btn btn-outline btn-success rounded-pill">Relação de Itens</a>
+								<button type="submit" formaction="{{url('item/primeiro')}}" class="btn btn-outline btn-success rounded-pill">Itens por Fornecedor</button>
+								<button type="submit" formaction="{{url('item/primeiro')}}" class="btn btn-outline btn-success rounded-pill">Resultado</button>
+								<a type="submit" href="{{route('registroDePreco.create', $licitacao->uuid)}}"  class="btn btn-outline btn-success rounded-pill"> Atas SRP</a>
+								<a type="button" href="{{url('contratacao/novo', ['licitacao' => $licitacao->uuid])}}" class="btn btn-outline btn-success rounded-pill">Contratações</a>
+							</div>
 						</div>
-						<div class="btn-group" role="group">
-							<a type="button" href="{{route('licitacao.ordenar.create', $licitacao->uuid)}}" class="btn btn-success btn-outline" title="Ordenar Itens"><i class="fa fa-sort"></i></a>
-						</div>
-						<div class="btn-group" role="group">
-							<a type="button" class="btn btn-success btn-outline" title="Mesclar Itens" href="{{route('licitacao.mesclar.create', $licitacao->uuid)}}"><i class="glyphicon glyphicon-resize-small"></i></a>
-						</div>
-						<div class="btn-group" role="group">
-							<button type="submit" class="btn btn-success btn-outline" title="Duplicar Itens"><i class="glyphicon glyphicon-duplicate"></i></button>
-						</div>
-						<div class="btn-group" role="group">
-							<a type="button"  class="btn btn-success btn-outline" title="Atribuir ou Remover Itens" href="{{route('licitacao.atribuir.create', $licitacao->uuid)}}"><i class="fa fa-plus-square" aria-hidden="true"></i></a>
-						</div>
-						<div class="btn-group" role="group">
-							<button type="submit" class="btn btn-danger btn-outline" title="Remover Itens" formaction="/action_page2.php"><i class="glyphicon glyphicon-trash"></i></button>
-						</div>
-					</div>
 
-					<div class="row text-center">
-						<div class="col-md-12 mt-2 mb-2">
-							<a type="submit" href="{{url('licitacao/relacaodeitem', $licitacao->uuid)}}" class="btn  btn-outline btn-success rounded-pill">
-							 Relação de Itens
-							</a>
-	
-							<button type="submit" formaction="{{url('item/primeiro')}}" class="btn btn-outline btn-success rounded-pill">
-								Itens por Fornecedor
-							</button>
+						<ul class="nav nav-pills nav-justified mt-2">
+							<li class="active"><a data-toggle="tab" href="#guiaItens">Item</a></li>
+							<li><a data-toggle="tab" href="#guiaRequisicao">Requisição</a></li>
+							<li><a data-toggle="tab" href="#guiaFornecedor">Fornecedor</a></li>
+							<li><a data-toggle="tab" href="#guiaParticipante">Participante</a></li>
+						</ul>
+					</div><!-- panel-heading -->
+					
+					<div class="panel-body">
+						<div class="tab-content">
+							<div id="guiaItens" class="tab-pane fade in active">
+								<div class="table-responsive">
+									<table class="table table-striped table-bordered dataTable">
+										<thead>
+											<tr>
+												<th class="center"><input type="checkbox" id="ckAll" name="example1"></th>
+												<th class="center">Número</th>
+												<th class="center">Descrição Detalhada</th>
+												<th class="center">Unidade</th>
+												<th class="center">Código</th>
+												<th class="center">Quantidade</th>
+												<th class="center">Grupo</th>
+											</tr>
+										</thead>
 
-							<button type="submit" formaction="{{url('item/primeiro')}}" class="btn btn-outline btn-success rounded-pill">
-								 Resultado
-							</button>
+										<tbody>
+											@forelse ($licitacao->itens->sortBy('ordem') as $item)
+											<tr>
+												<td>
+													<div class="input-group">
+														<span class="input-group-addon">
+															<input type="checkbox" id="defaultCheck"  class="chk" name="itens[]" value="{{$item->uuid}}" >
+														</span>
+														<a class="btn btn-default" href="{{route('pregao.item.edit', $item->uuid)}}" role="button">Detalhar</a>
+													</div>
+												</td>
+												<td class="center">{{$item->ordem}}</td>
+												<td class="text-justify">@php print($item->descricaoCompleta) @endphp</td>
+												<td class="center">{{$item->unidade->nome}}</td>
+												<td class="center">{{$item->codigo =='0'?'': $item->codigo}}</td>
+												<td class="center">{{$item->quantidadeTotal}}</td>
+												<td class="center"></td>
+												<!--<td>isset($item->grupo->numero) ? $item->grupo->numero : ''</td>-->
+											</tr>
+											@empty
+											<tr><td colspan=7><center><i> Nenhum item encontrado </i></center></td></tr>
+											@endforelse
 
-							<a type="submit" href="{{url('registro/precos/novo',['licitacao' => $licitacao->uuid])}}"  class="btn btn-outline btn-success rounded-pill">
-								 Atas SRP
-							</a>
+										</tbody>
+									</table>
+								</div><!-- table-responsive -->
+							</div><!-- / tab item-->
 
-							<a type="button" href="{{url('contratacao/novo', ['licitacao' => $licitacao->uuid])}}" class="btn btn-outline btn-success rounded-pill">
-								Contratações
-							</a>
-						</div>
-					</div>
-
-					<ul class="nav nav-pills nav-justified mt-2">
-						<li class="active"><a data-toggle="tab" href="#guiaItens">Item</a></li>
-						<li><a data-toggle="tab" href="#guiaRequisicao">Requisição</a></li>
-						<li><a data-toggle="tab" href="#guiaFornecedor">Fornecedor</a></li>
-						<li><a data-toggle="tab" href="#guiaParticipante">Participante</a></li>
-					</ul>
-				</div><!-- panel-heading -->
-				
-				<div class="panel-body">
-					<div class="tab-content">
-						<div id="guiaItens" class="tab-pane fade in active">
-							<div class="table-responsive">
-								<table class="table table-striped table-bordered dataTable">
-									<thead>
-										<tr>
-											<th class=" center"><input type="checkbox" id="ckAll" name="example1"></th>
-										    <th class=" center">Número</th>
-										    <th class=" center">Descrição Detalhada</th>
-										    <th class=" center">Unidade</th>
-										    <th class=" center">Código</th>
-										    <th class=" center">Quantidade</th>
-										    <th class=" center">Grupo</th>
-										</tr>
-									</thead>
-
-									<tbody>
-										@forelse ($licitacao->itens->sortBy('ordem') as $item)
-										<tr>
-											<td>
-												<div class="input-group">
-													<span class="input-group-addon">
-														<input type="checkbox" id="defaultCheck"  class="chk" name="itens[]" value="{{$item->uuid}}" >
-													</span>
-													<a class="btn btn-default" href="{{route('pregao.item.edit', $item->uuid)}}" role="button">Detalhar</a>
-												</div>
-											</td>
-											<td class=" center">{{$item->ordem}}</td>
-											<td class=" justicado">@php print($item->descricaoCompleta) @endphp</td>
-											<td class=" center">{{$item->unidade->nome}}</td>
-											<td class=" center">{{$item->codigo =='0'?'': $item->codigo}}</td>
-											<td class=" center">{{$item->quantidadeTotal}}</td>
-											<td class=" center"></td>
-											<!--<td>isset($item->grupo->numero) ? $item->grupo->numero : ''</td>-->
-										</tr>
-										@empty
-										<tr><td colspan=7><center><i> Nenhum item encontrado </i></center></td></tr>
-										@endforelse
-
-									</tbody>
-								</table>
-							</div><!-- table-responsive -->
-						</div><!-- / tab item-->
-
-{{ Form::close() }} 	
+	{{ Form::close() }} 	
 
 						<div id="guiaRequisicao" class="tab-pane fade">
 							<table class="table table-striped table-bordered">
@@ -222,7 +205,7 @@
 								</thead>
 								<tbody>
 									@forelse ($lista as $value)
-									<tr onclick="location.href ='{{route('item.edit', [$value[0]])}}'; target='_blank';" class="pointer">
+									<tr onclick="location.href ='{{route('fornecedor.item.edit', [$value[0], $licitacao->uuid])}}'; target='_blank';" class="pointer">
 										<td>{{$value[1]}}</td>
 										<td>{{$value[2]}}</td>
 										<td>
@@ -265,4 +248,12 @@
 			</div><!-- /.panel -->
 		</div><!-- /.col-lg-12 -->
 	</div>
+
+	@if ($errors->has('itens'))
+		<div class="alert ocultar alert-danger fixed-bottom w-5" id="success-alert">
+			<strong>Error!</strong>
+			<button type="button" class="close" data-dismiss="alert">x</button>
+			{{ $errors->first('itens') }}
+		</div>
+	@endif
 @endsection

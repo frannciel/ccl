@@ -7,7 +7,6 @@
 <h2 align="center">DOCUMENTO DE OFICIALIZAÇÃO DE DEMANDA</h2>
 <br/>
 @if (count($requisicao->itens) > 0)
-<div id="pesquisa">
    <div id="pesquisa">
       <table width="100%" border="1" cellspacing="0" cellpadding="2"  class="table table-striped table-bordered w-10">
          <tr bgcolor="#F5F5F5" >
@@ -16,7 +15,7 @@
          <tr>
             <td colspan="2"><b>REQUISIÇÃO:</b>&nbsp;{{$requisicao->ordem}}</td>
          </tr>
-          <tr>
+            <tr>
             <td colspan="2"><b>OBJETO:</b>&nbsp;{{$requisicao->descricao}}</td>
          </tr>
          <tr>
@@ -173,22 +172,20 @@
       <br/>
 
    </div>
-
-   <div class="row centered">
-      <div class="col-md-3">
-         <a class="btn btn-primary btn-block" type="button" href="{{route('requisicao.show', $requisicao->uuid)}}" >Voltar</a>
-      </div>
-      <div class="col-md-3">
-         <button class='btn btn-block btn-success' data-clipboard-action='copy' data-clipboard-target='#pesquisa'>Copiar </button>
-      </div>
-      <div class="col-md-3">
-         <a class="btn btn-default btn-block" type="button" href="{{route('requisicao.formalizacaoPdf', $requisicao->uuid)}}" role="button" target="_black">
-            Exportar PDF
-         </a> 
-      </div>
-   </div>
-   @else   
+@else   
    <table align="center"><tr><td><font size="3"><i> Requisição Não Encontrada </i></font></td></tr></table>
-   @endif
-   @endsection
-   <!-- class="table table-striped table-bordered w-10" -->
+@endif
+<div class="row centered">
+   <div class="col-md-3">
+      <a class="btn btn-primary btn-block" type="button" href="{{route('requisicao.show', $requisicao->uuid)}}" >Voltar</a>
+   </div>
+   <div class="col-md-3">
+      <button class='btn btn-block btn-success' data-clipboard-action='copy' data-clipboard-target='#pesquisa'>Copiar </button>
+   </div>
+   <div class="col-md-3">
+      <a class="btn btn-default btn-block" type="button" href="{{route('requisicao.formalizacaoPdf', $requisicao->uuid)}}" role="button" target="_black">
+         Exportar PDF
+      </a> 
+   </div>
+</div>
+@endsection

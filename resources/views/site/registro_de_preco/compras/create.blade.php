@@ -20,8 +20,7 @@
 	</div>
 
 	<div class="panel-body">
-		{{Form::open(['url' => 'registro/precos/store', 'method' => 'post', 'class' => 'form-padrao'])}}
-			{{ Form::hidden('licitacao', $licitacao->uuid)}}
+		{{Form::open(['route' => ['registroDePreco.store', $licitacao->uuid], 'method' => 'post', 'class' => 'form-padrao'])}}
 			
 			<div class="row">
 				@include('form.select', [
@@ -124,17 +123,17 @@
 							<td class="center w-2">
 								<div class="btn-group btn-group-justified" role="group" aria-label="...">
 									<div class="btn-group" role="group">
-										<a class="btn btn-default" type="button" href="{{url('registro/precos/documento', $ata->uuid)}}" role="button" target="_black">
+										<a class="btn btn-default" type="button" href="{{route('registroDePreco.showAta', $ata->uuid)}}" role="button" target="_black">
 											<i class="fa fa-eye"></i>
 										</a>
 									</div>
 									<div class="btn-group" role="group">
-										<a class="btn btn-default" type="button" href="{{url('registro/precos/pdf', $ata->uuid)}}" role="button" target="_black">
+										<a class="btn btn-default" type="button" href="{{route('registroDePreco.downloadPdf', $ata->uuid)}}" role="button" target="_black">
 											<i class="fa fa-file-pdf-o"></i>
 										</a>
 									</div>
 									<div class="btn-group" role="group">
-										<form action="{{url('registro/precos/apagar',  $ata->uuid)}}" method="post">
+										<form action="{{route('registroDePreco.destroy', $ata->uuid)}}" method="post">
 											{{csrf_field() }}
 											{{method_field('DELETE') }}
 											<button type="submit" class="btn btn-danger" role="button"><i class="fa fa-trash"></i></button>

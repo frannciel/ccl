@@ -35,13 +35,12 @@
             <div class="col-md-2">Unidade</div>
             <div class="col-md-2">Preços Unitário</div>
             <div class="col-md-2">Desdobrado?</div>
-            <div class="col-md-2">Desmenbrado</div>
-
+            <div class="col-md-2">Desmembrado</div>
         </div>
     </div>
 </div>
 
-{{Form::open(['route' => ['uasg.importarStore', $licitacao->uuid], 'method' => 'POST', 'class' => 'form-padrao'])}}
+{{Form::open(['route' => ['uasg.importarStore', $licitacao->uuid], 'method' => 'Post', 'class' => 'form-padrao'])}}
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
         @foreach($itens as $key => $item)
             <div class="panel panel-default">
@@ -54,15 +53,14 @@
                         @if($item['subrogado'])
                             <div class="col-md-2">Sim</div>
                             <div class="col-md-2">
-                                <input type="text" name="desmembrados['{{$item['item']}}']" class="form-control" value="{{$item['desmembrado']}}">
+                                <input type="text" name="desdobrados[{{$item['item']}}]" class="form-control" value="{{$item['desdobrado']}}">
                             </div>
                         @else
                             <div class="col-md-2">Não</div>
                             <div class="col-md-2">
-                                <input type="text" name="desmembrados['{{$item['item']}}']" class="form-control"  disabled="">
+                                <input type="text" name="desdobrados[{{$item['item']}}]" class="form-control" disabled="">
                             </div>
                         @endif
-
                     </div>
                 </div>
                 <div id="collapse{{$key}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{$key}}">
@@ -81,7 +79,7 @@
                                 @foreach($participantes->where('item', $item['item']) as $chave => $participante)
                                 <tr>
                                     <td>
-                                        <input type="checkbox" class="checkbox{{$key}}" name="participantes[]" value="{{$chave}}" >
+                                        <input type="checkbox" class="checkbox{{$key}}" name="participantes[{{$chave}}]" value="{{$item['item']}}" >
                                     </td>
                                     <td class="center">{{$participante['uasg']}}</td>
                                     <td>{{$participante['nome']}}</td>

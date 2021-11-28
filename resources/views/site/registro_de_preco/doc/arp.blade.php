@@ -1,4 +1,4 @@
-@extends('layouts.index')
+@extends('site.layouts.index')
 
 @section('content')
 	<div id="copiar">
